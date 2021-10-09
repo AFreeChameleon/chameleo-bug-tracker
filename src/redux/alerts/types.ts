@@ -1,0 +1,1 @@
+export const SET_ALERTS = 'SET_ALERTS';
