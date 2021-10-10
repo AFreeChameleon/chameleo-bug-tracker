@@ -1,0 +1,60 @@
+import { NextApiRequest, NextApiResponse } from 'next';
+import * as yup from 'yup';
+import bcrypt from 'bcrypt';
+import { prisma }  from '../../../lib/prisma';
+import withSession, { NextApiRequestWithSession } from '../../../lib/session';
+import { isUserLoggedIn } from '../../../middleware/auth';
+
+export default withSession(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+    switch (req.method) {
+        case 'GET':
+            isUserLoggedIn(req, res, getUserDetails);
+            break;
+        default:
+            res.status(404).json({
+                errors: ['Could not find route specified.']
+            });
+            break;
+    }
+});
+
+const getUserDetails = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+    try {
+        console.log(req.user.id)
+        const user = await prisma.user.findFirst({
+            where: {
+                id: req.user.id
+            },
+            select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+                notifications: true,
+                projects: {
+                    select: {
+                        name: true,
+                        key: true,
+                        user: {
+                            select: {
+                                firstName: true,
+                                lastName: true,
+                            }
+                        },
+                    }
+                }
+            }
+        });
+        return res.json({
+            user: user
+        });
+    } catch (err) {
+        if (err.errors) {
+            return res.status(500).json({
+                errors: err.errors
+            });
+        }
+        return res.status(500).json({
+            errors: ['An error occurred while getting your details, please try again later.']
+        })
+    }
+}

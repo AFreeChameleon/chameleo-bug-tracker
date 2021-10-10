@@ -140,7 +140,7 @@ class Header extends React.Component<HeaderProps> {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user
+    user: state.user.data
 })
 
 export default compose<any>(

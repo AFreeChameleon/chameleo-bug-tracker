@@ -32,7 +32,7 @@ const themeObj = {
             light: errorBg
         },
         background: {
-            light: chameleoGreen + '22',
+            // light: chameleoGreen + '22',
             default: '#ffffff',
             dark: darkGreen,
             contrastText: navy,
