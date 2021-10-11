@@ -7,6 +7,9 @@ import { useDispatch } from 'react-redux';
 import {
     setUserDetails
 } from '../../redux/user/actions';
+import {
+    setProjectData
+} from '../../redux/project/actions';
 
 import {
     styled
@@ -46,6 +49,9 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
     useEffect(() => {
         dispatch(setUserDetails({
             ...user
+        }));
+        dispatch(setProjectData({
+            ...project
         }))
     }, []);
     console.log(project, user)
@@ -80,16 +86,16 @@ ProjectPage.getInitialProps = async (ctx) => {
     try {
         let res: any;
         if (ctx.req) {
-            res = await axios.get(`${process.env.HOST}/api/project/details?key=${ctx.query.key}`, { 
+            res = await axios.get(`${process.env.HOST}/api/project/details?company=${ctx.query.company}`, { 
                 withCredentials: true,
                 headers: { Cookie: ctx.req.headers.cookie }
             });
         } else {
-            res = await axios.get(`${process.env.HOST}/api/project/details?key=${ctx.query.key}`, { 
+            res = await axios.get(`${process.env.HOST}/api/project/details?company=${ctx.query.company}`, { 
                 withCredentials: true,
             });
         }
-        console.log(res.data)
+        console.log('DATA', res.data)
         if (res.data.project && res.data.user) {
             console.log(res.data.project)
         

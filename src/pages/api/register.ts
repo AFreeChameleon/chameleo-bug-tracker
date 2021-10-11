@@ -47,7 +47,7 @@ const postRegister = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const { first_name, last_name, email, password } = schema.validateSync(req.body);
 
-        const existingUser = await prisma.user.findFirst({
+        const existingUser = await prisma.user.findUnique({
             where: {
                 email: email
             }

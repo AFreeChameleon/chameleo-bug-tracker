@@ -88,8 +88,6 @@ Dashboard.getInitialProps = async (ctx) => {
             });
         }
         if (res.data.user) {
-            console.log(res.data.user)
-        
             return {
                 ...res.data.user
             };

@@ -17,10 +17,13 @@
     "@mui/material": "^5.0.0-rc.1",
     "@prisma/client": "^3.2.1",
     "@types/bcrypt": "^5.0.0",
+    "@types/humanize-duration": "^3.25.1",
     "@types/mailgun-js": "^0.22.12",
     "@types/redux-thunk": "^2.1.0",
+    "@types/timestring": "^6.0.2",
     "axios": "^0.22.0",
     "bcrypt": "^5.0.1",
+    "humanize-duration": "^3.27.0",
     "mailgun-js": "^0.22.0",
     "next": "11.1.2",
     "next-iron-session": "^4.2.0",
@@ -29,6 +32,7 @@
     "react-redux": "^7.2.5",
     "redux": "^4.1.1",
     "redux-thunk": "^2.3.0",
+    "timestring": "^6.0.0",
     "yup": "^0.32.9"
   },
   "devDependencies": {

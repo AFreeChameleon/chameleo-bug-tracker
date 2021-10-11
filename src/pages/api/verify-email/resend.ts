@@ -25,7 +25,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 const postResendVerifyUserEmail = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const email = req.body.email;
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
             where: {
                 email: email
             }

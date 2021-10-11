@@ -21,16 +21,16 @@ export default withSession(async (req: NextApiRequestWithSession, res: NextApiRe
 
 const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
-        const key = req.query.key as string;
-        console.log('key: ', req.query)
+        const company = req.query.company as string;
         const project = await prisma.project.findFirst({
             where: {
                 userId: req.user.id,
-                key: key
+                company: company
             },
             select: {
                 name: true,
                 key: true,
+                company: true,
                 tickets: {
                     select: {
                         timeEstimate: true,
@@ -52,9 +52,14 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
                         updatedAt: true
                     }
                 },
+                updatedAt: true,
+                createdAt: true
+            },
+            orderBy: {
+                updatedAt: 'asc'
             }
         });
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
             where: {
                 id: req.user.id
             },
@@ -77,7 +82,6 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
                 }
             }
         });
-        console.log(project, user)
         return res.json({
             project: project,
             user: user

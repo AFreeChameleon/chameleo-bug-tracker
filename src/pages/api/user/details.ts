@@ -20,8 +20,7 @@ export default withSession(async (req: NextApiRequestWithSession, res: NextApiRe
 
 const getUserDetails = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
-        console.log(req.user.id)
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
             where: {
                 id: req.user.id
             },
@@ -34,6 +33,7 @@ const getUserDetails = async (req: NextApiRequestWithSession, res: NextApiRespon
                     select: {
                         name: true,
                         key: true,
+                        company: true,
                         user: {
                             select: {
                                 firstName: true,
@@ -48,6 +48,7 @@ const getUserDetails = async (req: NextApiRequestWithSession, res: NextApiRespon
             user: user
         });
     } catch (err) {
+        console.log(err)
         if (err.errors) {
             return res.status(500).json({
                 errors: err.errors

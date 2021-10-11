@@ -39,6 +39,7 @@ type ProjectTableState = {
     newProject: {
         name: string;
         key: string;
+        company: string;
     }
 }
 
@@ -61,18 +62,21 @@ class ProjectTable extends React.Component<ProjectTableProps, ProjectTableState>
         this.state = {
             newProject: {
                 name: '',
-                key: ''
+                key: '',
+                company: ''
             }
         }
     }
 
-    saveNewProject() {
+    saveNewProject(e) {
+        e.preventDefault();
         const { dispatchSetAlerts, dispatchFetchUserData, setNewProjectRowOpen } = this.props;
         const { newProject } = this.state;
 
         axios.post('/api/project/new', {
             name: newProject.name,
-            key: newProject.key
+            key: newProject.key,
+            company: newProject.company
         }, { withCredentials: true })
         .then((res) => {
             dispatchSetAlerts([]);
@@ -98,105 +102,127 @@ class ProjectTable extends React.Component<ProjectTableProps, ProjectTableState>
         const { newProject } = this.state;
 
         return (
-            <TableContainer component={Paper} sx={{ marginTop: '20px' }}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <CheckboxTableCell>
-                                <Checkbox
-                                    size="small"
-                                />
-                            </CheckboxTableCell>
-                            <TableCell align="left">Name</TableCell>
-                            <TableCell align="left">Key</TableCell>
-                            <TableCell align="left">Owner</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {user.projects.map((project, i) => (
-                            <NextLink href={`/dashboard/${project.key}`}>
-                                <TableRow
-                                    key={i}
-                                    sx={{ 
-                                        '&:last-child td, &:last-child th': { 
-                                            border: 0 
-                                        }, 
-                                        cursor: 'pointer',
-                                        '&:hover': (theme) => ({
-                                            backgroundColor: alpha(theme.palette.primary.main, 0.2)
-                                        })
-                                    } as any}
-                                >
-                                    <CheckboxTableCell>
-                                        <Checkbox
-                                            size="small"
-                                        />
-                                    </CheckboxTableCell>
-                                    <TableCell component="th" scope="row">
-                                        {project.name}
-                                    </TableCell>
-                                    <TableCell>{project.key}</TableCell>
-                                    <TableCell>
-                                        <FlexDiv>
-                                            <Avatar sx={{ height: 32, width: 32, paddingTop: '2px' }}>
-                                                {project.user.firstName.slice(0, 1)}
-                                            </Avatar>
-                                            {project.user.firstName} {project.user.lastName}
-                                        </FlexDiv>
-                                    </TableCell>
-                                </TableRow>
-                            </NextLink>
-                        ))}
-                        { newProjectRowOpen && <TableRow
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <CheckboxTableCell>
-                                <Tooltip title="Save">
-                                    <IconButton
-                                        onClick={this.saveNewProject}
+            <form action="/api/project/new" method="POST" onSubmit={this.saveNewProject}>
+                <TableContainer component={Paper} sx={{ marginTop: '20px' }}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <CheckboxTableCell>
+                                    <Checkbox
+                                        size="small"
+                                    />
+                                </CheckboxTableCell>
+                                <TableCell align="left">Name</TableCell>
+                                <TableCell align="left">Company</TableCell>
+                                <TableCell align="left">Key</TableCell>
+                                <TableCell align="left">Owner</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {user.projects.map((project, i) => (
+                                <NextLink href={`/dashboard/${project.company}`} key={i}>
+                                    <TableRow
+                                        sx={{ 
+                                            '&:last-child td, &:last-child th': { 
+                                                border: 0 
+                                            }, 
+                                            cursor: 'pointer',
+                                            '&:hover': (theme) => ({
+                                                backgroundColor: alpha(theme.palette.primary.main, 0.2)
+                                            })
+                                        } as any}
                                     >
-                                        <SaveIcon color="primary" />
-                                    </IconButton>
-                                </Tooltip>
-                            </CheckboxTableCell>
-                            <TableCell component="th" scope="row">
-                                <TextField
-                                    fullWidth
-                                    size="small"
-                                    value={newProject.name}
-                                    onChange={(e) => this.setState({
-                                        newProject: {
-                                            ...newProject,
-                                            name: e.target.value
-                                        }
-                                    })}
-                                />
-                            </TableCell>
-                            <TableCell>
-                                <TextField
-                                    fullWidth
-                                    size="small"
-                                    value={newProject.key}
-                                    onChange={(e) => this.setState({
-                                        newProject: {
-                                            ...newProject,
-                                            key: e.target.value
-                                        }
-                                    })}
-                                />
-                            </TableCell>
-                            <TableCell>
-                                <FlexDiv>
-                                    <Avatar sx={{ height: 32, width: 32, paddingTop: '2px' }}>
-                                        {user.firstName.slice(0, 1)}
-                                    </Avatar>
-                                    {user.firstName} {user.lastName}
-                                </FlexDiv>
-                            </TableCell>
-                        </TableRow> }
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                        <CheckboxTableCell>
+                                            <Checkbox
+                                                size="small"
+                                            />
+                                        </CheckboxTableCell>
+                                        <TableCell component="th" scope="row">
+                                            {project.name}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {project.company}
+                                        </TableCell>
+                                        <TableCell>{project.key}</TableCell>
+                                        <TableCell>
+                                            <FlexDiv>
+                                                <Avatar sx={{ height: 32, width: 32, paddingTop: '2px' }}>
+                                                    {project.user.firstName.slice(0, 1)}
+                                                </Avatar>
+                                                {project.user.firstName} {project.user.lastName}
+                                            </FlexDiv>
+                                        </TableCell>
+                                    </TableRow>
+                                </NextLink>
+                            ))}
+                            { newProjectRowOpen && <TableRow
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <CheckboxTableCell>
+                                    <Tooltip title="Save">
+                                        <IconButton
+                                            onClick={this.saveNewProject}
+                                            type="submit"
+                                        >
+                                            <SaveIcon color="primary" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </CheckboxTableCell>
+                                <TableCell component="th" scope="row">
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        name="name"
+                                        value={newProject.name}
+                                        onChange={(e) => this.setState({
+                                            newProject: {
+                                                ...newProject,
+                                                name: e.target.value
+                                            }
+                                        })}
+                                    />
+                                </TableCell>
+                                <TableCell component="th" scope="row">
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        name="company"
+                                        value={newProject.company}
+                                        onChange={(e) => this.setState({
+                                            newProject: {
+                                                ...newProject,
+                                                company: e.target.value
+                                            }
+                                        })}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        name="key"
+                                        value={newProject.key}
+                                        onChange={(e) => this.setState({
+                                            newProject: {
+                                                ...newProject,
+                                                key: e.target.value
+                                            }
+                                        })}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <FlexDiv>
+                                        <Avatar sx={{ height: 32, width: 32, paddingTop: '2px' }}>
+                                            {user.firstName.slice(0, 1)}
+                                        </Avatar>
+                                        {user.firstName} {user.lastName}
+                                    </FlexDiv>
+                                </TableCell>
+                            </TableRow> }
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </form>
         )
     }
 }

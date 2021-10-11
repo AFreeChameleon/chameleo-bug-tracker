@@ -10,7 +10,10 @@ const schema = yup.object().shape({
         .required('Name is required.')
         .min(3, 'Name must have more than 3 characters.'),
     key: yup.string()
-        .required()
+        .required(),
+    company: yup.string()
+        .required('Company is required.')
+        .min(3, 'Company must have more than 3 characters.')
 });
 
 export default withSession(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
@@ -28,12 +31,23 @@ export default withSession(async (req: NextApiRequestWithSession, res: NextApiRe
 
 const postNewProject = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
-        const { name, key } = schema.validateSync(req.body);
+        const { name, key, company } = schema.validateSync(req.body);
+        const existingProjects = await prisma.project.findMany({
+            where: {
+                company: company
+            }
+        });
+        if (existingProjects.length > 0) {
+            return res.status(404).json({
+                errors: ['Company with that name already exists.']
+            })
+        }
         const project = await prisma.project.create({
             data: {
                 userId: req.user.id,
                 name: name,
-                key: key
+                key: key,
+                company: company
             }
         });
         const role = await prisma.role.create({

@@ -107,7 +107,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 }
             }
         }
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
             select: {
                 tokens: {
                     where: {
