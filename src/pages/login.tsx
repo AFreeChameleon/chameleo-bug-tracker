@@ -37,10 +37,6 @@ const Login: NextPage<LoginProps> = ({ dispatchSetAlerts }: LoginProps) => {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
         axios.post('/api/login', {
             email: data.get('email'),
             password: data.get('password')

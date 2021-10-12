@@ -97,7 +97,7 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
         //         id: 
         //     }
         // })
-        console.log(project, user)
+        console.log(project.tickets, user)
         return res.json({
             project: project,
             user: user

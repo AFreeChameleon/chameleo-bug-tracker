@@ -1,6 +1,7 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
@@ -12,6 +13,7 @@ import Typography from '@mui/material/Typography';
 
 type DraggableBoardsProps = {
     tickets: any[];
+    project: any;
 }
 
 type DraggableBoardsState = {
@@ -42,7 +44,7 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
         this.filterTickets = this.filterTickets.bind(this);
         this.onDragEnd = this.onDragEnd.bind(this);
         this.formatTickets = this.formatTickets.bind(this);
-console.log(this.props.tickets)
+        
         this.state = {
             tickets: {
                 ...this.formatTickets()
@@ -55,7 +57,18 @@ console.log(this.props.tickets)
         'In progress',
         'Waiting for review',
         'Done'
-    ]
+    ];
+
+    componentDidUpdate(prevProps) {
+        const { tickets } = this.props;
+        if (!_.isEqual(tickets, prevProps.tickets)) {
+            this.setState({
+                tickets: {
+                    ...this.formatTickets()
+                }
+            })
+        }
+    }
 
     filterTickets() {
         const { tickets } = this.props;
@@ -157,13 +170,14 @@ console.log(this.props.tickets)
     }
 
     render() {
+        const { project } = this.props;
         const { tickets } = this.state;
         // console.log('tickets: ', tickets)
         if (!tickets) {
             return null;
         }
         // const formattedTickets = this.formatTickets();
-        // console.log(tickets)
+        console.log(project, tickets)
         return (
             <DragDropContext
                 onDragEnd={(result) => this.onDragEnd(result, tickets, (cols: any) => this.setState({ tickets: cols }))}
@@ -171,7 +185,7 @@ console.log(this.props.tickets)
                 <FlexDiv sx={{
                     marginTop: '50px'
                 }}>
-                    { Object.entries(tickets).map(([columnId, column]: any, i) => {console.log(tickets[columnId],columnId); return (
+                    { Object.entries(tickets).map(([columnId, column]: any, i) => (
                         <CenterDiv key={i}>
                             <Typography
                                 gutterBottom
@@ -219,7 +233,7 @@ console.log(this.props.tickets)
                                 )}
                             </Droppable>
                         </CenterDiv>
-                    )}) }
+                    )) }
                 </FlexDiv>
             </DragDropContext>
         )
@@ -227,7 +241,8 @@ console.log(this.props.tickets)
 }
 
 const mapStateToProps = (state) => ({
-    tickets: state.project.data.tickets
+    tickets: state.project.data.tickets,
+    project: state.project.data
 })
 
 

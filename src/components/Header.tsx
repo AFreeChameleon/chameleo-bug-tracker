@@ -1,5 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import NextLink from 'next/link';
+import { NextRouter, withRouter } from 'next/router';
 import NextImage from 'next/image';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -26,9 +28,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import chameleologo from '../../public/img/chameleo-logo.png';
+import { setAlerts } from '../redux/alerts/actions';
 
 type HeaderProps = {
     user: any;
+    router: NextRouter;
+    dispatchSetAlerts: (values: any[]) => void;
 }
 
 type HeaderState = {
@@ -98,10 +103,35 @@ const NotificationBadge = styled(Badge)(({ theme }) => ({
 class Header extends React.Component<HeaderProps, HeaderState> {
     constructor(props) {
         super(props);
-
+        this.logout = this.logout.bind(this);
+        
         this.state = {
             profileMenuAnchorEl: null
         }
+    }
+
+    logout() {
+        const { router, dispatchSetAlerts } = this.props;
+        dispatchSetAlerts([]);
+        axios.post('/api/logout', {}, { withCredentials: true })
+        .then((res) => {
+            router.push('/');
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatchSetAlerts(
+                    err.response.data.errors.map((e: string) => ({
+                        type: 'error',
+                        message: e
+                    }))
+                );
+            } else {
+                dispatchSetAlerts([ {
+                    type: 'error',
+                    message: err.message
+                } ]);
+            }
+        })
     }
 
     render() {
@@ -193,7 +223,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                 </ListItemIcon>
                                 Settings
                             </MenuItem>
-                            <MenuItem>
+                            <MenuItem onClick={this.logout}>
                                 <ListItemIcon>
                                     <LogoutIcon fontSize="small" />
                                 </ListItemIcon>
@@ -209,8 +239,12 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 
 const mapStateToProps = (state) => ({
     user: state.user.data
-})
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    dispatchSetAlerts: (values) => dispatch(setAlerts(values))
+});
 
 export default compose<any>(
-    connect(mapStateToProps)
-)(Header);
+    connect(mapStateToProps, mapDispatchToProps)
+)(withRouter(Header));

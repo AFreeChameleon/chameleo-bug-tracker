@@ -18,7 +18,7 @@ export default withSession(async (req: NextApiRequestWithSession, res: NextApiRe
     }
 });
 
-export const getTicketDetails = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+const getTicketDetails = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         // const company = req.query.company as string;
         // const project = await prisma.project.findFirst({

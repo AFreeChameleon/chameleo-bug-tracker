@@ -131,7 +131,7 @@ function Register({ dispatchSetAlerts }: RegisterProps) {
                     <Alert severity="success">
                         {success}
                         <br/>
-                        Didn't recieve an email? <Link 
+                        Didn&apos;t recieve an email? <Link 
                             sx={{
                                 cursor: 'pointer'
                             }} 
