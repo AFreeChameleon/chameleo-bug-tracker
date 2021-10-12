@@ -76,6 +76,7 @@ const Dashboard: NextPage<DashboardProps> = ({ firstName, lastName, email, notif
 
 Dashboard.getInitialProps = async (ctx) => {
     try {
+        console.log('getInitialProps')
         let res: any;
         if (ctx.req) {
             console.log(ctx.req.headers)
@@ -85,7 +86,7 @@ Dashboard.getInitialProps = async (ctx) => {
             });
             console.log(res.data)
         } else {
-            res = await axios.get(`${process.env.HOST}/api/user/details`, { 
+            res = await axios.get(`/api/user/details`, { 
                 withCredentials: true,
             });
         }

@@ -10,7 +10,7 @@ const defaultState = {
     loading: false,
     errors: [],
     data: {
-
+        tickets: []
     }
 }
 

@@ -14,14 +14,25 @@ import InputBase from '@mui/material/InputBase';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Link from '@mui/material/Link';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import chameleologo from '../../public/img/chameleo-logo.png';
 
 type HeaderProps = {
     user: any;
+}
+
+type HeaderState = {
+    profileMenuAnchorEl: any;
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -84,13 +95,18 @@ const NotificationBadge = styled(Badge)(({ theme }) => ({
     }
 }));
 
-class Header extends React.Component<HeaderProps> {
+class Header extends React.Component<HeaderProps, HeaderState> {
     constructor(props) {
         super(props);
+
+        this.state = {
+            profileMenuAnchorEl: null
+        }
     }
 
     render() {
         const { user } = this.props;
+        const { profileMenuAnchorEl } = this.state;
         return (
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static" color="transparent">
@@ -127,11 +143,63 @@ class Header extends React.Component<HeaderProps> {
                             color="inherit"
                             aria-label="open drawer"
                             sx={{ mr: 2 }}
+                            onClick={(e) => this.setState({ profileMenuAnchorEl: e.currentTarget })}
                         >
-                            <Avatar sx={{ height: 32, width: 32, paddingTop: '2px' }}>
-                                {user.firstName.slice(0, 1)}
+                            <Avatar sx={{ height: 32, width: 32, marginTop: '2px' }}>
+                                {user.firstName && user.firstName.slice(0, 1)}
                             </Avatar>
                         </IconButton>
+                        <Menu
+                            anchorEl={profileMenuAnchorEl}
+                            open={Boolean(profileMenuAnchorEl)}
+                            onClose={() => this.setState({ profileMenuAnchorEl: null })}
+                            onClick={() => this.setState({ profileMenuAnchorEl: null })}
+                            PaperProps={{
+                                elevation: 0,
+                                sx: {
+                                    overflow: 'visible',
+                                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                    mt: 1.5,
+                                    '& .MuiAvatar-root': {
+                                        width: 32,
+                                        height: 32,
+                                        ml: -0.5,
+                                        mr: 1,
+                                    },
+                                    '&:before': {
+                                        content: '""',
+                                        display: 'block',
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 22,
+                                        width: 10,
+                                        height: 10,
+                                        bgcolor: 'background.paper',
+                                        transform: 'translateY(-50%) rotate(45deg)',
+                                        zIndex: 0,
+                                    },
+                                },
+                            }}
+                            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                        >
+                            <MenuItem>
+                                <Avatar /> Profile
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem>
+                                <ListItemIcon>
+                                    <SettingsIcon fontSize="small" />
+                                </ListItemIcon>
+                                Settings
+                            </MenuItem>
+                            <MenuItem>
+                                <ListItemIcon>
+                                    <LogoutIcon fontSize="small" />
+                                </ListItemIcon>
+                                Logout
+                            </MenuItem>
+                        </Menu>
                     </Toolbar>
                 </AppBar>
             </Box>

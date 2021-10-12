@@ -76,7 +76,10 @@ const postRegister = async (req: NextApiRequest, res: NextApiResponse) => {
                     id: true,
                 }
             });
-            await sendVerifyEmail(email, user.tokens[0].token);
+            if (process.env.NODE_ENV === 'production') {
+                console.log(process.env.NODE_ENV)
+                await sendVerifyEmail(email, user.tokens[0].token);
+            }
             await prisma.user.update({
                 where: {
                     id: user.id

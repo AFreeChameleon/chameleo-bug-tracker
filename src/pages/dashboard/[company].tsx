@@ -5,10 +5,12 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-    setUserDetails
+    setUserDetails,
+    fetchUserData
 } from '../../redux/user/actions';
 import {
-    setProjectData
+    setProjectData,
+    fetchProjectDetails
 } from '../../redux/project/actions';
 
 import {
@@ -28,7 +30,8 @@ import DraggableBoards from '../../components/dashboard/ticket/DraggableBoards';
 
 type ProjectPageProps = {
     project: any;
-    user: any
+    user: any;
+    company: string;
 }
 
 const HeadingDiv = styled('div')(({ theme }) => ({
@@ -41,12 +44,24 @@ const LinkDiv = styled('div')(({ theme }) => ({
 }));
 
 const HeaderTypography = styled(Typography)(({ theme }) => ({
-    marginTop: '30px'
+    
+}));
+
+const FlexDiv = styled('div')(({ theme }) => ({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+}));
+
+const SmallButton = styled(Button)(({ theme }) => ({
+    width: '80px',
+    textTransform: 'none'
 }))
 
 const ProjectPage: NextPage<ProjectPageProps> = ({
     project,
-    user
+    user,
+    company
 }: ProjectPageProps) => {
     const dispatch = useDispatch();
     const [createModalOpen, setCreateModalOpen] = useState(true)
@@ -56,7 +71,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
         }));
         dispatch(setProjectData({
             ...project
-        }))
+        }));
     }, []);
     return (
         <div>
@@ -64,7 +79,12 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
             <Container>
                 <HeadingDiv>
                     <Breadcrumbs>
-                        <NextLink href="/dashboard">
+                        <NextLink
+                            shallow
+                            replace
+                            prefetch
+                            href="/dashboard"
+                        >
                             <LinkDiv>
                                 Projects
                             </LinkDiv>
@@ -73,13 +93,21 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                             {project && project.name}
                         </LinkDiv>
                     </Breadcrumbs>
-                    <HeaderTypography
-                        variant="h1"
-                    >
-                        Tickets
-                    </HeaderTypography>
+                    <FlexDiv sx={{marginTop: '30px'}}>
+                        <HeaderTypography
+                            variant="h1"
+                        >
+                            Tickets
+                        </HeaderTypography>
+                        <SmallButton
+                            variant="contained"
+                            onClick={(e) => setCreateModalOpen(true)}
+                        >
+                            Create
+                        </SmallButton>
+                    </FlexDiv>
                 </HeadingDiv>
-                <DraggableBoards />
+                {(project && project.tickets) && <DraggableBoards />}
             </Container>
             <CreateModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
             <Alerts />
@@ -103,11 +131,13 @@ ProjectPage.getInitialProps = async (ctx) => {
         if (res.data.project && res.data.user) {
             console.log('data: ', res.data)
             return {
+                company: ctx.query.company as string,
                 project: res.data.project,
                 user: res.data.user
             };
         } else {
             return { 
+                company: ctx.query.company as string,
                 user: null,
                 project: null
             };
@@ -115,6 +145,7 @@ ProjectPage.getInitialProps = async (ctx) => {
     } catch (err) {
         console.log(err);
         return {
+            company: ctx.query.company as string,
             user: null,
             project: null
         }

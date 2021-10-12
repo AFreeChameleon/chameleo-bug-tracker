@@ -227,7 +227,7 @@ console.log(this.props.tickets)
 }
 
 const mapStateToProps = (state) => ({
-    tickets: (state.project && state.project.data) ? state.project.data.tickets : []
+    tickets: state.project.data.tickets
 })
 
 

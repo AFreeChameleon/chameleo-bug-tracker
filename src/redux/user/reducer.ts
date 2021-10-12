@@ -10,9 +10,9 @@ const defaultState = {
     loading: false,
     errors: [],
     data: {
-        firstName: '',
-        lastName: '',
-        email: '',
+        firstName: ' ',
+        lastName: ' ',
+        email: ' ',
         notifications: [],
         projects: []
     }

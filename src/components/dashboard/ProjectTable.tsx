@@ -20,10 +20,12 @@ import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
+
 import SaveIcon from '@mui/icons-material/Save';
-import { Tooltip } from '@mui/material';
+
 import { setAlerts } from '../../redux/alerts/actions';
 import { fetchUserData } from '../../redux/user/actions';
 
@@ -100,7 +102,7 @@ class ProjectTable extends React.Component<ProjectTableProps, ProjectTableState>
     render() {
         const { newProjectRowOpen, user } = this.props;
         const { newProject } = this.state;
-
+        console.log(user);
         return (
             <form action="/api/project/new" method="POST" onSubmit={this.saveNewProject}>
                 <TableContainer component={Paper} sx={{ marginTop: '20px' }}>
@@ -119,8 +121,12 @@ class ProjectTable extends React.Component<ProjectTableProps, ProjectTableState>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {user.projects.map((project, i) => (
-                                <NextLink href={`/dashboard/${project.company}`} key={i}>
+                            {(user && user.projects) && user.projects.map((project, i) => (
+                                <NextLink
+                                    shallow 
+                                    key={i}
+                                    href={`/dashboard/${project.company}`} 
+                                >
                                     <TableRow
                                         sx={{ 
                                             '&:last-child td, &:last-child th': { 
@@ -128,7 +134,7 @@ class ProjectTable extends React.Component<ProjectTableProps, ProjectTableState>
                                             }, 
                                             cursor: 'pointer',
                                             '&:hover': (theme) => ({
-                                                backgroundColor: alpha(theme.palette.primary.main, 0.2)
+                                                backgroundColor: alpha(theme.palette.primary.main, 0.05)
                                             })
                                         } as any}
                                     >
