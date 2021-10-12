@@ -10,8 +10,7 @@ import { mapIntToPriority, mapIntToStatus, validateTime } from '../../../lib/tic
 const schema = yup.object().shape({
     name: yup.string()
         .required('Name is required.'),
-    description: yup.string()
-        .required('Description is required.'),
+    description: yup.string(),
     tags: yup.array(),
     project_company: yup.string()
         .required('Project is required.'),
@@ -62,6 +61,16 @@ const postNewTicket = async (req: NextApiRequestWithSession, res: NextApiRespons
         if (!project) {
             return res.status(404).json({
                 errors: ['Project doesn\'t exist.']
+            })
+        }
+        const existingTicket = await prisma.ticket.findMany({
+            where: {
+                name: name
+            }
+        });
+        if (existingTicket.length > 0) {
+            return res.status(404).json({
+                errors: ['Ticket with that name already exists.']
             })
         }
 

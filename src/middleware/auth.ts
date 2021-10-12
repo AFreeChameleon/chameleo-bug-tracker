@@ -7,6 +7,7 @@ type NextFunction = (req: NextApiRequestWithSession, res: NextApiResponse) => vo
 export const isUserLoggedIn = async (req: NextApiRequestWithSession, res: NextApiResponse, next: NextFunction) => {
     try {
         const id = req.session.get('user') || -1;
+        console.log(id)
         const user = await prisma.user.findUnique({
             where: {
                 id: id

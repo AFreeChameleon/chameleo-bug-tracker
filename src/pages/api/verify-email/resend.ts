@@ -56,7 +56,6 @@ const postResendVerifyUserEmail = async (req: NextApiRequest, res: NextApiRespon
             });
         });
     } catch (err) {
-        console.log('UH OHHH')
         return res.status(500).json({
             errors: ['An error occurred while resending your email. Please try again.']
         });

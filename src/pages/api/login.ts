@@ -46,7 +46,7 @@ const postLogin = async (req: NextApiRequestWithSession, res: NextApiResponse) =
             email,
             password
         } = schema.validateSync(req.body);
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where: {
                 email: email
             }

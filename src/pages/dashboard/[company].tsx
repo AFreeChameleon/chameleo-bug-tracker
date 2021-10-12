@@ -21,6 +21,10 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Header from '../../components/Header';
 import CreateModal from '../../components/dashboard/ticket/CreateModal';
+import ifAuth from '../../components/auth/ifAuth';
+import { authenticated } from '../../lib/auth';
+import Alerts from '../../components/Alerts';
+import DraggableBoards from '../../components/dashboard/ticket/DraggableBoards';
 
 type ProjectPageProps = {
     project: any;
@@ -54,7 +58,6 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
             ...project
         }))
     }, []);
-    console.log(project, user)
     return (
         <div>
             <Header />
@@ -67,7 +70,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                             </LinkDiv>
                         </NextLink>
                         <LinkDiv>
-                            {project.name}
+                            {project && project.name}
                         </LinkDiv>
                     </Breadcrumbs>
                     <HeaderTypography
@@ -76,8 +79,10 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                         Tickets
                     </HeaderTypography>
                 </HeadingDiv>
-                <CreateModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
+                <DraggableBoards />
             </Container>
+            <CreateModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
+            <Alerts />
         </div>
     )
 }
@@ -91,43 +96,31 @@ ProjectPage.getInitialProps = async (ctx) => {
                 headers: { Cookie: ctx.req.headers.cookie }
             });
         } else {
-            res = await axios.get(`${process.env.HOST}/api/project/details?company=${ctx.query.company}`, { 
+            res = await axios.get(`/api/project/details?company=${ctx.query.company}`, { 
                 withCredentials: true,
             });
         }
-        console.log('DATA', res.data)
         if (res.data.project && res.data.user) {
-            console.log(res.data.project)
-        
+            console.log('data: ', res.data)
             return {
                 project: res.data.project,
                 user: res.data.user
             };
         } else {
             return { 
-                user: {
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    notifications: [],
-                    projects: []
-                },
-                project: {}
+                user: null,
+                project: null
             };
         }
     } catch (err) {
-        console.log(err.message);
+        console.log(err);
         return {
-            user: {
-                firstName: '',
-                lastName: '',
-                email: '',
-                notifications: [],
-                projects: []
-            },
-            project: {}
+            user: null,
+            project: null
         }
     }
 };
 
-export default ProjectPage;
+const AuthenticatedProjectPage = ifAuth(ProjectPage);
+
+export default AuthenticatedProjectPage;

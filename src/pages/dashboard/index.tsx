@@ -78,10 +78,12 @@ Dashboard.getInitialProps = async (ctx) => {
     try {
         let res: any;
         if (ctx.req) {
+            console.log(ctx.req.headers)
             res = await axios.get(`${process.env.HOST}/api/user/details`, { 
                 withCredentials: true,
                 headers: { Cookie: ctx.req.headers.cookie }
             });
+            console.log(res.data)
         } else {
             res = await axios.get(`${process.env.HOST}/api/user/details`, { 
                 withCredentials: true,
@@ -103,7 +105,7 @@ Dashboard.getInitialProps = async (ctx) => {
             };
         }
     } catch (err) {
-        console.log(err.message);
+        console.log(err);
         return {
             user: {
                 firstName: '',

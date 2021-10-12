@@ -30,7 +30,7 @@ model Ticket {
   userId         Int
   projectId      Int
   name           String
-  description    String
+  description    String?
   timeEstimate   String
   status         String         @default("Unassigned")
   priority       String

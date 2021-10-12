@@ -8,7 +8,6 @@ import { isUserLoggedIn } from '../../../middleware/auth';
 export default withSession(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     switch (req.method) {
         case 'GET':
-            console.log('WOOP')
             isUserLoggedIn(req, res, getProjectDetails);
             break;
         default:
@@ -22,6 +21,7 @@ export default withSession(async (req: NextApiRequestWithSession, res: NextApiRe
 const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         const company = req.query.company as string;
+        console.log(company)
         const project = await prisma.project.findFirst({
             where: {
                 userId: req.user.id,
@@ -37,6 +37,7 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
                         status: true,
                         priority: true,
                         description: true,
+                        name: true,
                         user: {
                             select: {
                                 id: true,
@@ -53,7 +54,15 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
                     }
                 },
                 updatedAt: true,
-                createdAt: true
+                createdAt: true,
+                user: { 
+                    select: {
+                        id: true,
+                        email: true,
+                        firstName: true,
+                        lastName: true
+                    }
+                }
             },
             orderBy: {
                 updatedAt: 'asc'
@@ -72,6 +81,7 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
                     select: {
                         name: true,
                         key: true,
+                        company: true,
                         user: {
                             select: {
                                 firstName: true,
@@ -82,6 +92,12 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
                 }
             }
         });
+        // const usersInProject = await prisma.project.findMany({
+        //     where: {
+        //         id: 
+        //     }
+        // })
+        console.log(project, user)
         return res.json({
             project: project,
             user: user

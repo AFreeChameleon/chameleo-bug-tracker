@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
@@ -20,11 +21,16 @@ import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 
 import AddIcon from '@mui/icons-material/Add';
+import { setAlerts } from '../../../redux/alerts/actions';
+import { fetchProjectDetails } from '../../../redux/project/actions';
 
 type CreateModalProps = {
     open: boolean;
     onClose: () => void;
     user: any;
+    project: any;
+    dispatchSetAlerts: (value: any) => void;
+    dispatchFetchProjectDetails: (company: string) => void;
 }
 
 type CreateModalState = {
@@ -58,6 +64,12 @@ const SmallButton = styled(Button)(({ theme }) => ({
     width: '100px'
 }));
 
+const NoArrowAutocomplete = styled(Autocomplete)(({ theme }) => ({
+    '& .MuiAutocomplete-endAdornment': {
+        display: 'none'
+    }
+}))
+
 class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
     constructor(props) {
         super(props);
@@ -68,24 +80,45 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                 name: '',
                 description: '',
                 attachments: '',
-                status: 3,
+                status: 0,
                 priority: 2,
                 tags: [],
                 assignedTo: '',
                 estimate: ''
-            }
+            },
         }
     }
 
-    createTicket(e) {
-
+    async createTicket(e) {
+        const { onClose, project, user, dispatchSetAlerts, dispatchFetchProjectDetails } = this.props;
+        const { ticket } = this.state;
+        console.log(ticket, Boolean(ticket.description))
+        if (!Boolean(ticket.name)) {
+            dispatchSetAlerts([ {
+                type: 'error',
+                message: 'Name is required.'
+            } ]);
+            return;
+        } else {
+            const res = await axios.post('/api/ticket/new', {
+                name: ticket.name,
+                description: ticket.description,
+                tags: [],
+                project_company: project.company,
+                status: ticket.status,
+                priority: ticket.priority,
+                assignedTo: ticket.assignedTo,
+                estimate: ticket.estimate,
+            }, { withCredentials: true });
+            dispatchFetchProjectDetails(project.company);
+            onClose();
+        }
     }
 
     render() {
-        const { open, onClose, user } = this.props;
+        const { open, onClose, user, project } = this.props;
         const { ticket } = this.state;
-        console.log(user)
-        return (
+        return (project && project.user) ? (
             <Modal
                 open={open}
                 onClose={onClose}
@@ -104,6 +137,13 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                     fullWidth
                                     label="Name"
                                     variant="standard"
+                                    value={ticket.name}
+                                    onChange={(e) => this.setState({
+                                        ticket: {
+                                            ...ticket,
+                                            name: e.target.value
+                                        }
+                                    })}
                                 />
                                 <TextField
                                     fullWidth
@@ -111,6 +151,13 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                     rows={6}
                                     label="Description"
                                     variant="outlined"
+                                    value={ticket.description}
+                                    onChange={(e) => this.setState({
+                                        ticket: {
+                                            ...ticket,
+                                            description: e.target.value
+                                        }
+                                    })}
                                 />
                                 <Typography
                                     variant="subtitle2"
@@ -142,16 +189,13 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                         </div>
                         <div>
                             <Stack spacing={2}>
-                                <Select
+                                {/* <Select
                                     variant="filled"
                                     fullWidth
                                     label="Project"
-                                    value={ticket.status}
+                                    defaultValue={project.name}
                                     onChange={(e) => this.setState({
-                                        ticket: {
-                                            ...ticket,
-                                            status: e.target.value
-                                        }
+                                        selectedProject: e.target.value
                                     })}
                                     sx={{
                                         marginTop: '7px',
@@ -172,14 +216,18 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                         }
                                     }}
                                 >
-                                    {/* <MenuItem value={0}>Todo</MenuItem>
-                                    <MenuItem value={1}>In progress</MenuItem>
-                                    <MenuItem value={2}>Waiting for review</MenuItem>
-                                    <MenuItem value={3}>Done</MenuItem> */}
-                                    { user.projects.map((project) => (
-                                        <MenuItem value={project.name}>{project.name}</MenuItem>
+                                    { user.projects.map((project, i) => (
+                                        <MenuItem key={i} value={project.name}>{project.name}</MenuItem>
                                     )) }
-                                </Select>
+                                </Select> */}
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
+                                        marginTop: '2px'
+                                    }}
+                                >
+                                    {project.name}
+                                </Typography>
                                 <Paper variant="outlined" sx={{
                                     padding: '10px'
                                 }}>
@@ -254,7 +302,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                             >
                                                 Tags:
                                             </Typography>
-                                            <Autocomplete
+                                            <NoArrowAutocomplete
                                                 multiple
                                                 size="small"
                                                 fullWidth
@@ -289,6 +337,12 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                                 fullWidth
                                                 variant="standard"
                                                 value={ticket.estimate}
+                                                onChange={(e) => this.setState({
+                                                    ticket: {
+                                                        ...ticket,
+                                                        estimate: e.target.value
+                                                    }
+                                                })}
                                             />
                                         </FlexDiv>
                                         <FlexDiv>
@@ -300,12 +354,12 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                             >
                                                 Assigned To:
                                             </Typography>
-                                            <Autocomplete
+                                            <NoArrowAutocomplete
                                                 size="small"
                                                 fullWidth
                                                 options={[]}
                                                 limitTags={3}
-                                                value={ticket.assignedTo}
+                                                defaultValue={`${project.user.firstName} ${project.user.lastName}`}
                                                 renderOption={(e) => <div>scoopitypoop</div>}
                                                 noOptionsText="No users"
                                                 renderInput={(params) => (
@@ -326,14 +380,20 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                     </GridBody>
                 </ModalBody>
             </Modal>
-        )
+        ) : null;
     }
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user.data
+    user: state.user.data,
+    project: state.project.data
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    dispatchSetAlerts: (value: any[]) => dispatch(setAlerts(value)),
+    dispatchFetchProjectDetails: (company: string) => dispatch(fetchProjectDetails(company))
 })
 
 export default compose<any>(
-    connect(mapStateToProps)
+    connect(mapStateToProps, mapDispatchToProps)
 )(CreateModal);
