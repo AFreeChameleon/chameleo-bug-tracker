@@ -1,6 +1,7 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import _ from 'lodash';
 
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
@@ -10,6 +11,7 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import TicketItem from './TicketItem';
 
 type DraggableBoardsProps = {
     tickets: any[];
@@ -125,13 +127,18 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
         }
     }
 
-    setColumns() {
-
+    async setColumns(source: any, destination: any, columns: any) {
+        const ticket = columns[source.droppableId].items[source.index];
+        const res = await axios.patch('/api/ticket/change-status', {
+            ticket_id: ticket.id,
+            status: destination.droppableId
+        }, { withCredentials: true });
     }
 
-    onDragEnd(result, columns, setColumns) {
+    async onDragEnd(result, columns, setColumns) {
         if (!result.destination) return;
         const { source, destination } = result;
+        console.log(source, destination)
         if (source.droppableId !== destination.droppableId) {
             const sourceColumn = columns[source.droppableId];
             const destColumn = columns[destination.droppableId];
@@ -139,6 +146,8 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
             const destItems = [...destColumn.items];
             const [removed] = sourceItems.splice(source.index, 1);
             destItems.splice(destination.index, 0, removed);
+            await this.setColumns(source, destination, columns);
+            console.log(columns)
             this.setState({ 
                 tickets: {
                     ...columns,
@@ -157,6 +166,7 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
             const copiedItems = [...column.items];
             const [removed] = copiedItems.splice(source.index, 1);
             copiedItems.splice(destination.index, 0, removed);
+            await this.setColumns(source, destination, columns);
             this.setState({
                 tickets: {
                     ...columns,
@@ -207,24 +217,16 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                                                 index={i}
                                             >
                                                 {(provided, snapshot) => (
-                                                    <div
-                                                        ref={provided.innerRef}
+                                                    <TicketItem
+                                                        project={project}
+                                                        ticket={ticket}
+                                                        refEl={provided.innerRef}
+                                                        style={{
+                                                            ...provided.draggableProps.style,
+                                                        }}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        style={{
-                                                            userSelect: "none",
-                                                            padding: 16,
-                                                            margin: "0 0 8px 0",
-                                                            minHeight: "50px",
-                                                            backgroundColor: snapshot.isDragging
-                                                            ? "#263B4A"
-                                                            : "#456C86",
-                                                            color: "white",
-                                                            ...provided.draggableProps.style
-                                                        }}
-                                                    >
-                                                        {ticket.name}
-                                                    </div>
+                                                    />
                                                 ) }
                                             </Draggable>
                                         )) }

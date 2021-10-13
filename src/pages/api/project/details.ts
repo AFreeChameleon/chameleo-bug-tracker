@@ -33,6 +33,7 @@ const getProjectDetails = async (req: NextApiRequestWithSession, res: NextApiRes
                 company: true,
                 tickets: {
                     select: {
+                        id: true,
                         timeEstimate: true,
                         status: true,
                         priority: true,

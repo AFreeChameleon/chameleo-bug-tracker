@@ -82,7 +82,6 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                         <NextLink
                             shallow
                             replace
-                            prefetch
                             href="/dashboard"
                         >
                             <LinkDiv>

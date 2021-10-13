@@ -58,7 +58,7 @@ export const validateTime = (rawTime: string) => {
         if (!time) {
             return false;
         }
-        return shortEnglishHumanizer(time);
+        return shortEnglishHumanizer(time * 1000).replaceAll(' ', '');
     } catch (err) {
         return false;
     }
