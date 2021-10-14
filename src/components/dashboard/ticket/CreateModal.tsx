@@ -21,6 +21,8 @@ import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+
 import { setAlerts } from '../../../redux/alerts/actions';
 import { fetchProjectDetails } from '../../../redux/project/actions';
 
@@ -68,18 +70,41 @@ const NoArrowAutocomplete = styled(Autocomplete)(({ theme }) => ({
     '& .MuiAutocomplete-endAdornment': {
         display: 'none'
     }
-}))
+}));
+
+const AttachmentContainer = styled('div')(({ theme }) => ({
+    height: '100px',
+    width: '100px',
+    boxShadow: theme.shadows[2],
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+}));
+
+const AttachmentDescription = styled('div')(({ theme }) => ({
+    width: '100%',
+    backgroundColor: theme.palette.primary.dark
+}));
+
+const AttachmentClose = styled('div')(({ theme }) => ({
+    textAlign: 'left',
+    width: '100%'
+}));
 
 class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
     constructor(props) {
         super(props);
 
-        this.createTicket = this.createTicket.bind(this)
+        this.createTicket = this.createTicket.bind(this);
+        this.addAttachment = this.addAttachment.bind(this);
         this.state = {
             ticket: {
                 name: '',
                 description: '',
-                attachments: '',
+                attachments: [],
                 status: 0,
                 priority: 2,
                 tags: [],
@@ -115,9 +140,25 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
         }
     }
 
+    addAttachment(e) {
+        const { ticket } = this.state;
+        console.log(e.target.files)
+        this.setState({
+            ticket: {
+                ...ticket,
+                attachments: [...ticket.attachments, {
+                    data: URL.createObjectURL(e.target.files[0]),
+                    name: e.target.files[0].name,
+                    size: e.target.files[0].size
+                }]
+            }
+        })
+    }
+
     render() {
         const { open, onClose, user, project } = this.props;
         const { ticket } = this.state;
+        console.log(ticket)
         return (project && project.user) ? (
             <Modal
                 open={open}
@@ -164,8 +205,27 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                 >
                                     Attachments
                                 </Typography>
-                                {/* <FlexDiv>
-                                </FlexDiv> */}
+                                <FlexDiv
+                                    sx={{
+                                        justifyContent: 'normal',
+                                        columnGap: '10px'
+                                    }}
+                                >
+                                    { ticket.attachments.map((a) => (
+                                        <AttachmentContainer
+                                            sx={{
+                                                backgroundImage: `url('${a.data}')`,
+                                            }}
+                                        >
+                                            <AttachmentClose>
+                                                <CloseIcon fontSize="small"/>
+                                            </AttachmentClose>
+                                            <AttachmentDescription>
+                                                {a.name}
+                                            </AttachmentDescription>
+                                        </AttachmentContainer>
+                                    )) }
+                                </FlexDiv>
                                 <label htmlFor="new-ticket-upload-button" style={{ width: 'fit-content' }}>
                                     <Input 
                                         sx={{display: 'none'}} 
@@ -174,6 +234,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                         }} 
                                         id="new-ticket-upload-button" 
                                         type="file"
+                                        onChange={this.addAttachment}
                                     />
                                     <IconButton color="primary" component="span" size="small">
                                         <AddIcon fontSize="small" />
