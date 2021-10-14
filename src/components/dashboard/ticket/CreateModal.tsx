@@ -3,7 +3,7 @@ import axios from 'axios';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
-import { styled } from '@mui/system';
+import { styled, alpha } from '@mui/system';
 
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
@@ -81,16 +81,21 @@ const AttachmentContainer = styled('div')(({ theme }) => ({
     backgroundPosition: 'center',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    cursor: 'pointer',
 }));
 
-const AttachmentDescription = styled('div')(({ theme }) => ({
+const AttachmentDescription = styled(Typography)(({ theme }) => ({
     width: '100%',
-    backgroundColor: theme.palette.primary.dark
+    backgroundColor: alpha(theme.palette.primary.main, 0.7),
+    padding: '2px 5px',
+    '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+    }
 }));
 
 const AttachmentClose = styled('div')(({ theme }) => ({
-    textAlign: 'left',
+    textAlign: 'right',
     width: '100%'
 }));
 
@@ -218,9 +223,14 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                             }}
                                         >
                                             <AttachmentClose>
-                                                <CloseIcon fontSize="small"/>
+                                                <CloseIcon fontSize="small" sx={{
+                                                    fill: (theme) => theme.palette.primary.main
+                                                }}/>
                                             </AttachmentClose>
-                                            <AttachmentDescription>
+                                            <AttachmentDescription
+                                                variant="caption"
+                                                color="white"
+                                            >
                                                 {a.name}
                                             </AttachmentDescription>
                                         </AttachmentContainer>
