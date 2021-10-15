@@ -92,7 +92,6 @@ function Register({ dispatchSetAlerts }: RegisterProps) {
         })
         .catch((err: any) => {
             if (err.response) {
-                console.log(err.response.data)
                 dispatchSetAlerts(
                     err.response.data.errors.map((e: string) => ({
                         type: 'error',

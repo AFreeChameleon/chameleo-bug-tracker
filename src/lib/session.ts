@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { NextApiRequest } from 'next';
-import { withIronSession, Session } from 'next-iron-session'
+import { withIronSession, Session, ironSession } from 'next-iron-session'
 
 const withSession = (handler) => {
   return withIronSession(handler, {
@@ -11,6 +11,14 @@ const withSession = (handler) => {
     },
   });
 }
+
+export const session = ironSession({
+  password: process.env.SESSION_PASSWORD,
+  cookieName: 'chameleo-auth',
+  cookieOptions: {
+      secure: (process.env.NODE_ENV === 'production'),
+  },
+})
 
 export interface NextApiRequestWithSession extends NextApiRequest {
   session: Session;

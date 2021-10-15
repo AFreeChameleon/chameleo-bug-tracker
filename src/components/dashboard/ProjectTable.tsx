@@ -102,7 +102,6 @@ class ProjectTable extends React.Component<ProjectTableProps, ProjectTableState>
     render() {
         const { newProjectRowOpen, user } = this.props;
         const { newProject } = this.state;
-        console.log(user);
         return (
             <form action="/api/project/new" method="POST" onSubmit={this.saveNewProject}>
                 <TableContainer component={Paper} sx={{ marginTop: '20px' }}>

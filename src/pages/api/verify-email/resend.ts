@@ -1,28 +1,21 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { nanoid } from 'nanoid';
+import nextConnect from "next-connect";
 import { prisma } from "../../../lib/prisma";
 import { sendVerifyEmail } from '../../../lib/mail';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-    switch (req.method) {
-        case 'POST':
-            postResendVerifyUserEmail(req, res)
-            .catch((err) => {
-                console.log(err);
-                return res.status(500).json({
-                    errors: ['An error occurred while resending your verification email. Please try again soon.']
-                });
-            });
-            break;
-        default:
-            res.status(404).json({
-                errors: ['Could not find route specified.']
-            });
-            break;
-    }
-}
+const handler = nextConnect({
+    onError(error, req: NextApiRequest, res: NextApiResponse) {
+        console.log(error)
+        res.status(500).json({
+            errors: ['An error occurred while getting tickets, please try again later.']
+        })
+    },
+    onNoMatch(req, res) {
+        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+    },
+});
 
-const postResendVerifyUserEmail = async (req: NextApiRequest, res: NextApiResponse) => {
+handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const email = req.body.email;
         const user = await prisma.user.findUnique({
@@ -60,4 +53,6 @@ const postResendVerifyUserEmail = async (req: NextApiRequest, res: NextApiRespon
             errors: ['An error occurred while resending your email. Please try again.']
         });
     }
-}
+})
+
+export default handler;

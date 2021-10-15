@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { prisma }  from '../../lib/prisma';
 import { salt } from '../../lib/db';
 import { sendVerifyEmail } from '../../lib/mail';
-import withSession, { NextApiRequestWithSession } from '../../lib/session';
+import withSession, { NextApiRequestWithSession, session } from '../../lib/session';
 
 const schema = yup.object().shape({
     email: yup.string()
@@ -21,26 +22,21 @@ const schema = yup.object().shape({
         )
 });
 
-export default withSession(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
-    switch (req.method) {
-        case 'POST':
-            postLogin(req, res)
-            .catch((err) => {
-                console.log(err);
-                res.status(500).json({
-                    errors: ['An error occurred while logging you in. Please try again soon.']
-                });
-            });
-            break;
-        default:
-            res.status(404).json({
-                errors: ['Could not find route specified.']
-            });
-            break;
-    }
+const handler = nextConnect({
+    onError(error, req: NextApiRequest, res: NextApiResponse) {
+        console.log(error)
+        res.status(500).json({
+            errors: ['An error occurred while logging you in, please try again later.']
+        })
+    },
+    onNoMatch(req, res) {
+        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+    },
 });
 
-const postLogin = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+handler.use(session);
+
+handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         const {
             email,
@@ -57,7 +53,6 @@ const postLogin = async (req: NextApiRequestWithSession, res: NextApiResponse) =
             });
         } else {
             const valid = bcrypt.compareSync(password, user.password);
-            console.log(valid)
             if (valid) {
                 req.session.set('user', user.id);
                 await req.session.save();
@@ -78,7 +73,9 @@ const postLogin = async (req: NextApiRequestWithSession, res: NextApiResponse) =
             });
         }
         return res.status(500).json({
-            errors: ['An error occurred while registering you. Please try again.']
+            errors: ['An error occurred while authenticating you. Please try again.']
         });
     }
-}
+})
+
+export default handler;

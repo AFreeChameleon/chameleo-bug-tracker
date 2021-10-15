@@ -128,7 +128,6 @@ ProjectPage.getInitialProps = async (ctx) => {
             });
         }
         if (res.data.project && res.data.user) {
-            console.log('data: ', res.data)
             return {
                 company: ctx.query.company as string,
                 project: res.data.project,

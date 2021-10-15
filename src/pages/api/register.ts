@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { prisma }  from '../../lib/prisma';
@@ -24,26 +25,19 @@ const schema = yup.object().shape({
         )
 });
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-    switch (req.method) {
-        case 'POST':
-            postRegister(req, res)
-            .catch((err) => {
-                console.log(err);
-                return res.status(500).json({
-                    errors: ['An error occurred while setting up your account. Please try again soon.']
-                })
-            });
-            break;
-        default:
-            res.status(404).json({
-                errors: ['Could not find route specified.']
-            });
-            break;
-    }
-}
+const handler = nextConnect({
+    onError(error, req: NextApiRequest, res: NextApiResponse) {
+        console.log(error)
+        res.status(500).json({
+            errors: ['An error occurred while getting tickets, please try again later.']
+        })
+    },
+    onNoMatch(req, res) {
+        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+    },
+});
 
-const postRegister = async (req: NextApiRequest, res: NextApiResponse) => {
+handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const { first_name, last_name, email, password } = schema.validateSync(req.body);
 
@@ -77,7 +71,6 @@ const postRegister = async (req: NextApiRequest, res: NextApiResponse) => {
                 }
             });
             if (process.env.NODE_ENV === 'production') {
-                console.log(process.env.NODE_ENV)
                 await sendVerifyEmail(email, user.tokens[0].token);
             }
             await prisma.user.update({
@@ -103,4 +96,6 @@ const postRegister = async (req: NextApiRequest, res: NextApiResponse) => {
             errors: ['An error occurred while registering you. Please try again.']
         });
     }
-}
+})
+
+export default handler;

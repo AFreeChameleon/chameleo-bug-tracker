@@ -1,30 +1,24 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextHandler } from 'next-connect';
 import { prisma }  from '../lib/prisma';
 import withSession, { NextApiRequestWithSession } from '../lib/session';
 
-type NextFunction = (req: NextApiRequestWithSession, res: NextApiResponse) => void;
-
-export const isUserLoggedIn = async (req: NextApiRequestWithSession, res: NextApiResponse, next: NextFunction) => {
+export const isUserLoggedIn = async (req: NextApiRequestWithSession, res: NextApiResponse, next: NextHandler) => {
     try {
         const id = req.session.get('user') || -1;
-        console.log(id)
         const user = await prisma.user.findUnique({
             where: {
                 id: id
-            }
+            },
         });
         if (user) {
             req.user = user;
-            next(req, res)
+            next();
         } else {
-            return res.status(404).json({
-                errors: ['User doesn\'t exist.']
-            });
+            throw new Error('User doesn\'t exist.');
         }
     } catch (err) {
         console.log(err)
-        return res.status(500).json({
-            errors: ['An error occurred while']
-        });
+        throw new Error('An error occurred while getting your details.');
     }
 }

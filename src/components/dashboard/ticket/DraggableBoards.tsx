@@ -30,11 +30,11 @@ const FlexDiv = styled('div')(({ theme }) => ({
 const CenterDiv = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    width: '25%'
 }));
 
 const DroppablePaper = styled(Paper)(({ theme }) => ({
-    width: '250px',
+    width: '100%',
     minHeight: '150px',
     padding: '5px',
     backgroundColor: theme.palette.grey['50']
@@ -74,7 +74,6 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
 
     filterTickets() {
         const { tickets } = this.props;
-        console.log(tickets)
         const todoTickets = tickets.filter(t => t.status === 'Todo');
         const inProgressTickets = tickets.filter(t => t.status === 'In progress');
         const waitingForReviewTickets = tickets.filter(t => t.status === 'Waiting for review');
@@ -129,7 +128,6 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
 
     async setColumns(source: any, destination: any, columns: any) {
         const ticket = columns[source.droppableId].items[source.index];
-        console.log(destination)
         const res = await axios.patch('/api/ticket/change-status', {
             ticket_id: ticket.id,
             status: this.colNames.findIndex(c => c === destination.droppableId)
@@ -139,7 +137,6 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
     async onDragEnd(result, columns, setColumns) {
         if (!result.destination) return;
         const { source, destination } = result;
-        console.log(source, destination)
         if (source.droppableId !== destination.droppableId) {
             const sourceColumn = columns[source.droppableId];
             const destColumn = columns[destination.droppableId];
@@ -161,7 +158,6 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                 }
             })
             await this.setColumns(source, destination, columns);
-            console.log(columns)
         } else {
             const column = columns[source.droppableId];
             const copiedItems = [...column.items];
@@ -183,12 +179,10 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
     render() {
         const { project } = this.props;
         const { tickets } = this.state;
-        // console.log('tickets: ', tickets)
         if (!tickets) {
             return null;
         }
         // const formattedTickets = this.formatTickets();
-        console.log(project, tickets)
         return (
             <DragDropContext
                 onDragEnd={(result) => this.onDragEnd(result, tickets, (cols: any) => this.setState({ tickets: cols }))}
@@ -199,8 +193,8 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                     { Object.entries(tickets).map(([columnId, column]: any, i) => (
                         <CenterDiv key={i}>
                             <Typography
-                                gutterBottom
                                 variant="h5"
+                                sx={{ marginBottom: '20px' }}
                             >
                                 {column.name}
                             </Typography>

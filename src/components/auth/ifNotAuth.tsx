@@ -11,9 +11,7 @@ const ifNotAuth = <T extends object>(C: NextPage<T>) => {
                 if (ctx.req) {
                     const res = await axios.post(`${process.env.HOST}/api/logged-in`, {}, 
                         { withCredentials: true, headers: { Cookie: ctx.req.headers.cookie } });
-                    console.log(res.status)
                     if (res.status === 200) {
-                        console.log('redirected')
                         redirect(ctx, "/dashboard");
                     }
                     return {

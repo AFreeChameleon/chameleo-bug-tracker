@@ -1,25 +1,30 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { prisma }  from '../../lib/prisma';
-import withSession, { NextApiRequestWithSession } from '../../lib/session';
+import withSession, { NextApiRequestWithSession, session } from '../../lib/session';
 import { isUserLoggedIn } from '../../middleware/auth';
 
-export default withSession(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
-    switch (req.method) {
-        case 'POST':
-            isUserLoggedIn(req, res, postLoggedIn);
-            break;
-        default:
-            res.status(404).json({
-                errors: ['Could not find route specified.']
-            });
-            break;
-    }
+const handler = nextConnect({
+    onError(error, req: NextApiRequest, res: NextApiResponse) {
+        console.log(error)
+        res.status(500).json({
+            errors: ['An error occurred while getting tickets, please try again later.']
+        })
+    },
+    onNoMatch(req, res) {
+        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+    },
 });
 
-const postLoggedIn = async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+handler.use(session);
+handler.use(isUserLoggedIn);
+
+handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     return res.json({
         logged_in: true
     });
-}
+});
+
+export default handler;

@@ -148,7 +148,7 @@ class TicketItem extends React.Component<any> {
                             >
                                 {project.key}-{ticket.id}
                             </Typography>
-                            <Avatar sx={{ height: 32, width: 32, marginTop: '2px' }}>
+                            <Avatar sx={{ height: 25, width: 25, marginTop: '2px', fontSize: '12px', marginLeft: 'auto !important' }}>
                                 {ticket.user.firstName && ticket.user.firstName.slice(0, 1)}
                             </Avatar>
                         </Stack>
