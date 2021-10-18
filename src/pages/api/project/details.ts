@@ -14,7 +14,7 @@ const handler = nextConnect({
         })
     },
     onNoMatch(req, res) {
-        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+        res.status(405).json({ errors: [`Method '${req.method}' Not Allowed`] });
     },
 });
 
@@ -52,6 +52,13 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         assignedUserId: true,
                         source: true,
                         started: true,
+                        createdAt: true,
+                        updatedAt: true
+                    }
+                },
+                tags: {
+                    select: {
+                        name: true,
                         createdAt: true,
                         updatedAt: true
                     }
@@ -95,9 +102,10 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 }
             }
         });
-        // const usersInProject = await prisma.project.findMany({
+        // Need to set this up
+        // const usersInProject = await prisma.user.findMany({
         //     where: {
-        //         id: 
+        //         company: project.company
         //     }
         // })
         return res.json({

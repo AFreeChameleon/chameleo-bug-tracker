@@ -25,7 +25,7 @@ const handler = nextConnect({
         })
     },
     onNoMatch(req, res) {
-        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+        res.status(405).json({ errors: [`Method '${req.method}' Not Allowed`] });
     },
 });
 

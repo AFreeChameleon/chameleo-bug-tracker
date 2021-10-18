@@ -14,7 +14,7 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
@@ -25,6 +25,8 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import { setAlerts } from '../../../redux/alerts/actions';
 import { fetchProjectDetails } from '../../../redux/project/actions';
+
+const filter = createFilterOptions<any>();
 
 type CreateModalProps = {
     open: boolean;
@@ -107,6 +109,8 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
         this.createTicket = this.createTicket.bind(this);
         this.addAttachment = this.addAttachment.bind(this);
         this.submitNewTicket = this.submitNewTicket.bind(this);
+        this.createNewTag = this.createNewTag.bind(this);
+        this.addTag = this.addTag.bind(this);
         this.state = {
             ticket: {
                 name: '',
@@ -155,6 +159,57 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
             console.log(res)
             dispatchFetchProjectDetails(project.company);
             onClose();
+        }
+    }
+
+    async createNewTag(value) {
+        const { project, dispatchSetAlerts } = this.props;
+        const { ticket, attachments } = this.state;
+        // console.log(e.target.value)
+        if (!ticket.tags.includes(value)) {
+            axios.post('/api/tag/new', {
+                name: value,
+                project_company: project.company
+            }, { withCredentials: true })
+            .then((res) => {
+                this.setState({ 
+                    ticket: {
+                        ...ticket,
+                        tags: [ ...ticket.tags, {
+                            name: res.data.name
+                        } ]
+                    }
+                });
+            })
+            .catch((err) => {
+                if (err.response) {
+                    dispatchSetAlerts([ ...err.response.data.errors.map((message) => ({
+                        type: "error",
+                        message: message
+                    })) ]);
+                } else {
+                    dispatchSetAlerts([ { type: 'error', message: 'An error occurred while creating your tag, please try again later.' } ]);
+                }
+            });
+        } else {
+            dispatchSetAlerts([ { type: 'error', message: 'Tag already exists.' } ]);
+        }
+    }
+
+    addTag(e, value, reason) {
+        const { ticket } = this.state;
+        console.log(e, value, reason)
+        if (value.create || reason === 'createOption') {
+            this.createNewTag(value.inputValue);
+        } else {
+            this.setState({ 
+                ticket: {
+                    ...ticket,
+                    tags: [ ...ticket.tags, {
+                        name: value.inputValue || value[0]
+                    } ]
+                }
+            });
         }
     }
 
@@ -366,12 +421,44 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                                 </Typography>
                                                 <NoArrowAutocomplete
                                                     multiple
-                                                    size="small"
                                                     fullWidth
-                                                    options={[]}
-                                                    limitTags={3}
+                                                    freeSolo
+                                                    selectOnFocus
+                                                    clearOnBlur
+                                                    handleHomeEndKeys
+                                                    size="small"
                                                     value={ticket.tags}
-                                                    noOptionsText="No tags"
+                                                    options={project.tags}
+                                                    onChange={this.addTag}
+                                                    getOptionLabel={(option: any) => {
+                                                        // Value selected with enter, right from the input
+                                                        if (typeof option === 'string') {
+                                                          return option;
+                                                        }
+                                                        // Add "xxx" option created dynamically
+                                                        if (option.inputValue) {
+                                                          return option.inputValue;
+                                                        }
+                                                        // Regular option
+                                                        return option.name;
+                                                    }}
+                                                    filterOptions={(options: any, params) => {
+                                                        const { inputValue } = params;
+                                                        const filtered = filter(options, params);
+                                                        
+                                                        // Suggest the creation of a new value
+                                                        const isExisting = options.some((option) => inputValue === option.name);
+                                                        if (inputValue !== '' && !isExisting) {
+                                                            filtered.push({
+                                                                inputValue,
+                                                                name: `Create "${inputValue}"`,
+                                                                create: true
+                                                            });
+                                                        }
+                                                
+                                                        return filtered;
+                                                    }}
+                                                    renderOption={(props, option: any) => <li {...props}>{option.name}</li>}
                                                     renderInput={(params) => (
                                                         <TextField
                                                             {...params}
@@ -417,13 +504,10 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                                     Assigned To:
                                                 </Typography>
                                                 <NoArrowAutocomplete
-                                                    size="small"
                                                     fullWidth
-                                                    options={[]}
-                                                    limitTags={3}
+                                                    size="small"
                                                     defaultValue={`${project.user.firstName} ${project.user.lastName}`}
-                                                    renderOption={(e) => <div>scoopitypoop</div>}
-                                                    noOptionsText="No users"
+                                                    options={[]}
                                                     renderInput={(params) => (
                                                         <TextField
                                                             {...params}

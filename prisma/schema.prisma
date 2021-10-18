@@ -26,24 +26,24 @@ model User {
 }
 
 model Ticket {
-  id             Int            @id @default(autoincrement())
+  id             Int                 @id @default(autoincrement())
   userId         Int
   projectId      Int
   name           String
   description    String?
   timeEstimate   String
-  status         String         @default("Unassigned")
+  status         String              @default("Unassigned")
   priority       String
   assignedUserId Int?
-  source         String         @default("website")
+  source         String              @default("website")
   started        DateTime?
-  createdAt      DateTime?      @default(now())
-  updatedAt      DateTime?      @updatedAt
-  tags           Tag[]
+  createdAt      DateTime?           @default(now())
+  updatedAt      DateTime?           @updatedAt
+  tags           TagTicketJunction[]
   notifications  Notification[]
   comments       Comment[]
-  user           User           @relation(fields: [userId], references: [id])
-  project        Project        @relation(fields: [projectId], references: [id])
+  user           User                @relation(fields: [userId], references: [id])
+  project        Project             @relation(fields: [projectId], references: [id])
 }
 
 model Project {
@@ -61,14 +61,21 @@ model Project {
 }
 
 model Tag {
-  id        Int       @id @default(autoincrement())
-  ticketId  Int
-  projectId Int
-  name      String
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  project   Project   @relation(fields: [projectId], references: [id])
-  ticket    Ticket    @relation(fields: [ticketId], references: [id])
+  id         Int                 @id @default(autoincrement())
+  projectId  Int
+  name       String
+  createdAt  DateTime?           @default(now())
+  updatedAt  DateTime?           @updatedAt
+  project    Project             @relation(fields: [projectId], references: [id])
+  tagTickets TagTicketJunction[]
+}
+
+model TagTicketJunction {
+  id       Int    @id @default(autoincrement())
+  tagId    Int
+  ticketId Int
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+  tag      Tag    @relation(fields: [tagId], references: [id])
 }
 
 model Notification {

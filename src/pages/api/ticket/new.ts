@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import formidable from 'formidable';
 import multer from 'multer';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
@@ -35,7 +34,7 @@ const handler = nextConnect({
         })
     },
     onNoMatch(req, res) {
-        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+        res.status(405).json({ errors: [`Method '${req.method}' Not Allowed`] });
     },
 });
 
