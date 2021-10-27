@@ -138,8 +138,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         const { user } = this.props;
         const { profileMenuAnchorEl } = this.state;
         return (
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static" color="transparent">
+            <Box sx={{ flexGrow: 1 }} position="relative" zIndex={10}>
+                <AppBar position="static" color="transparent" sx={{boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)'}}>
                     <Toolbar sx={{  }}>
                         <NextLink href="/">
                             <StyledLink>

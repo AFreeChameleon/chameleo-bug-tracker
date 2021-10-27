@@ -13,7 +13,7 @@ const schema = yup.object().shape({
     name: yup.string()
         .required('Name is required.'),
     description: yup.string(),
-    tags: yup.array(),
+    tags: yup.array().nullable(),
     project_company: yup.string()
         .required('Project is required.'),
     status: yup.number()
@@ -50,91 +50,89 @@ handler.use(isUserLoggedIn);
 handler.use(upload.array('attachments'));
 
 handler.post(async (req: any, res: NextApiResponse) => {
+    console.log('new ticket', req.files, req.body)
     try {
-        console.log('new ticket', req.files, req.file, req.body)
+        const {
+            name,
+            description,
+            tags = [],
+            project_company,
+            status,
+            priority,
+            assignedTo,
+            estimate,
+            attachments
+        } = schema.validateSync(req.body);
+        const project = await prisma.project.findUnique({
+            where: {
+                company: project_company
+            },
+            select: {
+                id: true,
+                tags: true
+            }
+        });
+        if (!project) {
+            return res.status(404).json({
+                errors: ['Project doesn\'t exist.']
+            })
+        }
+        const existingTicket = await prisma.ticket.findMany({
+            where: {
+                name: name
+            }
+        });
+        if (existingTicket.length > 0) {
+            return res.status(404).json({
+                errors: ['Ticket with that name already exists.']
+            })
+        }
 
-        // const data = await new Promise((resolve, reject) => {
-        //     const form = formidable({
-        //         multiples: true,
-        //     });
-        //     console.log('form')
-        //     form.parse(req, (err, fields, files) => {
-        //         console.log('formparse')
-        //         if (err) {
-        //             console.log(err)
-        //             reject({ err })
-        //         }
-        //         console.log('fields & files', fields, files)
-        //         resolve({ err, fields, files });
-        //     });
-        // });
-        // console.log(data)
+        const assignedUser = await prisma.user.findUnique({
+            where: {
+                email: assignedTo
+            },
+            select: {
+                id: true
+            }
+        });
 
+        const ticket = await prisma.ticket.create({
+            data: {
+                userId: req.user.id,
+                name: name,
+                description: description,
+                projectId: project.id,
+                status: mapIntToStatus(status),
+                priority: mapIntToPriority(priority),
+                assignedUserId: assignedUser ? assignedUser.id : null,
+                timeEstimate: validateTime(estimate) || '0m'
+            },
+        });
 
-        // const {
-        //     name,
-        //     description,
-        //     tags,
-        //     project_company,
-        //     status,
-        //     priority,
-        //     assignedTo,
-        //     estimate,
-        //     attachments
-        // } = schema.validateSync(data);
-        // const project = await prisma.project.findUnique({
-        //     where: {
-        //         company: project_company
-        //     },
-        //     select: {
-        //         id: true
-        //     }
-        // });
-        // if (!project) {
-        //     return res.status(404).json({
-        //         errors: ['Project doesn\'t exist.']
-        //     })
-        // }
-        // const existingTicket = await prisma.ticket.findMany({
-        //     where: {
-        //         name: name
-        //     }
-        // });
-        // if (existingTicket.length > 0) {
-        //     return res.status(404).json({
-        //         errors: ['Ticket with that name already exists.']
-        //     })
-        // }
+        const tagList = await prisma.tagTicketJunction.createMany({
+            data: project.tags
+            .filter((tag) => 
+                tags.findIndex(t => t.name === tag.name)
+            ).map((tag) => ({
+                tagId: tag.id,
+                ticketId: ticket.id,
+            }))
+        });
 
-        // const assignedUser = await prisma.user.findUnique({
-        //     where: {
-        //         email: assignedTo
-        //     },
-        //     select: {
-        //         id: true
-        //     }
-        // });
-
-        // const ticket = await prisma.ticket.create({
-        //     data: {
-        //         userId: req.user.id,
-        //         name: name,
-        //         description: description,
-        //         projectId: project.id,
-        //         status: mapIntToStatus(status),
-        //         priority: mapIntToPriority(priority),
-        //         assignedUserId: assignedUser ? assignedUser.id : null,
-        //         timeEstimate: validateTime(estimate) || '0m'
-        //     },
-        // });
-
-        // const tagList = await prisma.tag.createMany({
-        //     data: tags.map((tag) => ({
-        //         name: tag.name,
-        //         ticketId: ticket.id,
-        //         projectId: project.id
-        //     }))
-        // })
+        if (attachments && attachments.length > 0) {
+            const attachmentList = await prisma.attachment.createMany({
+                data: req.files.map((file) => ({
+                    originalName: file.originalName,
+                    fileName: file.filename,
+                    encoding: file.encoding,
+                    mimetype: file.mimetype,
+                    destination: file.destination,
+                    path: file.path,
+                    size: file.size
+                }))
+            });
+        }
 
         return res.json({
             message: 'Successfully created ticket.'

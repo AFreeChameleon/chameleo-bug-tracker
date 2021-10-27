@@ -17,7 +17,7 @@ const errorBg = 'rgb(255, 72, 66, 0.1)';
 const themeObj = {
     palette: {
         primary: {
-            main: chameleoGreen,
+            main: '#030027',
             contrastText: '#ffffff'
         },
         success: {
@@ -32,25 +32,23 @@ const themeObj = {
             light: errorBg
         },
         background: {
-            // light: chameleoGreen + '22',
             default: '#ffffff',
-            dark: darkGreen,
+            dark: '#F8F9FB',
             contrastText: navy,
-            blue: blue,
-            red: red,
-            green: green
         },
         text: {
-            primary: lightNavy,
-            secondary: navy
+            primary: '#030027',
+            secondary: '#666666'
         },
         grey: {
             A200: paleBlue,
-            ['50']: lightGrey
+            ['50']: lightGrey,
+            ['200']: '#E5E5E5',
+            ['500']: '#666666'
         }
     },
     typography: {
-        fontFamily: '"Nunito", "Roboto"',
+        fontFamily: '"Lato", "Roboto"',
         fontWeightMedium: 600,
         fontWeightBold: 700,
         button: {
@@ -76,18 +74,19 @@ const themeObj = {
             fontSize: '1rem',
             fontWeight: 600
         },
+        subtitle2: {
+            fontSize: '12px'
+        },
         body2: {
             fontSize: '14px'
         }
     },
     shape: {
-        borderRadius: 0
-    }
+        borderRadius: 3
+    },
 }
 
 // Create a theme instance.
 const theme: any = createTheme(themeObj);
-
-export const secondary = '#13AA52';
 
 export default theme;

@@ -167,6 +167,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
         const { ticket, attachments } = this.state;
         // console.log(e.target.value)
         if (!ticket.tags.includes(value)) {
+            console.log(ticket)
             axios.post('/api/tag/new', {
                 name: value,
                 project_company: project.company

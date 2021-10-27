@@ -1,4 +1,5 @@
 import type { NextPage, GetServerSideProps } from 'next';
+import NextLink from 'next/link';
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -11,6 +12,8 @@ import {
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 
 import { prisma } from '../../lib/prisma';
 import withSession, { NextApiRequestWithSession } from '../../lib/session';
@@ -20,6 +23,8 @@ import ifAuth from '../../components/auth/ifAuth';
 import Header from '../../components/Header';
 import { isUserLoggedIn } from '../../middleware/auth';
 import ProjectTable from '../../components/dashboard/ProjectTable';
+import ProjectBody from '../../components/dashboard/ProjectBody';
+import Sidebar from '../../components/Sidebar';
 import axios from 'axios';
 
 type DashboardProps = {
@@ -31,10 +36,18 @@ type DashboardProps = {
 }
 
 const HeadingDiv = styled('div')(({ theme }) => ({
-    margin: '20px auto 0 auto',
+    margin: '30px auto 0 auto',
     display: 'flex',
     justifyContent: 'space-between',
 
+}));
+
+const LinkDiv = styled('div')(({ theme }) => ({
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    color: theme.palette.primary.main,
+    fontSize: '14px',
+    marginTop: '25px'
 }));
 
 const Dashboard: NextPage<DashboardProps> = ({ firstName, lastName, email, notifications, projects }: DashboardProps) => {
@@ -52,22 +65,44 @@ const Dashboard: NextPage<DashboardProps> = ({ firstName, lastName, email, notif
     return (
         <div>
             <Header />
-            <Container>
-                <HeadingDiv>
-                    <Typography
-                        variant="h1"
-                    >
-                        Projects
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        onClick={(e) => setCreatingNewProject(!creatingNewProject)}
-                    >
-                        {creatingNewProject ? 'Cancel' : 'Create'}
-                    </Button>
-                </HeadingDiv>
-                <ProjectTable newProjectRowOpen={creatingNewProject} setNewProjectRowOpen={(val: boolean) => setCreatingNewProject(val)} />
-            </Container>
+            <Box display="flex">
+                <Sidebar />
+                <Container>
+                    <Container>
+                        <HeadingDiv>
+                            <Breadcrumbs>
+                                <NextLink
+                                    shallow
+                                    replace
+                                    href="/dashboard"
+                                >
+                                    <LinkDiv sx={{
+
+                                    }}>
+                                        PROJECTS
+                                    </LinkDiv>
+                                </NextLink>
+                            </Breadcrumbs>
+                        </HeadingDiv>
+                        <HeadingDiv>
+                            <Typography
+                                variant="h1"
+                            >
+                                Projects
+                            </Typography>
+                            {/* <Button
+                                variant="contained"
+                                onClick={(e) => setCreatingNewProject(!creatingNewProject)}
+                            >
+                                {creatingNewProject ? 'Cancel' : 'Create'}
+                            </Button> */}
+                        </HeadingDiv>
+                        <ProjectBody />
+                        <ProjectTable newProjectRowOpen={creatingNewProject} setNewProjectRowOpen={(val: boolean) => setCreatingNewProject(val)} />
+                    </Container>
+
+                </Container>
+            </Box>
             <Alerts/>
         </div>
     )
