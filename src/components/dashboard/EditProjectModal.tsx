@@ -16,6 +16,7 @@ import { fetchUserData } from '../../redux/user/actions';
 
 type EditProjectModalProps = {
     project: any;
+    originalCompany: string;
     setProject: (key: string, value: any) => void;
     open: boolean;
     onClose: () => void;
@@ -24,9 +25,6 @@ type EditProjectModalProps = {
 }
 
 type EditProjectModalState = {
-    name: string;
-    key: string;
-    company: string;
 }
 
 const ModalBody = styled(Paper)(({ theme }) => ({
@@ -48,26 +46,15 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
         super(props);
 
         this.submitEditProject = this.submitEditProject.bind(this);
-        this.state = {
-            name: '',
-            key: '',
-            company: ''
-        }
     }
 
     submitEditProject(e) {
-        // REMOVE
-        return;
-
-
         e.preventDefault();
-        const { onClose, dispatchSetAlerts, dispatchFetchUserData } = this.props;
-        const { name, key, company } = this.state;
+        const { onClose, project, originalCompany, dispatchSetAlerts, dispatchFetchUserData } = this.props;
 
-        axios.post('/api/project/new', {
-            name: name,
-            key: key,
-            company: company
+        axios.patch('/api/project/edit', {
+            ...project,
+            originalCompany: originalCompany
         }, { withCredentials: true })
         .then((res) => {
             dispatchSetAlerts([]);
@@ -90,8 +77,7 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
 
     render() {
         const { project, setProject, open, onClose } = this.props;
-        const { name, key, company } = this.state;
-
+        console.log(project)
         return (
             <Modal
                 open={open}
@@ -141,7 +127,7 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
                             <TextField
                                 fullWidth
                                 variant="standard"
-                                value={key}
+                                value={project.key}
                                 onChange={(e) => setProject('key', e.target.value.toUpperCase())}
                                 helperText={`Usually the initials for your company. Can't have: spaces or special characters.`}
                             />

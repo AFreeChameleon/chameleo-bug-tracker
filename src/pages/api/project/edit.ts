@@ -14,6 +14,9 @@ const schema = yup.object().shape({
         .required(),
     company: yup.string()
         .required('Company is required.')
+        .min(3, 'Company must have more than 3 characters.'),
+    originalCompany: yup.string()
+        .required('Original company is required.')
         .min(3, 'Company must have more than 3 characters.')
 });
 
@@ -32,37 +35,38 @@ const handler = nextConnect({
 handler.use(session);
 handler.use(isUserLoggedIn);
 
-handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
-        const { name, key, company } = schema.validateSync(req.body);
-        const existingProjects = await prisma.project.findMany({
+        const { name, key, company, originalCompany } = schema.validateSync(req.body);
+        const existingProject = await prisma.project.findUnique({
             where: {
                 company: company
             }
         });
-        if (existingProjects.length > 0) {
+        if (existingProject) {
+            console.log(existingProject)
+            return res.status(409).json({
+                errors: ['Project with that company already exists.']
+            });
+        }
+        const projects = await prisma.project.updateMany({
+            where: {
+                company: originalCompany,
+                userId: req.user.id
+            },
+            data: {
+                company: company,
+                key: key,
+                name: name
+            }
+        });
+        if (projects.count === 0) {
             return res.status(404).json({
-                errors: ['Company with that name already exists.']
+                errors: ['Cannot find project.']
             })
         }
-        const project = await prisma.project.create({
-            data: {
-                userId: req.user.id,
-                name: name,
-                key: key.toUpperCase(),
-                company: company.toLowerCase()
-            }
-        });
-        const role = await prisma.role.create({
-            data: {
-                userId: req.user.id,
-                projectId: project.id,
-                role: 'Owner'
-            }
-        });
-
         return res.json({
-            message: 'Successfully created new project.'
+            message: 'Successfully updated project.'
         });
     } catch (err) {
         console.log(err);
@@ -75,6 +79,6 @@ handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
             errors: ['An error occurred while creating your project, please try again later.']
         })
     }
-})
+});
 
 export default handler;

@@ -251,6 +251,7 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                         ...editingProject,
                         [key]: value
                     } })} 
+                    originalCompany={{ ...editingProject }.company}
                 /> }
             </Root>
         )

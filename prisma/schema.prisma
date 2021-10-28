@@ -28,7 +28,7 @@ model User {
 model Ticket {
   id             Int                 @id @default(autoincrement())
   userId         Int
-  projectId      Int
+  projectId      String @db.Uuid()
   name           String
   description    String?
   timeEstimate   String
@@ -49,11 +49,10 @@ model Ticket {
 }
 
 model Project {
-  id        Int       @id @default(autoincrement())
+  id        String       @unique @default(uuid()) @db.Uuid
   userId    Int
   name      String
   key       String
-  company   String    @unique
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   tags      Tag[]
@@ -64,7 +63,7 @@ model Project {
 
 model Tag {
   id         Int                 @id @default(autoincrement())
-  projectId  Int
+  projectId  String @db.Uuid()
   name       String
   createdAt  DateTime?           @default(now())
   updatedAt  DateTime?           @updatedAt
@@ -95,7 +94,7 @@ model Notification {
 model Role {
   id        Int       @id @default(autoincrement())
   userId    Int
-  projectId Int
+  projectId String @db.Uuid()
   role      String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
