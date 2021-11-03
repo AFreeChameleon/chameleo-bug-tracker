@@ -107,7 +107,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 }
             }
         }
-        const user = await prisma.user.findUnique({
+        const user = (await prisma.user.findMany({
             select: {
                 tokens: {
                     where: {
@@ -118,7 +118,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 confirmedAt: true,
                 id: true
             }
-        });
+        }))[0];
         if (!user) {
             return {
                 props: {

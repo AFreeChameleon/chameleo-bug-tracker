@@ -4,7 +4,7 @@ import nextConnect from 'next-connect';
 import bcrypt from 'bcrypt';
 import { prisma }  from '../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../lib/session';
-import { isUserLoggedIn } from '../../../middleware/auth';
+import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../middleware/auth';
 
 const schema = yup.object().shape({
     name: yup.string()
@@ -12,9 +12,6 @@ const schema = yup.object().shape({
         .min(3, 'Name must have more than 3 characters.'),
     key: yup.string()
         .required(),
-    company: yup.string()
-        .required('Company is required.')
-        .min(3, 'Company must have more than 3 characters.')
 });
 
 const handler = nextConnect({
@@ -34,15 +31,16 @@ handler.use(isUserLoggedIn);
 
 handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
-        const { name, key, company } = schema.validateSync(req.body);
+        const { name, key } = schema.validateSync(req.body);
         const existingProjects = await prisma.project.findMany({
             where: {
-                company: company
+                name: name,
+                userId: req.user.id
             }
         });
         if (existingProjects.length > 0) {
             return res.status(404).json({
-                errors: ['Company with that name already exists.']
+                errors: ['Can\'t have two projects with the same name.']
             })
         }
         const project = await prisma.project.create({
@@ -50,7 +48,28 @@ handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 userId: req.user.id,
                 name: name,
                 key: key.toUpperCase(),
-                company: company.toLowerCase()
+                details: {
+                    columns: {
+                        'Todo': {
+                            ticketIds: []
+                        },
+                        'In progress': {
+                            ticketIds: []
+                        },
+                        'Waiting for review': {
+                            ticketIds: []
+                        },
+                        'Done': {
+                            ticketIds: []
+                        },
+                    },
+                    columnOrder: [
+                        'Todo',
+                        'In progress',
+                        'Waiting for review',
+                        'Done'
+                    ]
+                }
             }
         });
         const role = await prisma.role.create({

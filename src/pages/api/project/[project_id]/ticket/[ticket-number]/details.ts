@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
-import { prisma }  from '../../../lib/prisma';
-import withSession, { NextApiRequestWithSession, session } from '../../../lib/session';
-import { isUserLoggedIn } from '../../../middleware/auth';
+import { prisma }  from '../../../../../../lib/prisma';
+import withSession, { NextApiRequestWithSession, session } from '../../../../../../lib/session';
+import { isUserLoggedIn } from '../../../../../../middleware/auth';
 
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {

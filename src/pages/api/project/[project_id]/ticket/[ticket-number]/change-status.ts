@@ -2,10 +2,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import nextConnect from 'next-connect';
-import { prisma }  from '../../../lib/prisma';
-import withSession, { NextApiRequestWithSession, session } from '../../../lib/session';
-import { isUserLoggedIn } from '../../../middleware/auth';
-import { mapIntToStatus } from '../../../lib/ticket';
+import { prisma }  from '../../../../../../lib/prisma';
+import withSession, { NextApiRequestWithSession, session } from '../../../../../../lib/session';
+import { isUserLoggedIn } from '../../../../../../middleware/auth';
+import { mapIntToStatus } from '../../../../../../lib/ticket';
 
 const schema = yup.object().shape({
     ticket_id: yup.number()
@@ -31,6 +31,8 @@ handler.use(isUserLoggedIn);
 
 handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
+        const project_id = req.query.project_id as string;
+        const ticket_number = req.query.ticket_number as string;
         const { ticket_id, status } = schema.validateSync(req.body);
         const user = await prisma.user.findUnique({
             where: {
@@ -40,11 +42,25 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 id: true,
                 projects: {
                     select: {
-                        tickets: true
+                        tickets: true,
                     }
                 }
             }
         });
+        const project = await prisma.project.findFirst({
+            where: {
+                id: project_id,
+            },
+            select: {
+                tickets: true
+            }
+        });
+
+        if (!project) {
+            return res.status(404).json({
+                errors: ["Project doesn't exist"]
+            })
+        }
         const ticket = user.projects.find((p) => p.tickets.find((t) => t.id === ticket_id));
         if (!ticket) {
             return res.status(404).json({

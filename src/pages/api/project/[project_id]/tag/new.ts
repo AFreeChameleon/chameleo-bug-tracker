@@ -3,15 +3,13 @@ import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import timestring from 'timestring';
-import { prisma }  from '../../../lib/prisma';
-import { isUserLoggedIn } from '../../../middleware/auth';
-import withSession, { NextApiRequestWithSession, session } from '../../../lib/session';
+import { prisma }  from '../../../../../lib/prisma';
+import { isUserLoggedIn } from '../../../../../middleware/auth';
+import withSession, { NextApiRequestWithSession, session } from '../../../../../lib/session';
 
 const schema = yup.object().shape({
     name: yup.string()
         .required('Name is required.'),
-    project_company: yup.string()
-        .required('Project company is required.')
 });
 
 const handler = nextConnect({
@@ -31,23 +29,11 @@ handler.use(isUserLoggedIn);
 
 handler.post(async (req: any, res: NextApiResponse) => {
     try {
-        const { name, project_company } = schema.validateSync(req.body);
-        const project = await prisma.project.findUnique({
-            where: {
-                company: project_company
-            },
-            select: {
-                id: true
-            }
-        });
-        if (!project) {
-            return res.status(404).json({
-                errors: ['Project doesn\'t exist.']
-            });
-        }
+        const project_id = req.query.project_id as string;
+        const { name } = schema.validateSync(req.body);
         const existingTag = await prisma.tag.findFirst({
             where: {
-                projectId: project.id,
+                projectId: req.user.projects[0].id,
                 name: name
             },
             select: {
@@ -62,7 +48,7 @@ handler.post(async (req: any, res: NextApiResponse) => {
         const tag = await prisma.tag.create({
             data: {
                 name: name,
-                projectId: project.id
+                projectId: req.user.projects[0].id
             },
             select: {
                 name: true,

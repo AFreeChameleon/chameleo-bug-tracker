@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import * as yup from 'yup';
 import nextConnect from 'next-connect';
 import bcrypt from 'bcrypt';
-import { prisma }  from '../../../lib/prisma';
-import withSession, { NextApiRequestWithSession, session } from '../../../lib/session';
-import { isUserLoggedIn } from '../../../middleware/auth';
+import { prisma }  from '../../../../lib/prisma';
+import withSession, { NextApiRequestWithSession, NextApiRequestWithSessionRole, session } from '../../../../lib/session';
+import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../middleware/auth';
 
 const schema = yup.object().shape({
     name: yup.string()
@@ -12,12 +12,8 @@ const schema = yup.object().shape({
         .min(3, 'Name must have more than 3 characters.'),
     key: yup.string()
         .required(),
-    company: yup.string()
-        .required('Company is required.')
-        .min(3, 'Company must have more than 3 characters.'),
-    originalCompany: yup.string()
-        .required('Original company is required.')
-        .min(3, 'Company must have more than 3 characters.')
+    id: yup.string().uuid()
+        .required('ID is required.')
 });
 
 const handler = nextConnect({
@@ -33,38 +29,31 @@ const handler = nextConnect({
 });
 
 handler.use(session);
-handler.use(isUserLoggedIn);
+handler.use(isUserLoggedInWithRole);
 
-handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+handler.patch(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {
-        const { name, key, company, originalCompany } = schema.validateSync(req.body);
-        const existingProject = await prisma.project.findUnique({
-            where: {
-                company: company
-            }
-        });
-        if (existingProject) {
-            console.log(existingProject)
-            return res.status(409).json({
-                errors: ['Project with that company already exists.']
-            });
-        }
+        const { name, key } = schema.validateSync(req.body);
+        // const existingProject = await prisma.project.findUnique({
+        //     where: {
+        //         id: id
+        //     }
+        // });
+        // if (existingProject) {
+        //     return res.status(409).json({
+        //         errors: ['Project with that id already exists.']
+        //     });
+        // }
         const projects = await prisma.project.updateMany({
             where: {
-                company: originalCompany,
+                id: req.user.projects[0].id,
                 userId: req.user.id
             },
             data: {
-                company: company,
                 key: key,
                 name: name
             }
         });
-        if (projects.count === 0) {
-            return res.status(404).json({
-                errors: ['Cannot find project.']
-            })
-        }
         return res.json({
             message: 'Successfully updated project.'
         });

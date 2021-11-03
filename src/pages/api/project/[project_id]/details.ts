@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
-import { prisma }  from '../../../lib/prisma';
-import withSession, { NextApiRequestWithSession, session } from '../../../lib/session';
-import { isUserLoggedIn } from '../../../middleware/auth';
+import { prisma }  from '../../../../lib/prisma';
+import withSession, { NextApiRequestWithSession, session } from '../../../../lib/session';
+import { isUserLoggedIn } from '../../../../middleware/auth';
 
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {
@@ -23,16 +23,17 @@ handler.use(isUserLoggedIn);
 
 handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
-        const company = req.query.company as string;
+        const project_id = req.query.project_id as string;
         const project = await prisma.project.findFirst({
             where: {
                 userId: req.user.id,
-                company: company
+                id: project_id
             },
             select: {
                 name: true,
                 key: true,
-                company: true,
+                id: true,
+                details: true,
                 tickets: {
                     select: {
                         id: true,
@@ -91,7 +92,6 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                     select: {
                         name: true,
                         key: true,
-                        company: true,
                         user: {
                             select: {
                                 firstName: true,

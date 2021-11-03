@@ -22,6 +22,7 @@ export const sendVerifyEmail = (userEmail: string, token: string) => {
         }
         mailer.messages().send(data, (err, body) => {
             if (err) {
+                console.log(err)
                 reject({
                     error: true,
                     message: err

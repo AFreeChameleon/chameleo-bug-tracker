@@ -24,7 +24,6 @@ type CreateProjectModalProps = {
 type CreateProjectModalState = {
     name: string;
     key: string;
-    company: string;
 }
 
 const ModalBody = styled(Paper)(({ theme }) => ({
@@ -32,14 +31,28 @@ const ModalBody = styled(Paper)(({ theme }) => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '400px',
-    height: '400px',
+    width: '450px',
+    height: '200px',
     padding: '20px 30px'
 }));
 
 const Field = styled('div')(({ theme }) => ({
-    marginTop: '15px'
-}))
+    
+}));
+
+const FlexGrow = styled('div')(({ theme }) => ({
+    flexGrow: 1
+}));
+
+const Form = styled('form')(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    marginTop: '15px',
+    boxSizing: 'border-box'
+}));
+
+
 
 class CreateProjectModal extends React.Component<CreateProjectModalProps, CreateProjectModalState> {
     constructor(props) {
@@ -49,19 +62,17 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
         this.state = {
             name: '',
             key: '',
-            company: ''
         }
     }
 
     submitCreateProject(e) {
         e.preventDefault();
         const { onClose, dispatchSetAlerts, dispatchFetchUserData } = this.props;
-        const { name, key, company } = this.state;
+        const { name, key } = this.state;
 
         axios.post('/api/project/new', {
             name: name,
             key: key,
-            company: company
         }, { withCredentials: true })
         .then((res) => {
             dispatchSetAlerts([]);
@@ -84,7 +95,7 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
 
     render() {
         const { open, onClose } = this.props;
-        const { name, key, company } = this.state;
+        const { name, key } = this.state;
 
         return (
             <Modal
@@ -97,8 +108,7 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
                     >
                         Create project
                     </Typography>
-                    <form action="" onSubmit={this.submitCreateProject}>
-
+                    <Form action="" onSubmit={this.submitCreateProject}>
                         <Field>
                             <Typography
                                 variant="body2"
@@ -112,44 +122,17 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
                                 onChange={(e) => this.setState({ name: e.target.value })}
                             />
                         </Field>
-                        <Field>
-                            <Typography
-                                variant="body2"
-                            >
-                                Company
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                variant="standard"
-                                value={company}
-                                onChange={(e) => this.setState({ company: e.target.value })}
-                                helperText="Can't have: capital letters, spaces or special characters."
-                            />
-                        </Field>
-                        <Field>
-                            <Typography
-                                variant="body2"
-                            >
-                                Key
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                variant="standard"
-                                value={key}
-                                onChange={(e) => this.setState({ key: e.target.value.toUpperCase() })}
-                                helperText={`Usually the initials for your company. Can't have: spaces or special characters.`}
-                            />
-                        </Field>
-                        <Field>
+                        <FlexGrow />
+                        <div>
                             <Button
-                                fullWidth
+                                // fullWidth
                                 variant="contained"
                                 type="submit"
                             >
                                 Create
                             </Button>
-                        </Field>
-                    </form>
+                        </div>
+                    </Form>
                 </ModalBody>
             </Modal>
         )

@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User, Project, Role } from '@prisma/client';
 import { NextApiRequest } from 'next';
 import { withIronSession, Session, ironSession } from 'next-iron-session'
 
@@ -18,11 +18,30 @@ export const session = ironSession({
   cookieOptions: {
       secure: (process.env.NODE_ENV === 'production'),
   },
-})
+});
+
+type RoleProject = Project & {
+  role: Role
+}
+
+interface UserWithRole {
+  id: number;
+  projects: {
+    id: string;
+    roles: Role[];
+  }[];
+}
 
 export interface NextApiRequestWithSession extends NextApiRequest {
   session: Session;
-  user: User
+  user: User;
 }
+
+export interface NextApiRequestWithSessionRole extends NextApiRequest {
+  session: Session;
+  user: UserWithRole;
+}
+
+
 
 export default withSession;

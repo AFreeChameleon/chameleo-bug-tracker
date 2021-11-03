@@ -36,7 +36,6 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                     select: {
                         name: true,
                         key: true,
-                        company: true,
                         user: {
                             select: {
                                 firstName: true,
