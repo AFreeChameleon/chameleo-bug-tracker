@@ -31,7 +31,6 @@ import DraggableBoards from '../../components/dashboard/ticket/DraggableBoards';
 type ProjectPageProps = {
     project: any;
     user: any;
-    company: string;
 }
 
 const HeadingDiv = styled('div')(({ theme }) => ({
@@ -55,13 +54,13 @@ const FlexDiv = styled('div')(({ theme }) => ({
 
 const SmallButton = styled(Button)(({ theme }) => ({
     width: '80px',
-    textTransform: 'none'
+    textTransform: 'none',
+    fontSize: theme.typography.body1.fontSize
 }))
 
 const ProjectPage: NextPage<ProjectPageProps> = ({
     project,
     user,
-    company
 }: ProjectPageProps) => {
     const dispatch = useDispatch();
     const [createModalOpen, setCreateModalOpen] = useState(true)
@@ -118,24 +117,22 @@ ProjectPage.getInitialProps = async (ctx) => {
     try {
         let res: any;
         if (ctx.req) {
-            res = await axios.get(`${process.env.HOST}/api/project/details?company=${ctx.query.company}`, { 
+            res = await axios.get(`${process.env.HOST}/api/project/details?id=${ctx.query.project_id}`, { 
                 withCredentials: true,
                 headers: { Cookie: ctx.req.headers.cookie }
             });
         } else {
-            res = await axios.get(`/api/project/details?company=${ctx.query.company}`, { 
+            res = await axios.get(`/api/project/details?id=${ctx.query.project_id}`, { 
                 withCredentials: true,
             });
         }
         if (res.data.project && res.data.user) {
             return {
-                company: ctx.query.company as string,
                 project: res.data.project,
                 user: res.data.user
             };
         } else {
             return { 
-                company: ctx.query.company as string,
                 user: null,
                 project: null
             };
@@ -143,7 +140,6 @@ ProjectPage.getInitialProps = async (ctx) => {
     } catch (err) {
         console.log(err);
         return {
-            company: ctx.query.company as string,
             user: null,
             project: null
         }

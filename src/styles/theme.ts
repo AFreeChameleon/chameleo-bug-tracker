@@ -17,7 +17,7 @@ const errorBg = 'rgb(255, 72, 66, 0.1)';
 const themeObj = {
     palette: {
         primary: {
-            main: '#030027',
+            main: '#000000',
             contrastText: '#ffffff'
         },
         success: {

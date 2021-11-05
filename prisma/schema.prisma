@@ -52,7 +52,6 @@ model Project {
   id        String    @unique @default(uuid()) @db.Uuid
   userId    Int
   name      String
-  key       String
   details   Json?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt

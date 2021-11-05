@@ -47,8 +47,8 @@ const FlexGrow = styled('div')(({ theme }) => ({
 const Form = styled('form')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
-    marginTop: '15px',
+    height: 'calc(100% - 45px)',
+    marginTop: '25px',
     boxSizing: 'border-box'
 }));
 
@@ -128,6 +128,7 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
                                 // fullWidth
                                 variant="contained"
                                 type="submit"
+                                sx={{ width: '100px', height: '40px', textTransform: 'none' }}
                             >
                                 Create
                             </Button>

@@ -83,8 +83,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const SmallButton = styled(Button)(({ theme }) => ({
-    width: '80px',
-    textTransform: 'none'
+    width: '100px',
+    textTransform: 'none',
+    fontSize: theme.typography.body2.fontSize,
 }));
 
 const ProjectItem = styled(Paper)(({ theme }) => ({
@@ -133,6 +134,7 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                         />
                     </Search>
                     <SmallButton
+                        disableElevation
                         variant="contained"
                         onClick={(e) => this.setState({ creatingProject: true })}
                     >
