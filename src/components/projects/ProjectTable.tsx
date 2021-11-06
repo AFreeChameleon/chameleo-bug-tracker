@@ -124,7 +124,7 @@ class ProjectTable extends React.Component<ProjectTableProps, ProjectTableState>
                                 <NextLink
                                     shallow 
                                     key={i}
-                                    href={`/dashboard/${project.company}`} 
+                                    href={`/projects/${project.company}`} 
                                 >
                                     <TableRow
                                         sx={{ 

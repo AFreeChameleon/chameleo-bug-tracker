@@ -37,3 +37,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 ALTER TABLE "public"."Project" ADD CONSTRAINT "Project_company_unique_constraint" UNIQUE (company);
 ALTER TABLE "public"."User" ADD CONSTRAINT "User_email_unique_constraint" UNIQUE (email);
 ALTER TABLE "public"."Token" ADD CONSTRAINT "Token_token_unique_constraint" UNIQUE (token);
+
+ALTER TABLE "public"."Ticket" ADD FOREIGN KEY("projectId") REFERENCES "public"."Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Role" ADD FOREIGN KEY("projectId") REFERENCES "public"."Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Tag" ADD FOREIGN KEY("projectId") REFERENCES "public"."Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."TagTicketJunction" ADD FOREIGN KEY("ticketId") REFERENCES "public"."Ticket"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Attachment" ADD FOREIGN KEY("ticketId") REFERENCES "public"."Ticket"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Comment" ADD FOREIGN KEY("ticketId") REFERENCES "public"."Ticket"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Notification" ADD FOREIGN KEY("ticketId") REFERENCES "public"."Ticket"("id") ON DELETE CASCADE ON UPDATE CASCADE;

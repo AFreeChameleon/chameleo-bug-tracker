@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { prisma }  from '../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../../lib/session';
-import { isUserLoggedIn } from '../../../../middleware/auth';
+import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../middleware/auth';
 
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {
@@ -19,19 +19,18 @@ const handler = nextConnect({
 });
 
 handler.use(session);
-handler.use(isUserLoggedIn);
+handler.use(isUserLoggedInWithRole);
 
 handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         const project_id = req.query.project_id as string;
+        console.log('project-id', project_id)
         const project = await prisma.project.findFirst({
             where: {
-                userId: req.user.id,
                 id: project_id
             },
             select: {
                 name: true,
-                key: true,
                 id: true,
                 details: true,
                 tickets: {
@@ -54,7 +53,12 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         source: true,
                         started: true,
                         createdAt: true,
-                        updatedAt: true
+                        updatedAt: true,
+                    },
+                },
+                roles: {
+                    where: {
+                        userId: req.user.id
                     }
                 },
                 tags: {
@@ -91,7 +95,6 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 projects: {
                     select: {
                         name: true,
-                        key: true,
                         user: {
                             select: {
                                 firstName: true,

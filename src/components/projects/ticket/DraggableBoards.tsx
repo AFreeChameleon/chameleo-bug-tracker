@@ -10,7 +10,12 @@ import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+
+import MoreIcon from '@mui/icons-material/MoreHoriz';
+
 import TicketItem from './TicketItem';
 
 type DraggableBoardsProps = {
@@ -33,11 +38,25 @@ const CenterDiv = styled('div')(({ theme }) => ({
     width: '25%'
 }));
 
+const ColumnHeader = styled(Box)(({ theme }: any) => ({
+    backgroundColor: theme.palette.background.dark,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: '10px',
+    color: 'white',
+    padding: '2px 0px 2px 15px',
+    borderTopLeftRadius: '6px',
+    borderTopRightRadius: '6px',
+}));
+
 const DroppablePaper = styled(Paper)(({ theme }) => ({
     width: '100%',
     minHeight: '150px',
     padding: '5px',
-    backgroundColor: theme.palette.grey['50']
+    backgroundColor: theme.palette.grey['50'],
+    borderTopLeftRadius: '0',
+    borderTopRightRadius: '0',
 }))
 
 class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoardsState> {
@@ -192,16 +211,21 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                 }}>
                     { Object.entries(tickets).map(([columnId, column]: any, i) => (
                         <CenterDiv key={i}>
-                            <Typography
-                                variant="h5"
-                                sx={{ marginBottom: '20px' }}
-                            >
-                                {column.name}
-                            </Typography>
+                            <ColumnHeader>
+                                <Typography
+                                    variant="subtitle2"
+                                >
+                                    {column.name.toUpperCase()}
+                                </Typography>
+                                <IconButton color="inherit">
+                                    <MoreIcon />
+                                </IconButton>
+                            </ColumnHeader>
                             <Droppable droppableId={columnId} key={columnId}>
                                 {(provided, snapshot) => (
                                     <DroppablePaper
-                                        variant="outlined"
+                                        variant="elevation"
+                                        elevation={0}
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
                                     >

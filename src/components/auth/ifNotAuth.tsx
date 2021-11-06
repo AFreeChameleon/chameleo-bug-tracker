@@ -12,7 +12,7 @@ const ifNotAuth = <T extends object>(C: NextPage<T>) => {
                     const res = await axios.post(`${process.env.HOST}/api/logged-in`, {}, 
                         { withCredentials: true, headers: { Cookie: ctx.req.headers.cookie } });
                     if (res.status === 200) {
-                        redirect(ctx, "/dashboard");
+                        redirect(ctx, "/projects");
                     }
                     return {
                         props: {
@@ -24,7 +24,7 @@ const ifNotAuth = <T extends object>(C: NextPage<T>) => {
                     const res = await axios.post('/api/logged-in', {}, 
                     { withCredentials: true })
                     if (res.status === 200) {
-                        redirect(ctx, "/dashboard");
+                        redirect(ctx, "/projects");
                     }
                     return {
                         props: {

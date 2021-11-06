@@ -23,7 +23,6 @@ type CreateProjectModalProps = {
 
 type CreateProjectModalState = {
     name: string;
-    key: string;
 }
 
 const ModalBody = styled(Paper)(({ theme }) => ({
@@ -47,7 +46,7 @@ const FlexGrow = styled('div')(({ theme }) => ({
 const Form = styled('form')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100% - 45px)',
+    height: 'calc(100% - 50px)',
     marginTop: '25px',
     boxSizing: 'border-box'
 }));
@@ -61,18 +60,16 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
         this.submitCreateProject = this.submitCreateProject.bind(this);
         this.state = {
             name: '',
-            key: '',
         }
     }
 
     submitCreateProject(e) {
         e.preventDefault();
         const { onClose, dispatchSetAlerts, dispatchFetchUserData } = this.props;
-        const { name, key } = this.state;
+        const { name } = this.state;
 
         axios.post('/api/project/new', {
             name: name,
-            key: key,
         }, { withCredentials: true })
         .then((res) => {
             dispatchSetAlerts([]);
@@ -95,7 +92,7 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
 
     render() {
         const { open, onClose } = this.props;
-        const { name, key } = this.state;
+        const { name } = this.state;
 
         return (
             <Modal
@@ -109,7 +106,7 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
                         Create project
                     </Typography>
                     <Form action="" onSubmit={this.submitCreateProject}>
-                        <Field>
+                        <Field sx={{marginTop: 0}}>
                             <Typography
                                 variant="body2"
                             >
@@ -123,16 +120,14 @@ class CreateProjectModal extends React.Component<CreateProjectModalProps, Create
                             />
                         </Field>
                         <FlexGrow />
-                        <div>
-                            <Button
-                                // fullWidth
-                                variant="contained"
-                                type="submit"
-                                sx={{ width: '100px', height: '40px', textTransform: 'none' }}
-                            >
-                                Create
-                            </Button>
-                        </div>
+                        <Button
+                            // fullWidth
+                            variant="contained"
+                            type="submit"
+                            sx={{ width: '100px', height: '40px', textTransform: 'none' }}
+                        >
+                            Create
+                        </Button>
                     </Form>
                 </ModalBody>
             </Modal>

@@ -22,8 +22,8 @@ import Alerts from '../../components/Alerts';
 import ifAuth from '../../components/auth/ifAuth';
 import Header from '../../components/Header';
 import { isUserLoggedIn } from '../../middleware/auth';
-import ProjectTable from '../../components/dashboard/ProjectTable';
-import ProjectBody from '../../components/dashboard/ProjectBody';
+import ProjectTable from '../../components/projects/ProjectTable';
+import ProjectBody from '../../components/projects/ProjectBody';
 import Sidebar from '../../components/Sidebar';
 import axios from 'axios';
 
@@ -74,7 +74,7 @@ const Dashboard: NextPage<DashboardProps> = ({ firstName, lastName, email, notif
                                 <NextLink
                                     shallow
                                     replace
-                                    href="/dashboard"
+                                    href="/projects"
                                 >
                                     <LinkDiv sx={{
 
@@ -98,7 +98,7 @@ const Dashboard: NextPage<DashboardProps> = ({ firstName, lastName, email, notif
                             </Button> */}
                         </HeadingDiv>
                         <ProjectBody />
-                        <ProjectTable newProjectRowOpen={creatingNewProject} setNewProjectRowOpen={(val: boolean) => setCreatingNewProject(val)} />
+                        {/* <ProjectTable newProjectRowOpen={creatingNewProject} setNewProjectRowOpen={(val: boolean) => setCreatingNewProject(val)} /> */}
                     </Container>
 
                 </Container>

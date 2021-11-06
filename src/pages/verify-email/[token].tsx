@@ -119,6 +119,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 id: true
             }
         }))[0];
+        console.log(user)
         if (!user) {
             return {
                 props: {
@@ -176,6 +177,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             }
         }
     } catch (err: any) {
+        console.log(err)
         return {
             props: {
                 error: true,

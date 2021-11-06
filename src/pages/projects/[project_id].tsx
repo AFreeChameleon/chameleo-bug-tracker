@@ -22,11 +22,11 @@ import Button from '@mui/material/Button';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Header from '../../components/Header';
-import CreateModal from '../../components/dashboard/ticket/CreateModal';
+import CreateModal from '../../components/projects/ticket/CreateModal';
 import ifAuth from '../../components/auth/ifAuth';
 import { authenticated } from '../../lib/auth';
 import Alerts from '../../components/Alerts';
-import DraggableBoards from '../../components/dashboard/ticket/DraggableBoards';
+import DraggableBoards from '../../components/projects/ticket/DraggableBoards';
 
 type ProjectPageProps = {
     project: any;
@@ -72,6 +72,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
             ...project
         }));
     }, []);
+    console.log(project);
     return (
         <div>
             <Header />
@@ -81,7 +82,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                         <NextLink
                             shallow
                             replace
-                            href="/dashboard"
+                            href="/projects"
                         >
                             <LinkDiv>
                                 Projects
@@ -117,15 +118,16 @@ ProjectPage.getInitialProps = async (ctx) => {
     try {
         let res: any;
         if (ctx.req) {
-            res = await axios.get(`${process.env.HOST}/api/project/details?id=${ctx.query.project_id}`, { 
+            res = await axios.get(`${process.env.HOST}/api/project/${ctx.query.project_id}/details`, { 
                 withCredentials: true,
                 headers: { Cookie: ctx.req.headers.cookie }
             });
         } else {
-            res = await axios.get(`/api/project/details?id=${ctx.query.project_id}`, { 
+            res = await axios.get(`/api/project/${ctx.query.project_id}/details`, { 
                 withCredentials: true,
             });
         }
+        console.log(res.data)
         if (res.data.project && res.data.user) {
             return {
                 project: res.data.project,
@@ -138,7 +140,7 @@ ProjectPage.getInitialProps = async (ctx) => {
             };
         }
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         return {
             user: null,
             project: null

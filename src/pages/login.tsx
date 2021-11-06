@@ -42,7 +42,7 @@ const Login: NextPage<LoginProps> = ({ dispatchSetAlerts }: LoginProps) => {
             password: data.get('password')
         }, { withCredentials: true })
         .then((res) => {
-            router.push('/dashboard')
+            router.push('/projects')
         })
         .catch((err) => {
             if (err.response) {

@@ -25,3 +25,38 @@ export const authenticated = async (ctx) => {
         redirect(ctx, "/login");
     }
 }
+
+export const checkPermission = (role: string) => {
+    switch (role) {
+        case 'Owner':
+            return {
+                read: true,
+                write: true,
+                userReadWrite: true,
+            }
+        case 'Administrator':
+            return {
+                read: true,
+                write: true,
+                userReadWrite: true
+            }
+        case 'User':
+            return {
+                read: true,
+                write: true,
+                userReadWrite: false
+            }
+        case 'ReadOnly':
+            return {
+                read: true,
+                write: false,
+                userReadWrite: false
+            }
+        default:
+            return {
+                read: false,
+                write: false,
+                userReadWrite: false
+            }
+    }
+}

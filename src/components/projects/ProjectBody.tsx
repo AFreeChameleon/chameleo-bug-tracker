@@ -1,4 +1,5 @@
 import React from 'react';
+import NextLink from 'next/link';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { setAlerts } from '../../redux/alerts/actions';
@@ -24,9 +25,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import MoreIcon from '@mui/icons-material/MoreHoriz';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 import CreateProjectModal from './CreateProjectModal';
 import EditProjectModal from './EditProjectModal';
+import DestroyProjectModal from './DestroyProjectModal';
 
 type ProjectBodyProps = {
     user: any
@@ -36,6 +39,7 @@ type ProjectBodyState = {
     creatingProject: boolean;
     anchorEl: any;
     editingProject: any | null;
+    destroyProject: any | null;
 }
 
 const Root = styled('div')(({ theme }) => ({
@@ -83,14 +87,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const SmallButton = styled(Button)(({ theme }) => ({
-    width: '100px',
+    width: '150px',
+    height: '50px',
     textTransform: 'none',
     fontSize: theme.typography.body2.fontSize,
 }));
 
 const ProjectItem = styled(Paper)(({ theme }) => ({
     width: '200px',
-    height: '60px',
+    height: '50px',
     padding: '5px 10px',
     cursor: 'pointer',
     transition: '0.25s',
@@ -112,13 +117,14 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
         this.state = {
             creatingProject: false,
             editingProject: null,
+            destroyProject: null,
             anchorEl: null,
         }
     }
 
     render() {
         const { user, } = this.props;
-        const { creatingProject, anchorEl, editingProject } = this.state;
+        const { creatingProject, anchorEl, editingProject, destroyProject } = this.state;
         console.log(editingProject, anchorEl, anchorEl && anchorEl.id)
 
         return (
@@ -133,41 +139,39 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                             inputProps={{ 'aria-label': 'search' }}
                         />
                     </Search>
-                    <SmallButton
-                        disableElevation
-                        variant="contained"
-                        onClick={(e) => this.setState({ creatingProject: true })}
-                    >
-                        Create
-                    </SmallButton>
                 </Box>
                 <Box display="flex" columnGap={'25px'} mt={'25px'}>
                     {(user && user.projects) && user.projects.map((project, i) => (
-                        <ProjectItem key={project.company}>
-                            <Typography
-                                sx={{
-                                    color: (theme) => theme.palette.text.secondary,
-                                    fontSize: (theme) => theme.typography.body2.fontSize
-                                }}
-                            >
-                                {project.company}
-                            </Typography>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography
-                                    variant="body1"
-                                >
-                                    {project.name}
-                                </Typography>
-                                <IconButton
-                                    size="small"
-                                    id={`project-btn-${i}`}
-                                    onClick={(e) => this.setState({ anchorEl: e.currentTarget })}
-                                >
-                                    <MoreIcon />
-                                </IconButton>
-                            </Box>
-                        </ProjectItem>
+                        <NextLink
+                            shallow 
+                            key={i}
+                            href={`/projects/${project.id}`} 
+                        >
+                            <ProjectItem key={project.id}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center" height="100%">
+                                    <Typography
+                                        variant="body1"
+                                    >
+                                        {project.name}
+                                    </Typography>
+                                    <IconButton
+                                        size="small"
+                                        id={`project-btn-${i}`}
+                                        onClick={(e) => this.setState({ anchorEl: e.currentTarget })}
+                                    >
+                                        <MoreIcon />
+                                    </IconButton>
+                                </Box>
+                            </ProjectItem>
+                        </NextLink>
                     )) }
+                    <SmallButton
+                        disableElevation
+                        variant="outlined"
+                        onClick={(e) => this.setState({ creatingProject: true })}
+                    >
+                        <AddIcon/>
+                    </SmallButton>
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
@@ -222,7 +226,6 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                                 </ListItem>,
                                 <Divider/>,
                                 <MenuItem onClick={() => {
-                                    console.log(selectedProject);
                                     this.setState({ editingProject: selectedProject })
                                 }}>
                                     <ListItemIcon>
@@ -232,7 +235,9 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                                         Edit
                                     </ListItemText>
                                 </MenuItem>,
-                                <MenuItem >
+                                <MenuItem onClick={() => this.setState({
+                                    destroyProject: selectedProject
+                                })} >
                                     <ListItemIcon>
                                         <DeleteIcon sx={{ fill: (theme) => theme.palette.error.main }} />
                                     </ListItemIcon>
@@ -245,16 +250,17 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                     </Menu>
                 </Box>
                 <CreateProjectModal open={creatingProject} onClose={() => this.setState({ creatingProject: false })} />
-                { Boolean(editingProject) && <EditProjectModal 
+                <EditProjectModal 
                     open={Boolean(editingProject)} 
                     onClose={() => this.setState({ editingProject: null })} 
-                    project={editingProject} 
+                    project={editingProject || {}} 
                     setProject={(key: string, value: any) => this.setState({ editingProject: {
                         ...editingProject,
                         [key]: value
                     } })} 
                     originalCompany={{ ...editingProject }.company}
-                /> }
+                />
+                <DestroyProjectModal open={Boolean(destroyProject)} onClose={() => this.setState({ destroyProject: null })} project={destroyProject || {}} />
             </Root>
         )
     }

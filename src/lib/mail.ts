@@ -28,6 +28,7 @@ export const sendVerifyEmail = (userEmail: string, token: string) => {
                     message: err
                 })
             } else {
+                console.log(body)
                 resolve({
                     error: false,
                     message: body

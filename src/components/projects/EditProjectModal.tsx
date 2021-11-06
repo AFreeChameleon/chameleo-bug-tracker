@@ -32,14 +32,25 @@ const ModalBody = styled(Paper)(({ theme }) => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '400px',
-    height: '400px',
+    width: '450px',
+    height: '200px',
     padding: '20px 30px'
 }));
 
 const Field = styled('div')(({ theme }) => ({
-    marginTop: '15px'
-}))
+}));
+
+const Form = styled('form')(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100% - 50px)',
+    marginTop: '25px',
+    boxSizing: 'border-box'
+}));
+
+const FlexGrow = styled('div')(({ theme }) => ({
+    flexGrow: 1
+}));
 
 class EditProjectModal extends React.Component<EditProjectModalProps, EditProjectModalState> {
     constructor(props) {
@@ -50,11 +61,10 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
 
     submitEditProject(e) {
         e.preventDefault();
-        const { onClose, project, originalCompany, dispatchSetAlerts, dispatchFetchUserData } = this.props;
+        const { onClose, project, dispatchSetAlerts, dispatchFetchUserData } = this.props;
 
-        axios.patch('/api/project/edit', {
+        axios.patch(`/api/project/${project.id}/edit`, {
             ...project,
-            originalCompany: originalCompany
         }, { withCredentials: true })
         .then((res) => {
             dispatchSetAlerts([]);
@@ -67,7 +77,7 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
                     message: e
                 })));
             } else {
-                dispatchSetAlerts([ { type: 'error', message: 'An error occurred while creating your project. Please try again later.' } ])
+                dispatchSetAlerts([ { type: 'error', message: 'An error occurred while editing your project. Please try again later.' } ])
             }
         })
         .finally(() => {
@@ -89,8 +99,7 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
                     >
                         Edit project
                     </Typography>
-                    <form action="" onSubmit={this.submitEditProject}>
-
+                    <Form action="" onSubmit={this.submitEditProject}>
                         <Field>
                             <Typography
                                 variant="body2"
@@ -104,44 +113,16 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
                                 onChange={(e) => setProject('name', e.target.value)}
                             />
                         </Field>
-                        <Field>
-                            <Typography
-                                variant="body2"
-                            >
-                                Company
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                variant="standard"
-                                value={project.company}
-                                onChange={(e) => setProject('company', e.target.value)}
-                                helperText="Can't have: capital letters, spaces or special characters."
-                            />
-                        </Field>
-                        <Field>
-                            <Typography
-                                variant="body2"
-                            >
-                                Key
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                variant="standard"
-                                value={project.key}
-                                onChange={(e) => setProject('key', e.target.value.toUpperCase())}
-                                helperText={`Usually the initials for your company. Can't have: spaces or special characters.`}
-                            />
-                        </Field>
-                        <Field>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                type="submit"
-                            >
-                                Edit
-                            </Button>
-                        </Field>
-                    </form>
+                        <FlexGrow />
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            type="submit"
+                            sx={{ width: '100px', height: '40px', textTransform: 'none' }}
+                        >
+                            Edit
+                        </Button>
+                    </Form>
                 </ModalBody>
             </Modal>
         )

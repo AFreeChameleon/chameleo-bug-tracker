@@ -33,8 +33,9 @@ const themeObj = {
         },
         background: {
             default: '#ffffff',
-            dark: '#F8F9FB',
-            contrastText: navy,
+            dark: '#000000',
+            contrastText: '#000000',
+            light: '#F8F9FB'
         },
         text: {
             primary: '#030027',
@@ -42,7 +43,7 @@ const themeObj = {
         },
         grey: {
             A200: paleBlue,
-            ['50']: lightGrey,
+            ['50']: '#F8F9FB',
             ['200']: '#E5E5E5',
             ['500']: '#666666'
         }

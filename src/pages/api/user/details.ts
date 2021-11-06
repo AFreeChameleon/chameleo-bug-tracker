@@ -34,8 +34,8 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 notifications: true,
                 projects: {
                     select: {
+                        id: true,
                         name: true,
-                        key: true,
                         user: {
                             select: {
                                 firstName: true,
@@ -58,7 +58,7 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
         }
         return res.status(500).json({
             errors: ['An error occurred while getting your details, please try again later.']
-        })
+        });
     }
 })
 

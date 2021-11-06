@@ -48,6 +48,16 @@ export const isUserLoggedInWithRole = async (req: NextApiRequestWithSessionRole,
                 }
             }
         });
+        if (rawUser.projects.length === 0) {
+            return res.status(404).json({
+                errors: ['Project does not exist.']
+            });
+        }
+        if (rawUser.projects[0].roles.length === 0) {
+            return res.status(404).json({
+                errors: ['Project does not have any permissions.']
+            });
+        }
         let user = {
             ...rawUser,
             project: {

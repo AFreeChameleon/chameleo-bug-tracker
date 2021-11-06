@@ -70,9 +70,10 @@ handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
                     id: true,
                 }
             });
-            if (process.env.NODE_ENV === 'production') {
-                await sendVerifyEmail(email, user.tokens[0].token);
-            }
+            await sendVerifyEmail(email, user.tokens[0].token);
+            // Use this when I want to save money
+            // if (process.env.NODE_ENV === 'production') {
+            // }
             await prisma.user.update({
                 where: {
                     id: user.id

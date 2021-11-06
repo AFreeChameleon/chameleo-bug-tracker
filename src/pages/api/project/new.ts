@@ -10,8 +10,6 @@ const schema = yup.object().shape({
     name: yup.string()
         .required('Name is required.')
         .min(3, 'Name must have more than 3 characters.'),
-    key: yup.string()
-        .required(),
 });
 
 const handler = nextConnect({
@@ -31,7 +29,7 @@ handler.use(isUserLoggedIn);
 
 handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
-        const { name, key } = schema.validateSync(req.body);
+        const { name } = schema.validateSync(req.body);
         const existingProjects = await prisma.project.findMany({
             where: {
                 name: name,
@@ -41,33 +39,36 @@ handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
         if (existingProjects.length > 0) {
             return res.status(404).json({
                 errors: ['Can\'t have two projects with the same name.']
-            })
+            });
         }
         const project = await prisma.project.create({
             data: {
                 userId: req.user.id,
                 name: name,
-                key: key.toUpperCase(),
                 details: {
                     columns: {
-                        'Todo': {
-                            ticketIds: []
+                        1: {
+                            ticketIds: [],
+                            name: 'Todo'
                         },
-                        'In progress': {
-                            ticketIds: []
+                        2: {
+                            ticketIds: [],
+                            name: 'In progress'
                         },
-                        'Waiting for review': {
-                            ticketIds: []
+                        3: {
+                            ticketIds: [],
+                            name: 'Waiting for review'
                         },
-                        'Done': {
-                            ticketIds: []
+                        4: {
+                            ticketIds: [],
+                            name: 'Done'
                         },
                     },
                     columnOrder: [
-                        'Todo',
-                        'In progress',
-                        'Waiting for review',
-                        'Done'
+                        1,
+                        2,
+                        3,
+                        4
                     ]
                 }
             }

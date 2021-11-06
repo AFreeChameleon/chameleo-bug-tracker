@@ -23,6 +23,8 @@ model User {
   comments              Comment[]
   tokens                Token[]
   projects              Project[]
+
+  @@map("users")
 }
 
 model Ticket {
@@ -44,8 +46,10 @@ model Ticket {
   notifications  Notification[]
   comments       Comment[]
   attachments    Attachment[]
-  user           User                @relation(fields: [userId], references: [id])
-  project        Project             @relation(fields: [projectId], references: [id])
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project        Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("tickets")
 }
 
 model Project {
@@ -58,7 +62,9 @@ model Project {
   tags      Tag[]
   tickets   Ticket[]
   roles     Role[]
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("projects")
 }
 
 model Tag {
@@ -67,16 +73,20 @@ model Tag {
   name       String
   createdAt  DateTime?           @default(now())
   updatedAt  DateTime?           @updatedAt
-  project    Project             @relation(fields: [projectId], references: [id])
+  project    Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
   tagTickets TagTicketJunction[]
+
+  @@map("tags")
 }
 
 model TagTicketJunction {
   id       Int    @id @default(autoincrement())
   tagId    Int
   ticketId Int
-  ticket   Ticket @relation(fields: [ticketId], references: [id])
-  tag      Tag    @relation(fields: [tagId], references: [id])
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@map("tag_ticket_junctions")
 }
 
 model Notification {
@@ -87,8 +97,10 @@ model Notification {
   read      Boolean
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  ticket    Ticket    @relation(fields: [ticketId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+  ticket    Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
 }
 
 model Role {
@@ -98,8 +110,10 @@ model Role {
   role      String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  user      User      @relation(fields: [userId], references: [id])
-  project   Project   @relation(fields: [projectId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@map("roles")
 }
 
 model Comment {
@@ -109,18 +123,22 @@ model Comment {
   message   String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  user      User      @relation(fields: [userId], references: [id])
-  ticket    Ticket    @relation(fields: [ticketId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticket    Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  @@map("comments")
 }
 
 model Token {
   id        Int       @id @default(autoincrement())
   userId    Int
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   token     String    @unique @default(uuid()) @db.Uuid
   purpose   String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+  
+  @@map("tokens")
 }
 
 model Attachment {
@@ -135,5 +153,7 @@ model Attachment {
   size         Int
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
-  ticket       Ticket    @relation(fields: [ticketId], references: [id])
+  ticket       Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  
+  @@map("attachments")
 }

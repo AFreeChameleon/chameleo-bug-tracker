@@ -7,12 +7,6 @@ import withSession, { NextApiRequestWithSession, NextApiRequestWithSessionRole, 
 import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../middleware/auth';
 import { checkPermission } from '../../../../lib/auth';
 
-const schema = yup.object().shape({
-    name: yup.string()
-        .required('Name is required.')
-        .min(3, 'Name must have more than 3 characters.'),
-});
-
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {
         console.log(error)
@@ -28,24 +22,43 @@ const handler = nextConnect({
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
 
-handler.patch(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
+handler.delete(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {
-        const { name } = schema.validateSync(req.body);
         if (!checkPermission(req.user.projects[0].roles[0].role).write) {
             return res.status(401).json({
-                errors: ['You do not have permissions to edit this.']
+                errors: ['You do not have permissions to delete this.']
             });
         }
-        const projects = await prisma.project.updateMany({
+        const projectId = req.user.projects[0].id;
+        // const ticketResult = await prisma.$queryRaw`
+        //     DELETE FROM "Ticket" WHERE "projectId" = ${projectId};
+        // `;
+        const result = await prisma.$queryRaw`
+            DELETE FROM "Project" WHERE "id" = ${projectId};
+        `;
+        console.log(result)
+        // const tickets = await prisma.ticket.deleteMany({
+        //     where: {
+        //         projectId: projectId,
+        //     },
+        // });
+        const projects = await prisma.project.deleteMany({
             where: {
-                id: req.user.projects[0].id,
+                id: projectId,
+                roles: {
+                    every: {
+                        projectId: projectId
+                    }
+                },
+                tags: {
+                    every: {
+                        projectId: projectId
+                    }
+                }
             },
-            data: {
-                name: name
-            }
         });
         return res.json({
-            message: 'Successfully updated project.'
+            message: 'Successfully deleted project.'
         });
     } catch (err) {
         console.log(err);
