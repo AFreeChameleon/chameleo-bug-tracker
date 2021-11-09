@@ -7,12 +7,12 @@ import {
     FETCH_TICKET_DATA_FAILURE,
 } from './types';
 
-export const fetchTickets = () => {
+export const fetchTickets = (id: string, ticketId: string) => {
     return dispatch => {
         dispatch({
             type: FETCH_TICKET_DATA_REQUEST
         });
-        return axios.get('/api/ticket/details', { withCredentials: true })
+        return axios.get(`/api/projects/${id}/ticket/${ticketId}/details`, { withCredentials: true })
         .then((res: any) => {
             dispatch({
                 type: FETCH_TICKET_DATA_SUCCESS,

@@ -29,8 +29,8 @@ handler.use(isUserLoggedIn);
 
 handler.post(async (req: any, res: NextApiResponse) => {
     try {
-        const project_id = req.query.project_id as string;
         const { name } = schema.validateSync(req.body);
+        console.log(name)
         const existingTag = await prisma.tag.findFirst({
             where: {
                 projectId: req.user.projects[0].id,
@@ -40,6 +40,7 @@ handler.post(async (req: any, res: NextApiResponse) => {
                 id: true
             }
         });
+        console.log(existingTag);
         if (existingTag) {
             return res.status(409).json({
                 errors: ['Tag with that name already exists.']
@@ -56,9 +57,9 @@ handler.post(async (req: any, res: NextApiResponse) => {
                 updatedAt: true
             }
         });
+        console.log(tag)
         return res.json({
-            message: 'Successfully created tag.',
-            tag: tag
+            message: 'Successfully created tag.'
         });
     } catch (err) {
         console.log(err);
@@ -71,4 +72,6 @@ handler.post(async (req: any, res: NextApiResponse) => {
             errors: ['An error occurred while creating your tag, please try again later.']
         })
     }
-})
+});
+
+export default handler;

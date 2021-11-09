@@ -26,6 +26,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import { setAlerts } from '../../../redux/alerts/actions';
 import { fetchProjectDetails } from '../../../redux/project/actions';
 
+import {
+    validateTime
+} from '../../../lib/ticket';
+
 const filter = createFilterOptions<any>();
 
 type CreateModalProps = {
@@ -34,7 +38,7 @@ type CreateModalProps = {
     user: any;
     project: any;
     dispatchSetAlerts: (value: any) => void;
-    dispatchFetchProjectDetails: (company: string) => void;
+    dispatchFetchProjectDetails: (id: string) => void;
 }
 
 type CreateModalState = {
@@ -115,7 +119,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
             ticket: {
                 name: '',
                 description: '',
-                status: 0,
+                status: this.props.project.details.columnOrder[0] || 0,
                 priority: 2,
                 tags: [],
                 assignedTo: '',
@@ -140,7 +144,6 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                 name: ticket.name,
                 description: ticket.description,
                 tags: [],
-                project_company: project.company,
                 status: ticket.status,
                 priority: ticket.priority,
                 assignedTo: ticket.assignedTo,
@@ -157,20 +160,20 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                 'Content-Type': 'multipart/form-data'
             } });
             console.log(res)
-            dispatchFetchProjectDetails(project.company);
+            dispatchFetchProjectDetails(project.id);
             onClose();
         }
     }
 
     async createNewTag(value) {
+        console.log(value)
         const { project, dispatchSetAlerts } = this.props;
         const { ticket, attachments } = this.state;
         // console.log(e.target.value)
         if (!ticket.tags.includes(value)) {
             console.log(ticket)
-            axios.post('/api/tag/new', {
+            axios.post(`/api/project/${project.id}/tag/new`, {
                 name: value,
-                project_company: project.company
             }, { withCredentials: true })
             .then((res) => {
                 this.setState({ 
@@ -200,14 +203,14 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
     addTag(e, value, reason) {
         const { ticket } = this.state;
         console.log(e, value, reason)
-        if (value.create || reason === 'createOption') {
-            this.createNewTag(value.inputValue);
+        if (value[0].create || reason === 'createOption') {
+            this.createNewTag(value[0].inputValue);
         } else {
             this.setState({ 
                 ticket: {
                     ...ticket,
                     tags: [ ...ticket.tags, {
-                        name: value.inputValue || value[0]
+                        name: value[0].inputValue || value[0]
                     } ]
                 }
             });
@@ -228,6 +231,12 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
 
     submitNewTicket(e) {
         e.preventDefault();
+        const { dispatchSetAlerts } = this.props;
+        const { ticket } = this.state;
+        const validEstimate = validateTime(ticket.estimate);
+        if (!validEstimate && ticket.estimate !== '') {
+            dispatchSetAlerts([ {type: 'error', message: 'Estimate not correct format: 10m, 1h, 12d, 14w, 1m and 1y are examples of what can be accepted. '} ])
+        }
         this.createTicket(e);
     }
 
@@ -242,7 +251,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                 <ModalBody>
                     <Typography
                         gutterBottom
-                        variant="subtitle1"
+                        variant="h5"
                     >
                         New ticket
                     </Typography>
@@ -308,6 +317,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                                 <AttachmentDescription
                                                     variant="caption"
                                                     color="white"
+                                                    noWrap
                                                 >
                                                     {a.file.name}
                                                 </AttachmentDescription>
@@ -317,7 +327,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                     <label htmlFor="new-ticket-upload-button" style={{ width: 'fit-content' }}>
                                         <input 
                                             type="file"
-                                            accept="image/*"
+                                            accept="*/*"
                                             style={{ display: 'none' }} 
                                             id="new-ticket-upload-button"
                                             onChange={this.addAttachment}
@@ -337,15 +347,15 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                 </Stack>
                             </div>
                             <div>
-                                <Stack spacing={2}>
-                                    <Typography
+                                <Stack spacing={2} sx={{marginTop: '45px'}}>
+                                    {/* <Typography
                                         variant="subtitle1"
                                         sx={{
                                             marginTop: '2px'
                                         }}
                                     >
                                         {project.name}
-                                    </Typography>
+                                    </Typography> */}
                                     <Paper variant="outlined" sx={{
                                         padding: '10px'
                                     }}>
@@ -374,10 +384,9 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                                         width: '50%'
                                                     }}
                                                 >
-                                                    <MenuItem value={0}>Todo</MenuItem>
-                                                    <MenuItem value={1}>In progress</MenuItem>
-                                                    <MenuItem value={2}>Waiting for review</MenuItem>
-                                                    <MenuItem value={3}>Done</MenuItem>
+                                                    {project.details.columnOrder.map((colId, i) => (
+                                                       <MenuItem value={colId} key={colId}>{project.details.columns[colId].name}</MenuItem> 
+                                                    ))}
                                                 </Select>
                                             </FlexDiv>
                                             <FlexDiv>
@@ -539,7 +548,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     dispatchSetAlerts: (value: any[]) => dispatch(setAlerts(value)),
-    dispatchFetchProjectDetails: (company: string) => dispatch(fetchProjectDetails(company))
+    dispatchFetchProjectDetails: (id: string) => dispatch(fetchProjectDetails(id))
 })
 
 export default compose<any>(

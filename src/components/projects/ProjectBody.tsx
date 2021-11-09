@@ -157,7 +157,7 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                                     <IconButton
                                         size="small"
                                         id={`project-btn-${i}`}
-                                        onClick={(e) => this.setState({ anchorEl: e.currentTarget })}
+                                        onClick={(e) => {e.preventDefault();this.setState({ anchorEl: e.currentTarget })}}
                                     >
                                         <MoreIcon />
                                     </IconButton>
@@ -257,8 +257,7 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                     setProject={(key: string, value: any) => this.setState({ editingProject: {
                         ...editingProject,
                         [key]: value
-                    } })} 
-                    originalCompany={{ ...editingProject }.company}
+                    } })}
                 />
                 <DestroyProjectModal open={Boolean(destroyProject)} onClose={() => this.setState({ destroyProject: null })} project={destroyProject || {}} />
             </Root>
@@ -278,75 +277,3 @@ const mapDispatchToProps = (dispatch) => ({
 export default compose<any>(
     connect(mapStateToProps, mapDispatchToProps)
 )(ProjectBody);
-
-/*
-
-<Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={() => this.setState({ anchorEl: null })}
-                                    onClick={() => this.setState({ anchorEl: null })}
-                                    PaperProps={{
-                                        elevation: 0,
-                                        sx: {
-                                            overflow: 'visible',
-                                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                            mt: 1.5,
-                                            '& .MuiAvatar-root': {
-                                                width: 32,
-                                                height: 32,
-                                                ml: -0.5,
-                                                mr: 1,
-                                            },
-                                            '&:before': {
-                                                content: '""',
-                                                display: 'block',
-                                                position: 'absolute',
-                                                top: 0,
-                                                right: 22,
-                                                width: 10,
-                                                height: 10,
-                                                bgcolor: 'background.paper',
-                                                transform: 'translateY(-50%) rotate(45deg)',
-                                                zIndex: 0,
-                                            },
-                                        },
-                                    }}
-                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                                >
-                                    <ListItem>
-                                        <ListItemIcon sx={{  minWidth: 'fit-content' }}>
-                                            <Avatar>
-                                                {project.user.firstName.slice(0, 1)}
-                                            </Avatar>
-                                        </ListItemIcon>
-                                        <ListItemText>
-                                            <Typography noWrap>
-                                                Owned by: {`${project.user.firstName} ${project.user.lastName}`}
-                                            </Typography>
-                                        </ListItemText>
-                                    </ListItem>
-                                    <Divider/>
-                                    <MenuItem onClick={() => {
-                                        console.log(project, i);
-                                        this.setState({ editingProject: project })
-                                    }}>
-                                        <ListItemIcon>
-                                            <EditIcon />
-                                        </ListItemIcon>
-                                        <ListItemText>
-                                            Edit
-                                        </ListItemText>
-                                    </MenuItem>
-                                    <MenuItem >
-                                        <ListItemIcon>
-                                            <DeleteIcon sx={{ fill: (theme) => theme.palette.error.main }} />
-                                        </ListItemIcon>
-                                        <ListItemText sx={{ color: (theme) => theme.palette.error.main }}>
-                                            Destroy
-                                        </ListItemText>
-                                    </MenuItem>
-                                </Menu>
-
-*/

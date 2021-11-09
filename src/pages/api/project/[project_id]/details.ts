@@ -126,6 +126,84 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
             errors: ['An error occurred while getting project details, please try again later.']
         })
     }
+});
+
+handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+    try {
+        const { details } = req.body;
+        const project_id = req.query.project_id as string;
+        const project = await prisma.project.update({
+            where: {
+                id: project_id
+            },
+            data: {
+                details: details
+            },
+            select: {
+                name: true,
+                id: true,
+                details: true,
+                tickets: {
+                    select: {
+                        id: true,
+                        timeEstimate: true,
+                        status: true,
+                        priority: true,
+                        description: true,
+                        name: true,
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                                firstName: true,
+                                lastName: true
+                            }
+                        },
+                        assignedUserId: true,
+                        source: true,
+                        started: true,
+                        createdAt: true,
+                        updatedAt: true,
+                    },
+                },
+                roles: {
+                    where: {
+                        userId: req.user.id
+                    }
+                },
+                tags: {
+                    select: {
+                        name: true,
+                        createdAt: true,
+                        updatedAt: true
+                    }
+                },
+                updatedAt: true,
+                createdAt: true,
+                user: { 
+                    select: {
+                        id: true,
+                        email: true,
+                        firstName: true,
+                        lastName: true
+                    }
+                }
+            }
+        });
+        return res.json({
+            project: project,
+        });
+    } catch (err) {
+        console.log(err);
+        if (err.errors) {
+            return res.status(500).json({
+                errors: err.errors
+            });
+        }
+        return res.status(500).json({
+            errors: ['An error occurred while getting project details, please try again later.']
+        })
+    }
 })
 
 export default handler;

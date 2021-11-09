@@ -29,15 +29,21 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import chameleologo from '../../public/img/chameleo-logo.png';
 import { setAlerts } from '../redux/alerts/actions';
+import { Button } from '@mui/material';
+
+import CreateTicketModal from './projects/tickets/CreateModal';
 
 type HeaderProps = {
     user: any;
     router: NextRouter;
     dispatchSetAlerts: (values: any[]) => void;
+
+    createTicket?: boolean;
 }
 
 type HeaderState = {
     profileMenuAnchorEl: any;
+    createTicketModalOpen: boolean;
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -106,7 +112,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
         this.logout = this.logout.bind(this);
         
         this.state = {
-            profileMenuAnchorEl: null
+            profileMenuAnchorEl: null,
+            createTicketModalOpen: false
         }
     }
 
@@ -135,8 +142,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
 
     render() {
-        const { user } = this.props;
-        const { profileMenuAnchorEl } = this.state;
+        const { user, createTicket } = this.props;
+        const { profileMenuAnchorEl, createTicketModalOpen } = this.state;
         return (
             <Box sx={{ flexGrow: 1 }} position="relative" zIndex={10}>
                 <AppBar position="static" color="transparent" sx={{boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)'}}>
@@ -147,6 +154,16 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                             </StyledLink>
                         </NextLink>
                         <FlexGrow/>
+                        {createTicket && <Button
+                            onClick={() => this.setState({ createTicketModalOpen: true })}
+                            sx={{ 
+                                textTransform: 'none',
+                                marginRight: '10px'
+                            }}
+                            variant="contained"
+                        >
+                            Create Ticket
+                        </Button>}
                         <Search>
                             <SearchIconWrapper>
                                 <SearchIcon />
@@ -232,6 +249,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                         </Menu>
                     </Toolbar>
                 </AppBar>
+                { createTicketModalOpen && <CreateTicketModal open={createTicketModalOpen} onClose={() => this.setState({ createTicketModalOpen: false })} /> }
             </Box>
         )
     }

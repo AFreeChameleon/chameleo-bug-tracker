@@ -14,8 +14,6 @@ const schema = yup.object().shape({
         .required('Name is required.'),
     description: yup.string(),
     tags: yup.array().nullable(),
-    project_company: yup.string()
-        .required('Project is required.'),
     status: yup.number()
         .integer().required('Status is required.'),
     priority: yup.number()

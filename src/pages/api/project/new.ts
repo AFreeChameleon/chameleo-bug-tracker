@@ -47,28 +47,28 @@ handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 name: name,
                 details: {
                     columns: {
-                        1: {
+                        '1': {
                             ticketIds: [],
                             name: 'Todo'
                         },
-                        2: {
+                        '2': {
                             ticketIds: [],
                             name: 'In progress'
                         },
-                        3: {
+                        '3': {
                             ticketIds: [],
                             name: 'Waiting for review'
                         },
-                        4: {
+                        '4': {
                             ticketIds: [],
                             name: 'Done'
                         },
                     },
                     columnOrder: [
-                        1,
-                        2,
-                        3,
-                        4
+                        '1',
+                        '2',
+                        '3',
+                        '4'
                     ]
                 }
             }

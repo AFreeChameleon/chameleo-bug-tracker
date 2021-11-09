@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import axios from 'axios';
 
 import { compose } from 'redux';
@@ -11,19 +12,22 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-import { setAlerts } from '../../redux/alerts/actions';
-import { fetchUserData } from '../../redux/user/actions';
+import { setAlerts } from '../../../redux/alerts/actions';
+import { fetchUserData } from '../../../redux/user/actions';
+import { setProjectDetails } from '../../../redux/project/actions';
 
-type EditProjectModalProps = {
+type EditColumnModalProps = {
     project: any;
-    setProject: (key: string, value: any) => void;
+    columnId: string;
     open: boolean;
     onClose: () => void;
     dispatchSetAlerts: (e: any[]) => void;
     dispatchFetchUserData: () => void;
+    dispatchSetProjectDetails: (id: string, details: any) => void;
 }
 
-type EditProjectModalState = {
+type EditColumnModalState = {
+    name: string;
 }
 
 const ModalBody = styled(Paper)(({ theme }) => ({
@@ -33,7 +37,8 @@ const ModalBody = styled(Paper)(({ theme }) => ({
     transform: 'translate(-50%, -50%)',
     width: '450px',
     height: '200px',
-    padding: '20px 30px'
+    padding: '20px 30px',
+    outline: 'none'
 }));
 
 const Field = styled('div')(({ theme }) => ({
@@ -51,42 +56,35 @@ const FlexGrow = styled('div')(({ theme }) => ({
     flexGrow: 1
 }));
 
-class EditProjectModal extends React.Component<EditProjectModalProps, EditProjectModalState> {
+class EditColumnModal extends React.Component<EditColumnModalProps, EditColumnModalState> {
     constructor(props) {
         super(props);
 
-        this.submitEditProject = this.submitEditProject.bind(this);
+        this.submitEditColumn = this.submitEditColumn.bind(this);
+
+        this.state = {
+            name: ''
+        }
     }
 
-    submitEditProject(e) {
+    submitEditColumn(e) {
         e.preventDefault();
-        const { onClose, project, dispatchSetAlerts, dispatchFetchUserData } = this.props;
+        const { project, columnId, dispatchSetProjectDetails, onClose } = this.props;
+        const { name } = this.state;
 
-        axios.patch(`/api/project/${project.id}/edit`, {
-            ...project,
-        }, { withCredentials: true })
-        .then((res) => {
-            dispatchSetAlerts([]);
-            dispatchFetchUserData();
-        })
-        .catch((err) => {
-            if (err.response) {
-                dispatchSetAlerts(err.response.data.errors.map((e) => ({
-                    type: 'error',
-                    message: e
-                })));
-            } else {
-                dispatchSetAlerts([ { type: 'error', message: 'An error occurred while editing your project. Please try again later.' } ])
-            }
-        })
-        .finally(() => {
-            onClose();
-        });
+        let editableProject = _.cloneDeep(project);
+        editableProject.details.columns[columnId].name = name;
+        dispatchSetProjectDetails(editableProject.id, editableProject.details);
+        onClose();
     }
 
     render() {
-        const { project, setProject, open, onClose } = this.props;
-        console.log(project)
+        const { open, onClose, columnId, project } = this.props;
+        if (!(project && project.details && columnId)) {
+            return null;
+        }
+        const column = project.details.columns[columnId];
+        console.log(column, project, columnId)
         return (
             <Modal
                 open={open}
@@ -96,9 +94,9 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
                     <Typography
                         variant="h5"
                     >
-                        Edit project
+                        Edit column
                     </Typography>
-                    <Form action="" onSubmit={this.submitEditProject}>
+                    <Form action="" onSubmit={this.submitEditColumn}>
                         <Field>
                             <Typography
                                 variant="body2"
@@ -108,8 +106,9 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
                             <TextField
                                 fullWidth
                                 variant="standard"
-                                value={project.name}
-                                onChange={(e) => setProject('name', e.target.value)}
+                                placeholder="Column name..."
+                                defaultValue={column.name}
+                                onChange={(e) => this.setState({ name: e.target.value })}
                             />
                         </Field>
                         <FlexGrow />
@@ -129,14 +128,16 @@ class EditProjectModal extends React.Component<EditProjectModalProps, EditProjec
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user.data
+    user: state.user.data,
+    project: state.project.data
 });
 
 const mapDispatchToProps = (dispatch) => ({
     dispatchSetAlerts: (values: any[]) => dispatch(setAlerts(values)),
-    dispatchFetchUserData: () => dispatch(fetchUserData())
+    dispatchFetchUserData: () => dispatch(fetchUserData()),
+    dispatchSetProjectDetails: (id: string, details: any) => dispatch(setProjectDetails(id, details))
 })
 
-export default compose<any>(
+export default compose(
     connect(mapStateToProps, mapDispatchToProps)
-)(EditProjectModal);
+)(EditColumnModal);

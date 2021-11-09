@@ -30,31 +30,9 @@ handler.delete(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) 
             });
         }
         const projectId = req.user.projects[0].id;
-        // const ticketResult = await prisma.$queryRaw`
-        //     DELETE FROM "Ticket" WHERE "projectId" = ${projectId};
-        // `;
-        const result = await prisma.$queryRaw`
-            DELETE FROM "Project" WHERE "id" = ${projectId};
-        `;
-        console.log(result)
-        // const tickets = await prisma.ticket.deleteMany({
-        //     where: {
-        //         projectId: projectId,
-        //     },
-        // });
         const projects = await prisma.project.deleteMany({
             where: {
                 id: projectId,
-                roles: {
-                    every: {
-                        projectId: projectId
-                    }
-                },
-                tags: {
-                    every: {
-                        projectId: projectId
-                    }
-                }
             },
         });
         return res.json({
@@ -68,7 +46,7 @@ handler.delete(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) 
             });
         }
         return res.status(500).json({
-            errors: ['An error occurred while creating your project, please try again later.']
+            errors: ['An error occurred while deleting your project, please try again later.']
         })
     }
 });

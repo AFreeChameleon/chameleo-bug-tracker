@@ -23,7 +23,7 @@ const Root = styled('div')(({ theme }: any) => ({
     height: 'calc(100vh - 64px)',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: theme.palette.background.dark,
+    backgroundColor: theme.palette.background.light,
     position: 'sticky'
 }));
 
