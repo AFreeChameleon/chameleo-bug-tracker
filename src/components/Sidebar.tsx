@@ -62,7 +62,6 @@ class Sidebar extends React.Component<SidebarProps> {
 
     render() {
         const { user, project } = this.props;
-        console.log(project)
         return (
             <Root>
                 <Subtitle
@@ -75,11 +74,11 @@ class Sidebar extends React.Component<SidebarProps> {
                     { user.projects.map((projectItem, i) => (
                         <MenuItem key={i} sx={{
                             padding: 0,
-                            height: '40px'
+                            height: '50px'
                         }}>
-                            { project.company === projectItem.company && <SelectedListItem/> }
+                            { project.id === projectItem.id && <SelectedListItem/> }
                             <ListItemText sx={{
-                                paddingLeft: project.company === projectItem.company ? '23px' : '25px',
+                                paddingLeft: project.id === projectItem.id ? '23px' : '25px',
                                 fontSize: '16px'
                             }}>
                                 {projectItem.name}
@@ -103,12 +102,12 @@ class Sidebar extends React.Component<SidebarProps> {
                             paddingLeft: '25px',
                             fontSize: '16px'
                         }}>
-                            <TicketLabel
+                            {/* <TicketLabel
                                 variant="caption"
                                 component="div"
                             >
                                 CH-50
-                            </TicketLabel>
+                            </TicketLabel> */}
                             <Typography>
                                 Yeet
                             </Typography>
