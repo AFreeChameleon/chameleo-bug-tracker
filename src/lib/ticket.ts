@@ -26,8 +26,6 @@ export const mapIntToPriority = (num: number) => {
             return 'Medium';
         case 3:
             return 'Low';
-        case 4:
-            return 'Very low';
         default:
             return 'Medium'
     }

@@ -150,13 +150,14 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                 estimate: ticket.estimate,
                 // attachments: attachments.map((a) => a.file)
             }
+            console.log(ticket.status)
             for (const key in jsonData) {
                 formData.append(key, jsonData[key])
             }
             for (const attachment of attachments) {
                 formData.append('attachments', attachment.file, attachment.name);
             }
-            const res = await axios.post('/api/ticket/new', formData, { withCredentials: true, headers: {
+            const res = await axios.post(`/api/project/${project.id}/ticket/new`, formData, { withCredentials: true, headers: {
                 'Content-Type': 'multipart/form-data'
             } });
             console.log(res)
@@ -176,6 +177,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                 name: value,
             }, { withCredentials: true })
             .then((res) => {
+                console.log(res.data)
                 this.setState({ 
                     ticket: {
                         ...ticket,
@@ -255,7 +257,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                     >
                         New ticket
                     </Typography>
-                    <form action="/api/ticket/new" method="POST" onSubmit={this.submitNewTicket}>
+                    <form action="" method="POST" onSubmit={this.submitNewTicket}>
                         <GridBody>
                             <div>
                                 <Stack spacing={2}>
@@ -417,7 +419,6 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                                     <MenuItem value={1}>High</MenuItem>
                                                     <MenuItem value={2}>Medium</MenuItem>
                                                     <MenuItem value={3}>Low</MenuItem>
-                                                    <MenuItem value={4}>Very low</MenuItem>
                                                 </Select>
                                             </FlexDiv>
                                             <FlexDiv>

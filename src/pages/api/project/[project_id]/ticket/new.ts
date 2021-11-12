@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import _ from 'lodash';
 import nextConnect from 'next-connect';
 import multer from 'multer';
 import * as yup from 'yup';
@@ -14,8 +15,8 @@ const schema = yup.object().shape({
         .required('Name is required.'),
     description: yup.string(),
     tags: yup.array().nullable(),
-    status: yup.number()
-        .integer().required('Status is required.'),
+    status: yup.string()
+        .required('Status is required.'),
     priority: yup.number()
         .integer().required('Priority is required.'),
     assignedTo: yup.string()
@@ -60,17 +61,18 @@ handler.post(async (req: any, res: NextApiResponse) => {
             estimate,
             attachments
         } = schema.validateSync(req.body);
-        const projects = await prisma.project.findMany({
+        const project_id = req.query.project_id;
+        const project = await prisma.project.findUnique({
             where: {
-                name: name,
-                userId: req.user.id
+                id: project_id,
             },
             select: {
                 id: true,
-                tags: true
+                tags: true,
+                details: true
             }
         });
-        if (projects.length === 0) {
+        if (!project) {
             return res.status(404).json({
                 errors: ['Project doesn\'t exist.']
             })
@@ -81,9 +83,15 @@ handler.post(async (req: any, res: NextApiResponse) => {
             }
         });
         if (existingTicket.length > 0) {
-            return res.status(404).json({
+            return res.status(409).json({
                 errors: ['Ticket with that name already exists.']
-            })
+            });
+        }
+        const project_details: any = project.details;
+        if (!project_details.columns[status]) {
+            return res.status(422).json({
+                errors: ["Status doesn't exist."]
+            });
         }
 
         const assignedUser = await prisma.user.findUnique({
@@ -98,7 +106,7 @@ handler.post(async (req: any, res: NextApiResponse) => {
         const latestTicket = await prisma.ticket.findMany({
             where: {
                 userId: req.user.id,
-                projectId: projects[0].id,
+                projectId: project.id,
             },
             select: {
                 ticketNumber: true,
@@ -107,35 +115,35 @@ handler.post(async (req: any, res: NextApiResponse) => {
                 createdAt: 'asc'
             },
             take: 1
-        })
+        });
 
         const ticket = await prisma.ticket.create({
             data: {
                 userId: req.user.id,
                 name: name,
                 description: description,
-                projectId: projects[0].id,
-                // status: mapIntToStatus(status),
+                projectId: project.id,
+                status: status,
                 priority: mapIntToPriority(priority),
                 assignedUserId: assignedUser ? assignedUser.id : null,
                 timeEstimate: validateTime(estimate) || '0m',
                 ticketNumber: (latestTicket && latestTicket[0]) ? latestTicket[0].ticketNumber + 1 : 1
             },
         });
+        let newDetails = _.cloneDeep(project_details);
+        newDetails.columns[status].ticketIds = [ ticket.id, ...newDetails.columns[status].ticketIds ]
 
         const updatedProject = await prisma.project.update({
             where: {
-                id: projects[0].id,
+                id: project.id,
             },
             data: {
-                details: {
-
-                }
+                details: newDetails
             }
         })
 
         const tagList = await prisma.tagTicketJunction.createMany({
-            data: projects[0].tags
+            data: project.tags
             .filter((tag) => 
                 tags.findIndex(t => t.name === tag.name)
             ).map((tag) => ({

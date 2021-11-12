@@ -3,8 +3,13 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { Avatar } from '@mui/material';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
+import AddIcon from '@mui/icons-material/Add';
+import { CriticalPriorityIcon, HighPriorityIcon, LowPriorityIcon, MediumPriorityIcon } from './Icons';
 
 // type TicketItemProps = {
 //     ticket: any;
@@ -16,11 +21,16 @@ const TicketContainer = styled('div')(({ theme }) => ({
     userSelect: "none",
     padding: 10,
     margin: "0 0 8px 0",
-    '&:last-child': {
-        marginBottom: 0
-    },
-    minHeight: "50px",
-    backgroundColor: theme.palette.background.paper
+    minHeight: '140px',
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[2],
+    borderRadius: '6px',
+    display: 'flex',
+    flexDirection: 'column'
+}));
+
+const SourceTypography = styled(Typography)(({ theme }) => ({
+    color: theme.palette.text.secondary,
 }));
 
 const FlexDiv = styled('div')(({ theme }) => ({
@@ -29,25 +39,23 @@ const FlexDiv = styled('div')(({ theme }) => ({
     alignItems: 'center'
 }));
 
-const PriorityDiv = styled('div')(({ theme }) => ({
-    padding: '0px 10px',
-    borderRadius: '25px',
-    ...theme.typography.caption,
-    color: theme.palette.primary.contrastText,
-    fontSize: '10px'
-}));
-
 const TagList = styled('div')(({ theme }) => ({
     display: 'flex',
-    columnGap: '10px'
+    columnGap: '10px',
+    alignItems: 'center',
+    height: '30px'
 }));
 
 const Tag = styled('div')(({ theme }) => ({
     padding: '0px 10px',
     borderRadius: '25px',
     ...theme.typography.caption,
-    backgroundColor: theme.palette.primary.dark,
-    color: theme.palette.primary.contrastText,
+    border: `1px solid ${theme.palette.primary.dark}`,
+    height: 'fit-content'
+}));
+
+const FlexGrow = styled('div')(({ theme }) => ({
+    flexGrow: 1
 }))
 
 class TicketItem extends React.Component<any> {
@@ -61,53 +69,25 @@ class TicketItem extends React.Component<any> {
         const { ticket } = this.props;
 
         switch (ticket.priority) {
-            case 'Very low':
-                return (
-                    <PriorityDiv sx={{
-                        backgroundColor: 'primary.dark'
-                    }}>
-                        { ticket.priority }
-                    </PriorityDiv>
-                )
             case 'Low':
                 return (
-                    <PriorityDiv sx={{
-                        backgroundColor: 'primary.main'
-                    }}>
-                        { ticket.priority }
-                    </PriorityDiv>
+                    <LowPriorityIcon />
                 )
             case 'Medium':
                 return (
-                    <PriorityDiv sx={{
-                        backgroundColor: 'warning.light'
-                    }}>
-                        { ticket.priority }
-                    </PriorityDiv>
+                    <MediumPriorityIcon />
                 )
             case 'High':
                 return (
-                    <PriorityDiv sx={{
-                        backgroundColor: 'error.main'
-                    }}>
-                        { ticket.priority }
-                    </PriorityDiv>
+                    <HighPriorityIcon />
                 )
             case 'Critical':
                 return (
-                    <PriorityDiv sx={{
-                        backgroundColor: 'error.dark'
-                    }}>
-                        { ticket.priority }
-                    </PriorityDiv>
+                    <CriticalPriorityIcon />
                 )
             default:
                 return (
-                    <PriorityDiv sx={{
-                        backgroundColor: 'primary.dark'
-                    }}>
-                        { ticket.priority }
-                    </PriorityDiv>
+                    <MediumPriorityIcon />
                 )
         }
     }
@@ -119,41 +99,50 @@ class TicketItem extends React.Component<any> {
                 ref={refEl} 
                 {...otherProps}
             >
-                <Stack spacing={1}>
+                <FlexDiv sx={{ paddingRight: '5px' }}>
+                    <TagList>
+                        <Tag>
+                            TAGLIST
+                        </Tag>
+                        {/* <IconButton size="small">
+                            <AddIcon sx={{ width: '20px', height: '20px' }} color="primary" />
+                        </IconButton> */}
+                    </TagList>
+                    {this.formatPriority()}
+                </FlexDiv>
+                <Box marginTop="5px">
+                    {ticket.source !== 'website' && 
+                    <SourceTypography
+                        variant="caption"
+                    >
+                        From: {ticket.source}
+                    </SourceTypography>}
                     <FlexDiv>
                         <Typography
-                            variant="body2"
+                            variant="body1"
                         >
                             {ticket.name}
                         </Typography>
-                        {this.formatPriority()}
                     </FlexDiv>
+                </Box>
+                <FlexGrow />
+                <FlexDiv>
                     <Typography
                         variant="caption"
+                        sx={{ 
+                            border: `1px solid #000000`,
+                            padding: '0 15px',
+                            borderRadius: '20px'
+                        }}
                     >
                         {ticket.timeEstimate}
                     </Typography>
-                    <FlexDiv sx={{
-                        alignItems: 'flex-end',
-                        marginTop: '0 !important'
-                    }}>
-                        <TagList>
-                            <Tag>
-                                TAGLIST
-                            </Tag>
-                        </TagList>
-                        <Stack spacing={1}>
-                            <Typography
-                                variant="body2"
-                            >
-                                {project.key}-{ticket.id}
-                            </Typography>
-                            <Avatar sx={{ height: 25, width: 25, marginTop: '2px', fontSize: '12px', marginLeft: 'auto !important' }}>
-                                {ticket.user.firstName && ticket.user.firstName.slice(0, 1)}
-                            </Avatar>
-                        </Stack>
-                    </FlexDiv>
-                </Stack>
+                    <Tooltip title={ticket.user.firstName + ' ' + ticket.user.lastName}>
+                        <Avatar sx={{ height: 30, width: 30, marginTop: '2px', fontSize: '18px', marginLeft: 'auto !important' }}>
+                            {ticket.user.firstName && ticket.user.firstName.slice(0, 1)}
+                        </Avatar>
+                    </Tooltip>
+                </FlexDiv>
             </TicketContainer>
         )
     }

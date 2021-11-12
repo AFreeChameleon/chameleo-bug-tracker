@@ -1,14 +1,11 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -87,14 +84,6 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
         }
     }
 
-    // async setColumns(source: any, destination: any, columns: any) {
-    //     const ticket = columns[source.droppableId].items[source.index];
-    //     const res = await axios.patch('/api/ticket/change-status', {
-    //         ticket_id: ticket.id,
-    //         status: this.colNames.findIndex(c => c === destination.droppableId)
-    //     }, { withCredentials: true });
-    // }
-
     async onDragEnd(result) {
         if (!result.destination) return;
         const { source, destination } = result;
@@ -105,55 +94,18 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
             columnOrder.splice(destination.index, 0, columnOrder.splice(source.index, 1)[0]);
             editableProject.details.columnOrder = columnOrder;
             dispatchSetProjectDetails(project.id, editableProject.details);
+        } else {
+            let sourceColumn = editableProject.details.columns[source.droppableId];
+            let destColumn = editableProject.details.columns[destination.droppableId];
+            const id = sourceColumn.ticketIds.splice(source.index, 1)[0];
+            destColumn.ticketIds.splice(destination.index, 0, id);
+            dispatchSetProjectDetails(project.id, editableProject.details);
         }
-        return;
-        // if (source.droppableId !== destination.droppableId) {
-        //     const sourceColumn = columns[source.droppableId];
-        //     const destColumn = columns[destination.droppableId];
-        //     const sourceItems = [...sourceColumn.items];
-        //     const destItems = [...destColumn.items];
-        //     const [removed] = sourceItems.splice(source.index, 1);
-        //     destItems.splice(destination.index, 0, removed);
-        //     this.setState({ 
-        //         tickets: {
-        //             ...columns,
-        //             [source.droppableId]: {
-        //               ...sourceColumn,
-        //               items: sourceItems
-        //             },
-        //             [destination.droppableId]: {
-        //               ...destColumn,
-        //               items: destItems
-        //             }
-        //         }
-        //     })
-        //     await this.setColumns(source, destination, columns);
-        // } else {
-        //     const column = columns[source.droppableId];
-        //     const copiedItems = [...column.items];
-        //     const [removed] = copiedItems.splice(source.index, 1);
-        //     copiedItems.splice(destination.index, 0, removed);
-        //     this.setState({
-        //         tickets: {
-        //             ...columns,
-        //             [source.droppableId]: {
-        //               ...column,
-        //               items: copiedItems
-        //             }
-        //         }
-        //     })
-        //     await this.setColumns(source, destination, columns);
-        // }
     }
 
     render() {
-        const { project } = this.props;
-        const { tickets, colMenuAnchorEl, editingColumn } = this.state;
-        if (!tickets) {
-            return null;
-        }
-        // const formattedTickets = this.formatTickets();
-        console.log(colMenuAnchorEl, project)
+        const { project, tickets } = this.props;
+        const { colMenuAnchorEl, editingColumn } = this.state;
         return (
             <DragDropContext
                 onDragEnd={this.onDragEnd}
@@ -182,7 +134,11 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                                                     >
                                                         {project.details.columns[columnId].name.toUpperCase()}
                                                     </Typography>
-                                                    <IconButton color="inherit" id={`column-${columnId}`} onClick={(e) => this.setState({ colMenuAnchorEl: e.currentTarget })}>
+                                                    <IconButton 
+                                                        color="inherit" 
+                                                        id={`column-${columnId}`} 
+                                                        onClick={(e) => this.setState({ colMenuAnchorEl: e.currentTarget })}
+                                                    >
                                                         <MoreIcon />
                                                     </IconButton>
                                                 </ColumnHeader>
