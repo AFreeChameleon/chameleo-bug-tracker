@@ -19,6 +19,7 @@ export const fetchUserData = () => {
         });
         return axios.get('/api/user/details', { withCredentials: true })
         .then((res: any) => {
+            console.log(res.data)
             dispatch({
                 type: FETCH_USER_DETAILS_SUCCESS,
                 data: { ...res.data.user }

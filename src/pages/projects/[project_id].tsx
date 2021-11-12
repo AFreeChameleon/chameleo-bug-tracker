@@ -119,7 +119,6 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
             ...project
         }));
     }, []);
-    console.log(project);
     return (
         <div>
             <Header createTicket />
@@ -130,7 +129,6 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                         <Breadcrumbs>
                             <NextLink
                                 shallow
-                                replace
                                 href="/projects"
                             >
                                 <LinkDiv>
@@ -170,22 +168,30 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
 
 ProjectPage.getInitialProps = async (ctx) => {
     try {
-        let res: any;
+        let projectRes: any;
+        let userRes: any;
         if (ctx.req) {
-            res = await axios.get(`${process.env.HOST}/api/project/${ctx.query.project_id}/details`, { 
+            projectRes = axios.get(`${process.env.HOST}/api/project/${ctx.query.project_id}/details`, { 
+                withCredentials: true,
+                headers: { Cookie: ctx.req.headers.cookie }
+            });
+            userRes = axios.get(`${process.env.HOST}/api/user/details`, {
                 withCredentials: true,
                 headers: { Cookie: ctx.req.headers.cookie }
             });
         } else {
-            res = await axios.get(`/api/project/${ctx.query.project_id}/details`, { 
+            projectRes = axios.get(`/api/project/${ctx.query.project_id}/details`, { 
+                withCredentials: true,
+            });
+            userRes = axios.get('/api/user/details', {
                 withCredentials: true,
             });
         }
-        console.log(res.data)
-        if (res.data.project && res.data.user) {
+        const [project, user] = await Promise.all([projectRes, userRes])
+        if (project && user) {
             return {
-                project: res.data.project,
-                user: res.data.user
+                project: project.data.project,
+                user: user.data.user
             };
         } else {
             return { 

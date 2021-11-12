@@ -26,13 +26,16 @@ import ProjectTable from '../../components/projects/ProjectTable';
 import ProjectBody from '../../components/projects/ProjectBody';
 import Sidebar from '../../components/Sidebar';
 import axios from 'axios';
+import { setProjectData } from '../../redux/project/actions';
 
 type DashboardProps = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    notifications: any[];
-    projects: any[];
+    user: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        notifications: any[];
+        projects: any[];
+    }
 }
 
 const HeadingDiv = styled('div')(({ theme }) => ({
@@ -50,17 +53,13 @@ const LinkDiv = styled('div')(({ theme }) => ({
     marginTop: '25px'
 }));
 
-const Dashboard: NextPage<DashboardProps> = ({ firstName, lastName, email, notifications, projects }: DashboardProps) => {
-    const [creatingNewProject, setCreatingNewProject] = useState(false);
+const Dashboard: NextPage<DashboardProps> = ({user}: DashboardProps) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setUserDetails({
-            firstName,
-            lastName,
-            email,
-            notifications,
-            projects
-        }))
+            ...user
+        }));
+        dispatch(setProjectData({}));
     }, []);
     return (
         <div>
@@ -79,7 +78,7 @@ const Dashboard: NextPage<DashboardProps> = ({ firstName, lastName, email, notif
                                     <LinkDiv sx={{
 
                                     }}>
-                                        PROJECTS
+                                        Projects
                                     </LinkDiv>
                                 </NextLink>
                             </Breadcrumbs>
@@ -123,7 +122,9 @@ Dashboard.getInitialProps = async (ctx) => {
         }
         if (res.data.user) {
             return {
-                ...res.data.user
+                user: {
+                    ...res.data.user
+                }
             };
         } else {
             return { 

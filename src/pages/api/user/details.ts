@@ -36,6 +36,8 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                     select: {
                         id: true,
                         name: true,
+                        createdAt: true,
+                        updatedAt: true,
                         user: {
                             select: {
                                 firstName: true,
@@ -46,6 +48,7 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 }
             }
         });
+        console.log(user)
         return res.json({
             user: user
         });

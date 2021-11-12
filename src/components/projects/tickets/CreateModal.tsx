@@ -205,14 +205,17 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
     addTag(e, value, reason) {
         const { ticket } = this.state;
         console.log(e, value, reason)
-        if (value[0].create || reason === 'createOption') {
-            this.createNewTag(value[0].inputValue);
+        if (value[value.length - 1].create || reason === 'createOption') {
+            this.createNewTag(value[value.length - 1].inputValue);
+        } else if (reason === 'removeOption') {
+
         } else {
+            console.log(value)
             this.setState({ 
                 ticket: {
                     ...ticket,
                     tags: [ ...ticket.tags, {
-                        name: value[0].inputValue || value[0]
+                        name: value[value.length - 1].inputValue || value[value.length - 1]
                     } ]
                 }
             });
@@ -438,10 +441,14 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                                     clearOnBlur
                                                     handleHomeEndKeys
                                                     size="small"
-                                                    value={ticket.tags}
+                                                    value={ticket.tags.map(t => t.name)}
                                                     options={project.tags}
                                                     onChange={this.addTag}
                                                     getOptionLabel={(option: any) => {
+                                                        console.log(option)
+                                                        if (!option) {
+                                                            return;
+                                                        }
                                                         // Value selected with enter, right from the input
                                                         if (typeof option === 'string') {
                                                           return option;

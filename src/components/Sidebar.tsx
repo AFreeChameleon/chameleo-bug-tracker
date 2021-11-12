@@ -62,6 +62,7 @@ class Sidebar extends React.Component<SidebarProps> {
 
     render() {
         const { user, project } = this.props;
+        console.log(user, project)
         return (
             <Root>
                 <Subtitle
@@ -102,12 +103,6 @@ class Sidebar extends React.Component<SidebarProps> {
                             paddingLeft: '25px',
                             fontSize: '16px'
                         }}>
-                            {/* <TicketLabel
-                                variant="caption"
-                                component="div"
-                            >
-                                CH-50
-                            </TicketLabel> */}
                             <Typography>
                                 Yeet
                             </Typography>

@@ -83,28 +83,6 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 updatedAt: 'asc'
             }
         });
-        const user = await prisma.user.findUnique({
-            where: {
-                id: req.user.id
-            },
-            select: {
-                firstName: true,
-                lastName: true,
-                email: true,
-                notifications: true,
-                projects: {
-                    select: {
-                        name: true,
-                        user: {
-                            select: {
-                                firstName: true,
-                                lastName: true,
-                            }
-                        },
-                    }
-                }
-            }
-        });
         // Need to set this up
         // const usersInProject = await prisma.user.findMany({
         //     where: {
@@ -113,7 +91,6 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
         // })
         return res.json({
             project: project,
-            user: user
         })
     } catch (err) {
         console.log(err);

@@ -193,7 +193,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                             onClick={(e) => this.setState({ profileMenuAnchorEl: e.currentTarget })}
                         >
                             <Avatar sx={{ height: 32, width: 32, marginTop: '2px' }}>
-                                {user.firstName && user.firstName.slice(0, 1)}
+                                {user.firstName && user.firstName.slice(0, 1).toUpperCase()}
                             </Avatar>
                         </IconButton>
                         <Menu

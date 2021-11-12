@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import timestring from 'timestring';
 import { prisma }  from '../../../../../lib/prisma';
-import { isUserLoggedIn } from '../../../../../middleware/auth';
+import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../../middleware/auth';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../lib/session';
 
 const schema = yup.object().shape({
@@ -25,7 +25,7 @@ const handler = nextConnect({
 });
 
 handler.use(session);
-handler.use(isUserLoggedIn);
+handler.use(isUserLoggedInWithRole);
 
 handler.post(async (req: any, res: NextApiResponse) => {
     try {
