@@ -14,9 +14,7 @@ import {
 const defaultState = {
     loading: false,
     errors: [],
-    data: {
-        tickets: []
-    }
+    data: {}
 }
 
 const reducer = (state = defaultState, action) => {

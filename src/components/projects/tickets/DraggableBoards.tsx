@@ -66,6 +66,16 @@ const DroppablePaper = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.grey['50'],
     borderTopLeftRadius: '0',
     borderTopRightRadius: '0',
+    overflow: 'auto',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+    '&::-webkit-scrollbar': {
+        width: '5px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+        background: '#B7B7B7',
+        borderRadius: '5px'
+    },
 }));
 
 const Container = styled('div')(({ theme }) => ({

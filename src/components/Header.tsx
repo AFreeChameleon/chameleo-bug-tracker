@@ -31,7 +31,7 @@ import chameleologo from '../../public/img/chameleo-logo.png';
 import { setAlerts } from '../redux/alerts/actions';
 import { Button } from '@mui/material';
 
-import CreateTicketModal from './projects/tickets/CreateModal';
+import CreateTicketModal from './projects/tickets/CreateTicketModal';
 
 type HeaderProps = {
     user: any;

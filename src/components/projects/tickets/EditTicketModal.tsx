@@ -32,7 +32,7 @@ import {
 
 const filter = createFilterOptions<any>();
 
-type CreateModalProps = {
+type EditTicketModalProps = {
     open: boolean;
     onClose: () => void;
     user: any;
@@ -41,7 +41,7 @@ type CreateModalProps = {
     dispatchFetchProjectDetails: (id: string) => void;
 }
 
-type CreateModalState = {
+type EditTicketModalState = {
     ticket: any;
     attachments: any[];
 }
@@ -106,13 +106,11 @@ const AttachmentClose = styled('div')(({ theme }) => ({
     width: '100%'
 }));
 
-class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
+class EditTicketModal extends React.Component<EditTicketModalProps, EditTicketModalState> {
     constructor(props) {
         super(props);
 
-        this.createTicket = this.createTicket.bind(this);
         this.addAttachment = this.addAttachment.bind(this);
-        this.submitNewTicket = this.submitNewTicket.bind(this);
         this.createNewTag = this.createNewTag.bind(this);
         this.addTag = this.addTag.bind(this);
         this.state = {
@@ -129,63 +127,27 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
         }
     }
 
-    async createTicket(e) {
-        const { onClose, project, user, dispatchSetAlerts, dispatchFetchProjectDetails } = this.props;
-        const { ticket, attachments } = this.state;
-        if (!Boolean(ticket.name)) {
-            dispatchSetAlerts([ {
-                type: 'error',
-                message: 'Name is required.'
-            } ]);
-            return;
-        } else {
-            let formData = new FormData();
-            const jsonData = {
-                name: ticket.name,
-                description: ticket.description,
-                tags: [],
-                status: ticket.status,
-                priority: ticket.priority,
-                assignedTo: ticket.assignedTo,
-                estimate: ticket.estimate,
-                // attachments: attachments.map((a) => a.file)
-            }
-            console.log(ticket.status)
-            for (const key in jsonData) {
-                formData.append(key, jsonData[key])
-            }
-            for (const attachment of attachments) {
-                formData.append('attachments', attachment.file, attachment.name);
-            }
-            const res = await axios.post(`/api/project/${project.id}/ticket/new`, formData, { withCredentials: true, headers: {
-                'Content-Type': 'multipart/form-data'
-            } });
-            console.log(res)
-            dispatchFetchProjectDetails(project.id);
-            onClose();
-        }
-    }
-
     async createNewTag(value) {
         console.log(value)
-        const { project, dispatchSetAlerts } = this.props;
+        const { project, dispatchSetAlerts, dispatchFetchProjectDetails } = this.props;
         const { ticket, attachments } = this.state;
         // console.log(e.target.value)
         if (!ticket.tags.includes(value)) {
             console.log(ticket)
+            this.setState({ 
+                ticket: {
+                    ...ticket,
+                    tags: [ ...ticket.tags, {
+                        name: value
+                    } ]
+                }
+            });
             axios.post(`/api/project/${project.id}/tag/new`, {
                 name: value,
             }, { withCredentials: true })
             .then((res) => {
-                console.log(res.data)
-                this.setState({ 
-                    ticket: {
-                        ...ticket,
-                        tags: [ ...ticket.tags, {
-                            name: res.data.name
-                        } ]
-                    }
-                });
+                console.log(res.data);
+                dispatchFetchProjectDetails(project.id);
             })
             .catch((err) => {
                 if (err.response) {
@@ -205,10 +167,16 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
     addTag(e, value, reason) {
         const { ticket } = this.state;
         console.log(e, value, reason)
-        if (value[value.length - 1].create || reason === 'createOption') {
-            this.createNewTag(value[value.length - 1].inputValue);
+        if (reason === 'createOption' || (value[value.length - 1] && value[value.length - 1].create)) {
+            this.createNewTag(value[value.length - 1].inputValue || value[value.length - 1]);
         } else if (reason === 'removeOption') {
-
+            console.log(ticket.tags.filter(t => t.name !== value[value.length - 1]))
+            this.setState({
+                ticket: {
+                    ...ticket,
+                    tags: value
+                }
+            });
         } else {
             console.log(value)
             this.setState({ 
@@ -234,17 +202,6 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
         })
     }
 
-    submitNewTicket(e) {
-        e.preventDefault();
-        const { dispatchSetAlerts } = this.props;
-        const { ticket } = this.state;
-        const validEstimate = validateTime(ticket.estimate);
-        if (!validEstimate && ticket.estimate !== '') {
-            dispatchSetAlerts([ {type: 'error', message: 'Estimate not correct format: 10m, 1h, 12d, 14w, 1m and 1y are examples of what can be accepted. '} ])
-        }
-        this.createTicket(e);
-    }
-
     render() {
         const { open, onClose, user, project } = this.props;
         const { ticket, attachments } = this.state;
@@ -260,7 +217,7 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                     >
                         New ticket
                     </Typography>
-                    <form action="" method="POST" onSubmit={this.submitNewTicket}>
+                    <form action="" method="POST">
                         <GridBody>
                             <div>
                                 <Stack spacing={2}>
@@ -345,7 +302,6 @@ class CreateModal extends React.Component<CreateModalProps, CreateModalState> {
                                     </label>
                                     <SmallButton
                                         variant="contained"
-                                        onClick={this.createTicket}
                                     >
                                         CREATE
                                     </SmallButton>
@@ -561,4 +517,4 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default compose<any>(
     connect(mapStateToProps, mapDispatchToProps)
-)(CreateModal);
+)(EditTicketModal);

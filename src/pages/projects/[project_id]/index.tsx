@@ -7,11 +7,11 @@ import { useDispatch } from 'react-redux';
 import {
     setUserDetails,
     fetchUserData
-} from '../../redux/user/actions';
+} from '../../../redux/user/actions';
 import {
     setProjectData,
     fetchProjectDetails
-} from '../../redux/project/actions';
+} from '../../../redux/project/actions';
 
 import {
     styled,
@@ -27,13 +27,12 @@ import InputBase from '@mui/material/InputBase';
 
 import SearchIcon from '@mui/icons-material/Search';
 
-import Header from '../../components/Header';
-import CreateModal from '../../components/projects/tickets/CreateModal';
-import ifAuth from '../../components/auth/ifAuth';
-import { authenticated } from '../../lib/auth';
-import Alerts from '../../components/Alerts';
-import DraggableBoards from '../../components/projects/tickets/DraggableBoards';
-import Sidebar from '../../components/Sidebar';
+import Header from '../../../components/Header';
+import ifAuth from '../../../components/auth/ifAuth';
+import { authenticated } from '../../../lib/auth';
+import Alerts from '../../../components/Alerts';
+import DraggableBoards from '../../../components/projects/tickets/DraggableBoards';
+import Sidebar from '../../../components/Sidebar';
 
 type ProjectPageProps = {
     project: any;

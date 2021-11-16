@@ -26,7 +26,12 @@ const TicketContainer = styled('div')(({ theme }) => ({
     boxShadow: theme.shadows[2],
     borderRadius: '6px',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    cursor: 'pointer !important',
+    transition: 'box-shadow 0.2s',
+    '&:hover': {
+        boxShadow: theme.shadows[4],
+    }
 }));
 
 const SourceTypography = styled(Typography)(({ theme }) => ({

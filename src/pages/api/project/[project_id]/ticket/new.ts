@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import _ from 'lodash';
 import nextConnect from 'next-connect';
 import multer from 'multer';
+import fs from 'fs';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import timestring from 'timestring';
@@ -39,7 +40,13 @@ const handler = nextConnect({
 
 const upload = multer({
     storage: multer.diskStorage({
-        destination: './public/img/uploads',
+        // destination: './public/img/uploads',
+        destination: (req, file, cb) => {
+            const { project_id } = req.query;
+            const path = `./public/img/uploads/${project_id}`;
+            fs.mkdirSync(path, { recursive: true });
+            cb(null, './public/img/uploads/' + project_id);
+        },
         filename: (req, file, cb) => cb(null, file.originalname),
     }),
 });
@@ -140,7 +147,9 @@ handler.post(async (req: any, res: NextApiResponse) => {
             data: {
                 details: newDetails
             }
-        })
+        });
+
+        console.log(project.tags, tags)
 
         const tagList = await prisma.tagTicketJunction.createMany({
             data: project.tags
