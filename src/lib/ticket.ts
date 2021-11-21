@@ -49,15 +49,15 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 
 export const validateTime = (rawTime: string) => {
     try {
-        const time = timestring(rawTime,null, {
+        const time = timestring(rawTime, null, {
             hoursPerDay: 7.5,
             daysPerWeek: 5
         });
         if (!time) {
-            return false;
+            return null;
         }
         return shortEnglishHumanizer(time * 1000).replaceAll(' ', '');
     } catch (err) {
-        return false;
+        return null;
     }
 }

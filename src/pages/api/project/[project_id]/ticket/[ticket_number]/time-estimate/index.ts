@@ -30,45 +30,23 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         const project_id = req.query.project_id as string;
         const ticket_number = req.query.ticket_number as string;
-        const { tags } = req.body;
+        const { time } = req.body;
 
-        const ticket = await prisma.ticket.findFirst({
+        await prisma.ticket.updateMany({
             where: {
                 projectId: project_id,
                 ticketNumber: parseInt(ticket_number)
-            }
+            },
+            data: {
+                timeEstimate: time || '0m'
+            },
         });
 
-        const selectedTags = await prisma.tag.findMany({
-            where: {
-                projectId: project_id,
-                OR: tags.map((tag) => ({ id: tag.id }))
-            }
-        })
-
-        const deletedTagTickets = await prisma.tagTicketJunction.deleteMany({
-            where: {
-                ticketId: ticket.id
-            }
-        });
-
-        const addedTagTickets = await prisma.tagTicketJunction.createMany({
-            data: selectedTags.map((tag) => ({
-                tagId: tag.id,
-                ticketId: ticket.id,
-            })),
-        });
-
-        const newTicket = await getTicket(project_id, parseInt(ticket_number));
+        const ticket = await getTicket(project_id, parseInt(ticket_number));
 
         return res.json({
             ticket: {
-                ...newTicket,
-                tags: selectedTags.map((tag) => ({
-                    tag: {
-                        ...tag
-                    }
-                }))
+                ...ticket,
             }
         });
     } catch (err) {
@@ -79,9 +57,9 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
             });
         }
         return res.status(500).json({
-            errors: ['An error occurred while editing this ticket\'s tags, please try again later.']
+            errors: ['An error occurred while changing the time estimate, please try again later.']
         })
     }
-})
+});
 
 export default handler;

@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import { prisma }  from '../../../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../../../lib/session';
 import { isUserLoggedInWithRole } from '../../../../../../../middleware/auth';
+import { getTicket } from '../../../../../../../lib/db';
 
 const schema = yup.object().shape({
     tags: yup.array().required()
@@ -41,46 +42,7 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
             },
         });
 
-        const ticket = await prisma.ticket.findFirst({
-            where: {
-                projectId: project_id,
-                ticketNumber: parseInt(ticket_number)
-            },
-            select: {
-                id: true,
-                name: true,
-                createdAt: true,
-                updatedAt: true,
-                projectId: true,
-                description: true,
-                timeEstimate: true,
-                ticketNumber: true,
-                status: true,
-                priority: true,
-                started: true,
-                archived: true,
-                assignedUserId: true,
-                user: {
-                    select: {
-                        id: true,
-                        lastName: true,
-                        firstName: true,
-                        email: true,
-                        createdAt: true,
-                        updatedAt: true
-                    }
-                },
-                tags: {
-                    select: {
-                        tag: {
-                            select: {
-                                name: true,
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        const ticket = await getTicket(project_id, parseInt(ticket_number));
 
         return res.json({
             ticket: {

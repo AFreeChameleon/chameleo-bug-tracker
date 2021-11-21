@@ -22,12 +22,12 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-import AddIcon from '@mui/icons-material/Add';
+import DoneIcon from '@mui/icons-material/Done';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CloseIcon from '@mui/icons-material/Close';
 import { 
-    saveTicketTags, 
-    setTicketPriority 
+    saveTicketTags,
+    setTicketName
 } from "../../../../redux/ticket/actions";
 
 type TicketHeaderProps = {
@@ -35,11 +35,13 @@ type TicketHeaderProps = {
     ticket: any;
 
     dispatchSaveTicketTags: (projectId: string, ticketNumber: number, tags: any[]) => void;
+    dispatchSetTicketName: (projectId: string, ticketNumber: number, name: string) => void;
 };
 
 type TicketHeaderState = {
     editingTagsOpen: boolean;
     editingTags: any[];
+    editingName: null | string;
 }
 
 const HeadingDiv = styled('div')(({ theme }) => ({
@@ -51,9 +53,19 @@ const LinkDiv = styled('div')(({ theme }) => ({
     textDecoration: 'underline'
 }));
 
-const HeaderTypography = styled(Typography)(({ theme }) => ({
-    
-}));
+const HeaderInput = styled('input')(({ theme }) => ({
+    ...theme.typography.h1,
+    width: 'calc(100% + 5px)',
+    border: 'none',
+    outline: 'none',
+    transition: '0.2s',
+    padding: '5px 5px',
+    borderRadius: theme.shape.borderRadius,
+    marginLeft: '-5px',
+    '&:hover': {
+        backgroundColor: theme.palette.grey['200']
+    }
+}))
 
 const FlexDiv = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -92,6 +104,19 @@ const SaveTagsButton = styled(Button)(({ theme }) => ({
     height: '30px'
 }));
 
+const SaveButtons = styled('div')(({ theme }) => ({
+    display: 'flex',
+    columnGap: '15px',
+    position: 'absolute',
+    zIndex: 5,
+    marginTop: '50px'
+}));
+
+const SaveButton = styled(Button)(({ theme }) => ({
+    textTransform: 'none',
+    width: '70px',
+}));
+
 class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState> {
     constructor(props) {
         super(props);
@@ -99,9 +124,12 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
         this.addTag = this.addTag.bind(this);
         this.removeTag = this.removeTag.bind(this);
         this.saveTags = this.saveTags.bind(this);
+        this.saveName = this.saveName.bind(this);
+
         this.state = {
             editingTagsOpen: false,
-            editingTags: []
+            editingTags: [],
+            editingName: null
         }
     }
 
@@ -116,7 +144,6 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
 
     removeTag(id: number) {
         const { editingTags } = this.state;
-        console.log(editingTags);
         this.setState({ editingTags: [ ...editingTags.filter(t => t.id !== id) ] })
     }
 
@@ -128,9 +155,18 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
         this.setState({ editingTagsOpen: false });
     }
 
+    saveName(e) {
+        e.preventDefault();
+        const { project, ticket, dispatchSetTicketName } = this.props;
+        const { editingName } = this.state;
+
+        dispatchSetTicketName(project.id, ticket.ticketNumber, editingName);
+        this.setState({ editingName: null });
+    }
+
     render() {
         const { project, ticket } = this.props;
-        const { editingTagsOpen, editingTags } = this.state;
+        const { editingTagsOpen, editingTags, editingName } = this.state;
 
         console.log(ticket, project)
         
@@ -158,11 +194,46 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
                     </LinkDiv>
                 </Breadcrumbs>
                 <FlexDiv sx={{marginTop: '30px'}}>
-                    <HeaderTypography
-                        variant="h1"
+                    <Box 
+                        component="form" 
+                        action="" 
+                        sx={{ 
+                            width: '100%', 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'flex-end' 
+                        }}
+                        onSubmit={this.saveName}
                     >
-                        {ticket.name}
-                    </HeaderTypography>
+                        <HeaderInput
+                            value={editingName === null ? ticket.name : editingName}
+                            onChange={(e) => this.setState({ editingName: e.target.value })}
+                        />
+                        {editingName !== null && (
+                            <SaveButtons>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ minWidth: '20px', padding: '6px' }}
+                                    type="submit"
+                                >
+                                    <DoneIcon />
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    sx={{ 
+                                        minWidth: '20px', 
+                                        padding: '6px', 
+                                        backgroundColor: (theme) => `${theme.palette.background.paper} !important` 
+                                    }}
+                                    onClick={() => this.setState({ editingName: null })}
+                                >
+                                    <CloseIcon />
+                                </Button>
+                            </SaveButtons>
+                        )}
+                    </Box>
                 </FlexDiv>
                 { !editingTagsOpen ? (<TagList>
                     { ticket.tags.map(({tag}, i) => (
@@ -225,6 +296,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     dispatchSaveTicketTags: (projectId: string, ticketNumber: number, tags: any[]) => dispatch(saveTicketTags(projectId, ticketNumber, tags)),
+    dispatchSetTicketName: (projectId: string, ticketNumber: number, name: string) => dispatch(setTicketName(projectId, ticketNumber, name)),
 });
 
 export default compose<any>(

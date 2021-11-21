@@ -45,6 +45,14 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                             }
                         },
                     }
+                },
+                roles: {
+                    select: {
+                        createdAt: true,
+                        updatedAt: true,
+                        role: true,
+                        projectId: true
+                    }
                 }
             }
         });

@@ -61,6 +61,7 @@ const TicketPage: NextPage<TicketPageProps> = ({
             <Box display="grid" gridTemplateColumns="250px auto">
                 <Sidebar />
                 <Container>
+                    <TicketHeader />
                     <TicketBody />
                 </Container>
             </Box>

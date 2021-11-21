@@ -78,18 +78,26 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         firstName: true,
                         lastName: true
                     }
+                },
+                users: {
+                    select: {
+                        user: {
+                            select: {
+                                id: true,
+                                firstName: true,
+                                lastName: true,
+                                email: true,
+                                createdAt: true,
+                                updatedAt: true,
+                            }
+                        }
+                    }
                 }
             },
             orderBy: {
                 updatedAt: 'asc'
             }
         });
-        // Need to set this up
-        // const usersInProject = await prisma.user.findMany({
-        //     where: {
-        //         company: project.company
-        //     }
-        // })
         return res.json({
             project: project,
         })

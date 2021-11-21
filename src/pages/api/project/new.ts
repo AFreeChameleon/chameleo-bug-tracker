@@ -70,14 +70,18 @@ handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         '3',
                         '4'
                     ]
+                },
+                users: {
+                    create: {
+                        userId: req.user.id,
+                    }
+                },
+                roles: {
+                    create: {
+                        userId: req.user.id,
+                        role: 'Owner'
+                    }
                 }
-            }
-        });
-        const role = await prisma.role.create({
-            data: {
-                userId: req.user.id,
-                projectId: project.id,
-                role: 'Owner'
             }
         });
 

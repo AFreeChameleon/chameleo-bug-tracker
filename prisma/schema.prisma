@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-  id                    Int            @id @default(autoincrement())
-  email                 String         @unique
+  id                    Int                   @id @default(autoincrement())
+  email                 String                @unique
   firstName             String
   lastName              String
   password              String
   confirmationEmailSent DateTime?
   confirmedAt           DateTime?
-  createdAt             DateTime?      @default(now())
-  updatedAt             DateTime?      @updatedAt
+  createdAt             DateTime?             @default(now())
+  updatedAt             DateTime?             @updatedAt
   tickets               Ticket[]
   notifications         Notification[]
   roles                 Role[]
   comments              Comment[]
   tokens                Token[]
   projects              Project[]
+  projectUsers          ProjectUserJunction[]
 
   @@map("users")
 }
@@ -54,18 +55,29 @@ model Ticket {
 }
 
 model Project {
-  id        String    @unique @default(uuid()) @db.Uuid
+  id        String                @unique @default(uuid()) @db.Uuid
   userId    Int
   name      String
   details   Json?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  createdAt DateTime?             @default(now())
+  updatedAt DateTime?             @updatedAt
   tags      Tag[]
   tickets   Ticket[]
   roles     Role[]
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users     ProjectUserJunction[]
 
   @@map("projects")
+}
+
+model ProjectUserJunction {
+  id        Int     @id @default(autoincrement())
+  projectId String  @default(uuid()) @db.Uuid
+  userId    Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("project_user_junctions")
 }
 
 model Tag {
