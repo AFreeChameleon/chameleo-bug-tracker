@@ -2,33 +2,77 @@ import axios from 'axios';
 import {
     SET_TICKET_DATA,
 
-    FETCH_TICKET_DATA_REQUEST,
-    FETCH_TICKET_DATA_SUCCESS,
-    FETCH_TICKET_DATA_FAILURE,
+    ADD_TAG_TO_TICKET_REQUEST,
+    ADD_TAG_TO_TICKET_SUCCESS,
+    ADD_TAG_TO_TICKET_FAILURE,
+
+    SET_TICKET_PRIORITY_REQUEST,
+    SET_TICKET_PRIORITY_SUCCESS,
+    SET_TICKET_PRIORITY_FAILURE
 } from './types';
 
-export const fetchTickets = (id: string, ticketId: string) => {
+export const setTicketData = (data: any) => ({
+    type: SET_TICKET_DATA,
+    data: data
+});
+
+export const setTicketPriority = (projectId: string, ticketNumber: number, priority: string) => {
     return dispatch => {
         dispatch({
-            type: FETCH_TICKET_DATA_REQUEST
+            type: SET_TICKET_PRIORITY_REQUEST,
+            priority: priority
         });
-        return axios.get(`/api/projects/${id}/ticket/${ticketId}/details`, { withCredentials: true })
+        return axios.patch(`/api/project/${projectId}/ticket/${ticketNumber}/priority`, {
+            priority: priority,
+        }, { withCredentials: true })
         .then((res: any) => {
+            console.log(res.data)
             dispatch({
-                type: FETCH_TICKET_DATA_SUCCESS,
-                data: res.data.tickets
-            })
+                type: SET_TICKET_PRIORITY_SUCCESS,
+                data: res.data.ticket 
+            });
         })
         .catch((err) => {
             if (err.response) {
                 dispatch({
-                    type: FETCH_TICKET_DATA_FAILURE,
+                    type: SET_TICKET_PRIORITY_FAILURE,
                     errors: err.response.errors  
                 });
             } else {
                 dispatch({
-                    type: FETCH_TICKET_DATA_FAILURE,
-                    errors: ['An error occurred while getting your details, please try again later.']
+                    type: SET_TICKET_PRIORITY_FAILURE,
+                    errors: ['An error occurred while changing the priority, please try again later.']
+                })
+            }
+        })
+    }
+}
+
+export const saveTicketTags = (projectId: string, ticketNumber: number, tags: any[] = []) => {
+    return dispatch => {
+        dispatch({
+            type: ADD_TAG_TO_TICKET_REQUEST,
+            tags: tags
+        });
+        return axios.patch(`/api/project/${projectId}/ticket/${ticketNumber}/tags`, {
+            tags: tags
+        }, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: ADD_TAG_TO_TICKET_SUCCESS,
+                data: res.data.ticket
+            });
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: ADD_TAG_TO_TICKET_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: ADD_TAG_TO_TICKET_FAILURE,
+                    errors: ['An error occurred while adding the tag, please try again later.']
                 })
             }
         })

@@ -1,11 +1,12 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
+import _ from 'lodash';
 import axios from 'axios';
 
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-    setUserDetails,
+    setUserData,
     fetchUserData
 } from '../../../redux/user/actions';
 import {
@@ -109,15 +110,16 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
     project,
     user,
 }: ProjectPageProps) => {
+    const projectData = useSelector((state: any) => state.project.data);
+    const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setUserDetails({
-            ...user
-        }));
-        dispatch(setProjectData({
-            ...project
-        }));
+        dispatch(setUserData(user));
+        dispatch(setProjectData(project));
     }, []);
+    if (_.isEmpty(projectData) || _.isEmpty(userData)) {
+        return null;
+    }
     return (
         <div>
             <Header createTicket />

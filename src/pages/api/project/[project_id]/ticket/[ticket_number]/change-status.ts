@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import nextConnect from 'next-connect';
 import { prisma }  from '../../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../../lib/session';
-import { isUserLoggedIn } from '../../../../../../middleware/auth';
+import { isUserLoggedInWithRole } from '../../../../../../middleware/auth';
 import { mapIntToStatus } from '../../../../../../lib/ticket';
 
 const schema = yup.object().shape({
@@ -27,7 +27,7 @@ const handler = nextConnect({
 });
 
 handler.use(session);
-handler.use(isUserLoggedIn);
+handler.use(isUserLoggedInWithRole);
 
 handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {

@@ -24,7 +24,6 @@ handler.use(isUserLoggedInWithRole);
 handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         const project_id = req.query.project_id as string;
-        console.log('project-id', project_id)
         const project = await prisma.project.findFirst({
             where: {
                 id: project_id
@@ -54,6 +53,7 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         started: true,
                         createdAt: true,
                         updatedAt: true,
+                        ticketNumber: true
                     },
                 },
                 roles: {
@@ -63,6 +63,7 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 },
                 tags: {
                     select: {
+                        id: true,
                         name: true,
                         createdAt: true,
                         updatedAt: true
@@ -141,6 +142,7 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         started: true,
                         createdAt: true,
                         updatedAt: true,
+                        ticketNumber: true
                     },
                 },
                 roles: {
@@ -167,6 +169,7 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 }
             }
         });
+        console.log('TICKETS', project.tickets)
         return res.json({
             project: project,
         });

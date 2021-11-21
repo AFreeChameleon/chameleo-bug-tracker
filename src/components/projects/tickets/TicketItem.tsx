@@ -1,4 +1,5 @@
 import React from 'react';
+import NextLink from 'next/link';
 
 import { styled } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
@@ -21,7 +22,7 @@ const TicketContainer = styled('div')(({ theme }) => ({
     userSelect: "none",
     padding: 10,
     margin: "0 0 8px 0",
-    minHeight: '140px',
+    minHeight: '120px',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[2],
     borderRadius: '6px',
@@ -61,7 +62,13 @@ const Tag = styled('div')(({ theme }) => ({
 
 const FlexGrow = styled('div')(({ theme }) => ({
     flexGrow: 1
-}))
+}));
+
+const TimeEstimate = styled(Typography)(({ theme }) => ({
+    padding: '0 10px',
+    borderRadius: '20px',
+    backgroundColor: theme.palette.grey['200']
+}));
 
 class TicketItem extends React.Component<any> {
     constructor(props) {
@@ -100,55 +107,52 @@ class TicketItem extends React.Component<any> {
     render() {
         const { ticket, refEl, project, ...otherProps } = this.props;
         return (
-            <TicketContainer 
-                ref={refEl} 
-                {...otherProps}
-            >
-                <FlexDiv sx={{ paddingRight: '5px' }}>
-                    <TagList>
-                        <Tag>
-                            TAGLIST
-                        </Tag>
-                        {/* <IconButton size="small">
-                            <AddIcon sx={{ width: '20px', height: '20px' }} color="primary" />
-                        </IconButton> */}
-                    </TagList>
-                    {this.formatPriority()}
-                </FlexDiv>
-                <Box marginTop="5px">
-                    {ticket.source !== 'website' && 
-                    <SourceTypography
-                        variant="caption"
-                    >
-                        From: {ticket.source}
-                    </SourceTypography>}
-                    <FlexDiv>
-                        <Typography
-                            variant="body1"
-                        >
-                            {ticket.name}
-                        </Typography>
+            <NextLink href={`/projects/${project.id}/tickets/${ticket.ticketNumber}`}>
+                <TicketContainer 
+                    ref={refEl} 
+                    {...otherProps}
+                >
+                    <FlexDiv sx={{ paddingRight: '5px' }}>
+                        <TagList>
+                            <Tag>
+                                TAGLIST
+                            </Tag>
+                            {/* <IconButton size="small">
+                                <AddIcon sx={{ width: '20px', height: '20px' }} color="primary" />
+                            </IconButton> */}
+                        </TagList>
+                        {this.formatPriority()}
                     </FlexDiv>
-                </Box>
-                <FlexGrow />
-                <FlexDiv>
-                    <Typography
-                        variant="caption"
-                        sx={{ 
-                            border: `1px solid #000000`,
-                            padding: '0 15px',
-                            borderRadius: '20px'
-                        }}
-                    >
-                        {ticket.timeEstimate}
-                    </Typography>
-                    <Tooltip title={ticket.user.firstName + ' ' + ticket.user.lastName}>
-                        <Avatar sx={{ height: 30, width: 30, marginTop: '2px', fontSize: '18px', marginLeft: 'auto !important' }}>
-                            {ticket.user.firstName && ticket.user.firstName.slice(0, 1)}
-                        </Avatar>
-                    </Tooltip>
-                </FlexDiv>
-            </TicketContainer>
+                    <Box marginTop="5px">
+                        {ticket.source !== 'website' && 
+                        <SourceTypography
+                            variant="caption"
+                        >
+                            From: {ticket.source}
+                        </SourceTypography>}
+                        <FlexDiv>
+                            <Typography
+                                variant="body1"
+                            >
+                                {ticket.name}
+                            </Typography>
+                        </FlexDiv>
+                    </Box>
+                    <FlexGrow />
+                    <FlexDiv>
+                        <TimeEstimate
+                            variant="subtitle2"
+                        >
+                            {ticket.timeEstimate}
+                        </TimeEstimate>
+                        <Tooltip title={ticket.user.firstName + ' ' + ticket.user.lastName}>
+                            <Avatar sx={{ height: 30, width: 30, marginTop: '2px', fontSize: '18px', marginLeft: 'auto !important' }}>
+                                {ticket.user.firstName && ticket.user.firstName.slice(0, 1)}
+                            </Avatar>
+                        </Tooltip>
+                    </FlexDiv>
+                </TicketContainer>
+            </NextLink>
         )
     }
 }

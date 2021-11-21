@@ -48,7 +48,6 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 }
             }
         });
-        console.log(user)
         return res.json({
             user: user
         });

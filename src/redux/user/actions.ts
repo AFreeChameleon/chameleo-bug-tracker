@@ -1,14 +1,14 @@
 import axios from 'axios';
 import {
-    SET_USER_DETAILS,
+    SET_USER_DATA,
 
     FETCH_USER_DETAILS_REQUEST,
     FETCH_USER_DETAILS_SUCCESS,
     FETCH_USER_DETAILS_FAILURE,
 } from './types';
 
-export const setUserDetails = (user) => ({
-    type: SET_USER_DETAILS,
+export const setUserData = (user) => ({
+    type: SET_USER_DATA,
     user: user
 });
 

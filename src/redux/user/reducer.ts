@@ -1,5 +1,5 @@
 import {
-    SET_USER_DETAILS,
+    SET_USER_DATA,
 
     FETCH_USER_DETAILS_REQUEST,
     FETCH_USER_DETAILS_SUCCESS,
@@ -9,22 +9,15 @@ import {
 const defaultState = {
     loading: false,
     errors: [],
-    data: {
-        firstName: ' ',
-        lastName: ' ',
-        email: ' ',
-        notifications: [],
-        projects: []
-    }
+    data: {}
 }
 
 const reducer = (state = defaultState, action) => {
     switch (action.type) {
-        case SET_USER_DETAILS:
+        case SET_USER_DATA:
             return {
                 ...state,
                 data: {
-                    ...state.data,
                     ...action.user
                 }
             }

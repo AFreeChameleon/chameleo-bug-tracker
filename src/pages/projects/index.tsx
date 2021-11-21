@@ -1,9 +1,10 @@
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import type { NextPage, GetServerSideProps } from 'next';
 import NextLink from 'next/link';
-import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import _ from 'lodash';
 import {
-    setUserDetails
+    setUserData
 } from '../../redux/user/actions';
 
 import {
@@ -54,13 +55,14 @@ const LinkDiv = styled('div')(({ theme }) => ({
 }));
 
 const Dashboard: NextPage<DashboardProps> = ({user}: DashboardProps) => {
+    const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setUserDetails({
-            ...user
-        }));
-        dispatch(setProjectData({}));
+        dispatch(setUserData(user));
     }, []);
+    if (_.isEmpty(userData)) {
+        return null;
+    }
     return (
         <div>
             <Header />
@@ -129,11 +131,6 @@ Dashboard.getInitialProps = async (ctx) => {
         } else {
             return { 
                 user: {
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    notifications: [],
-                    projects: []
                 }
             };
         }
@@ -141,11 +138,6 @@ Dashboard.getInitialProps = async (ctx) => {
         console.log(err);
         return {
             user: {
-                firstName: '',
-                lastName: '',
-                email: '',
-                notifications: [],
-                projects: []
             }
         }
     }
