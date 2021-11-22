@@ -28,6 +28,7 @@ import {
     MediumPriorityIcon 
 } from "../Icons";
 import TicketDetails from "./TicketDetails";
+import Comments from "./Comments";
 
 type TicketBodyProps = {
     project: any;
@@ -118,6 +119,7 @@ class TicketBody extends React.Component<TicketBodyProps, TicketBodyState> {
                                 </SaveButtons>
                             )}
                         </form>
+                        <Comments />
                     </Main>
                     <TicketDetails />
                 </Body>

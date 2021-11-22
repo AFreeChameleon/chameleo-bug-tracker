@@ -25,12 +25,46 @@ import {
     SET_TICKET_NAME_REQUEST,
     SET_TICKET_NAME_SUCCESS,
     SET_TICKET_NAME_FAILURE,
+
+    ADD_TICKET_COMMENT_REQUEST,
+    ADD_TICKET_COMMENT_SUCCESS,
+    ADD_TICKET_COMMENT_FAILURE,
 } from './types';
 
 export const setTicketData = (data: any) => ({
     type: SET_TICKET_DATA,
     data: data
 });
+
+export const createComment = (projectId: string, ticketNumber: number, message: string) => {
+    return dispatch => {
+        dispatch({
+            type: ADD_TICKET_COMMENT_REQUEST
+        });
+        return axios.post(`/api/project/${projectId}/ticket/${ticketNumber}/comments/new`, {
+            message: message
+        }, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: ADD_TICKET_COMMENT_SUCCESS,
+                data: res.data.ticket
+            });
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: ADD_TICKET_COMMENT_FAILURE,
+                    errors: err.response.errors
+                });
+            } else {
+                dispatch({
+                    type: ADD_TICKET_COMMENT_FAILURE,
+                    errors: ['An error occurred while changing the name, please try again later.']
+                })
+            }
+        })
+    }
+}
 
 export const setTicketName = (projectId: string, ticketNumber: number, name: string) => {
     return dispatch => {

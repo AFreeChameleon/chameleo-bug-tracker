@@ -24,6 +24,10 @@ import {
     SET_TICKET_NAME_REQUEST,
     SET_TICKET_NAME_SUCCESS,
     SET_TICKET_NAME_FAILURE,
+
+    ADD_TICKET_COMMENT_REQUEST,
+    ADD_TICKET_COMMENT_SUCCESS,
+    ADD_TICKET_COMMENT_FAILURE,
 } from './types';
 
 const defaultState = {
@@ -33,7 +37,8 @@ const defaultState = {
         assignedTo: false,
         timeEstimate: false,
         description: false,
-        name: false
+        name: false,
+        addComment: false
     },
     errors: [],
     data: {}
@@ -49,6 +54,35 @@ const reducer = (state = defaultState, action) => {
                 }
             }
             
+        case ADD_TICKET_COMMENT_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    addComment: true
+                },
+            }
+        case ADD_TICKET_COMMENT_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    addComment: false
+                },
+                data: {
+                    ...action.data
+                }
+            }
+        case ADD_TICKET_COMMENT_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    addComment: false
+                },
+                errors: action.errors
+            }
+
         case SET_TICKET_NAME_REQUEST:
             return {
                 ...state,

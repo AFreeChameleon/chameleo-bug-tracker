@@ -22,6 +22,26 @@ export const getTicket = async (projectId: string, ticketNumber: number) => {
             started: true,
             archived: true,
             assignedUserId: true,
+            comments: {
+                select: {
+                    message: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    user: {
+                        select: {
+                            id: true,
+                            lastName: true,
+                            firstName: true,
+                            email: true,
+                            createdAt: true,
+                            updatedAt: true
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                }
+            },
             user: {
                 select: {
                     id: true,
