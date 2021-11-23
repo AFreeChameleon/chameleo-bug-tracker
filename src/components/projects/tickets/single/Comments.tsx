@@ -37,6 +37,18 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
     fontSize: '17px'
 }));
 
+const CommentActionTypography = styled(Typography)(({ theme }) => ({
+    fontWeight: 600, 
+    textDecoration: 'underline', 
+    cursor: 'pointer'
+}));
+
+const CommentContainer = styled('div')(({ theme }) => ({
+    display: 'flex',
+    columnGap: '15px',
+    marginTop: '15px'
+}))
+
 class Comments extends React.Component<CommentsProps, CommentsState> {
     constructor(props) {
         super(props);
@@ -70,10 +82,8 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
                 >
                     Feedback
                 </Typography>
-                <Box display="flex" columnGap="15px" marginTop="15px">
-                    <SmallAvatar
-
-                    >
+                <CommentContainer>
+                    <SmallAvatar>
                         {user.firstName[0].toUpperCase()}
                     </SmallAvatar>
                     <Box component="form" width="100%" onSubmit={this.createComment}>
@@ -86,18 +96,24 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
                             onChange={(e) => this.setState({ newComment: e.target.value })}
                         />
                     </Box>
-                </Box>
-                {ticket.comments.map((comment) => (
-                    <Box display="flex" columnGap="15px" marginTop="15px" key={comment.id}>
+                </CommentContainer>
+                { ticket.comments.map((comment) => (
+                    <CommentContainer key={comment.id}>
                         <SmallAvatar>
                             {comment.user.firstName[0].toUpperCase()}
                         </SmallAvatar>
                         <Box>
                             <Box display="flex" columnGap="15px">
-                                <Typography variant="subtitle1" sx={{ lineHeight: '1.5' }}>
+                                <Typography 
+                                    variant="subtitle1" 
+                                    sx={{ lineHeight: '1.5' }}
+                                >
                                     {comment.user.firstName} {comment.user.lastName}
                                 </Typography>
-                                <Typography variant="body2" sx={{ lineHeight: '1.8' }}>
+                                <Typography 
+                                    variant="body2" 
+                                    sx={{ lineHeight: '1.8' }}
+                                >
                                     {(new Date(comment.createdAt)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </Typography>
                             </Box>
@@ -106,19 +122,30 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
                                     {comment.message}
                                 </Typography>
                             </Box>
-                            <Box marginTop="15px" display="flex" columnGap="10px">
-                                <Typography variant="body2" sx={{fontWeight: 600, textDecoration: 'underline', cursor: 'pointer'}}>
+                            <Box 
+                                marginTop="15px"
+                                display="flex"
+                                columnGap="10px"
+                            >
+                                <CommentActionTypography 
+                                    variant="body2"
+                                >
                                     Edit
-                                </Typography>
-                                <Typography variant="body2" sx={{fontWeight: 600}}>
+                                </CommentActionTypography>
+                                <Typography 
+                                    variant="body2" 
+                                    sx={{fontWeight: 600}}
+                                >
                                     |
                                 </Typography>
-                                <Typography variant="body2" sx={{fontWeight: 600, textDecoration: 'underline', cursor: 'pointer'}}>
+                                <CommentActionTypography 
+                                    variant="body2"
+                                >
                                     Delete                                    
-                                </Typography>
+                                </CommentActionTypography>
                             </Box>
                         </Box>
-                    </Box>
+                    </CommentContainer>
                 )) }
             </Main>
         )
