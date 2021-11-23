@@ -23,6 +23,8 @@ type CommentsProps = {
 
 type CommentsState = {
     newComment: string;
+    selectedCommentIndex: number;
+    editingComment: null | string;
 }
 
 const Main = styled('div')(({ theme }) => ({
@@ -42,7 +44,10 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
         this.createComment = this.createComment.bind(this);
 
         this.state = {
-            newComment: ''
+            newComment: '',
+
+            selectedCommentIndex: -1,
+            editingComment: null
         }
     }
 
