@@ -29,6 +29,14 @@ import {
     ADD_TICKET_COMMENT_REQUEST,
     ADD_TICKET_COMMENT_SUCCESS,
     ADD_TICKET_COMMENT_FAILURE,
+
+    EDIT_TICKET_COMMENT_REQUEST,
+    EDIT_TICKET_COMMENT_SUCCESS,
+    EDIT_TICKET_COMMENT_FAILURE,
+
+    DELETE_TICKET_COMMENT_REQUEST,
+    DELETE_TICKET_COMMENT_SUCCESS,
+    DELETE_TICKET_COMMENT_FAILURE,
 } from './types';
 
 export const setTicketData = (data: any) => ({
@@ -36,10 +44,71 @@ export const setTicketData = (data: any) => ({
     data: data
 });
 
+export const deleteComment = (projectId: string, ticketNumber: number, commentId: number) => {
+    return dispatch => {
+        dispatch({
+            type: DELETE_TICKET_COMMENT_REQUEST,
+            commentId: commentId
+        });
+        return axios.patch(`/api/project/${projectId}/ticket/${ticketNumber}/comments/${commentId}/delete`, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: DELETE_TICKET_COMMENT_SUCCESS,
+                data: res.data.ticket
+            });
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: DELETE_TICKET_COMMENT_FAILURE,
+                    errors: err.response.errors
+                });
+            } else {
+                dispatch({
+                    type: DELETE_TICKET_COMMENT_FAILURE,
+                    errors: ['An error occurred while deleting your comment, please try again later.']
+                });
+            }
+        });
+    }
+}
+
+export const editComment = (projectId: string, ticketNumber: number, comment: any) => {
+    return dispatch => {
+        dispatch({
+            type: EDIT_TICKET_COMMENT_REQUEST,
+            comment: comment
+        });
+        return axios.patch(`/api/project/${projectId}/ticket/${ticketNumber}/comments/${comment.id}/edit`, {
+            message: comment.message
+        }, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: EDIT_TICKET_COMMENT_SUCCESS,
+                data: res.data.ticket
+            });
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: EDIT_TICKET_COMMENT_FAILURE,
+                    errors: err.response.errors
+                });
+            } else {
+                dispatch({
+                    type: EDIT_TICKET_COMMENT_FAILURE,
+                    errors: ['An error occurred while editing your comment, please try again later.']
+                });
+            }
+        });
+    }
+}
+
 export const createComment = (projectId: string, ticketNumber: number, message: string) => {
     return dispatch => {
         dispatch({
-            type: ADD_TICKET_COMMENT_REQUEST
+            type: ADD_TICKET_COMMENT_REQUEST,
+            message: message
         });
         return axios.post(`/api/project/${projectId}/ticket/${ticketNumber}/comments/new`, {
             message: message

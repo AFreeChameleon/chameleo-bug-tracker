@@ -28,9 +28,17 @@ import {
     ADD_TICKET_COMMENT_REQUEST,
     ADD_TICKET_COMMENT_SUCCESS,
     ADD_TICKET_COMMENT_FAILURE,
+
+    EDIT_TICKET_COMMENT_REQUEST,
+    EDIT_TICKET_COMMENT_SUCCESS,
+    EDIT_TICKET_COMMENT_FAILURE,
+
+    DELETE_TICKET_COMMENT_REQUEST,
+    DELETE_TICKET_COMMENT_SUCCESS,
+    DELETE_TICKET_COMMENT_FAILURE,
 } from './types';
 
-const defaultState = {
+const defaultState: any = {
     loading: {
         addTag: false,
         setPriority: false,
@@ -38,7 +46,9 @@ const defaultState = {
         timeEstimate: false,
         description: false,
         name: false,
-        addComment: false
+        addComment: false,
+        editComment: false,
+        deleteComment: false
     },
     errors: [],
     data: {}
@@ -54,13 +64,104 @@ const reducer = (state = defaultState, action) => {
                 }
             }
             
+        case DELETE_TICKET_COMMENT_REQUEST:
+            let deletedComments = [
+                ...state.data.comments
+            ];
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteComment: true
+                },
+                data: {
+                    ...state.data,
+                    comments: [
+                        ...deletedComments.filter(c => c.id !== action.commentId)
+                    ]
+                }
+            }
+        case DELETE_TICKET_COMMENT_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteComment: false
+                },
+                data: {
+                    ...action.data
+                }
+            }
+        case DELETE_TICKET_COMMENT_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteComment: false
+                },
+                errors: action.errors
+            }
+
+        case EDIT_TICKET_COMMENT_REQUEST:
+            let editedComments = [
+                ...state.data.comments
+            ];
+            editedComments.splice(editedComments.findIndex(c => c.id === action.comment.id), 1, {
+                creating: true,
+                ...action.comment
+            });
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    editComment: true
+                },
+                data: {
+                    ...state.data,
+                    comments: [
+                        ...editedComments
+                    ]
+                }
+            }
+        case EDIT_TICKET_COMMENT_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    editComment: false
+                },
+                data: {
+                    ...action.data
+                }
+            }
+        case EDIT_TICKET_COMMENT_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    editComment: false
+                },
+                errors: action.errors
+            }
+
         case ADD_TICKET_COMMENT_REQUEST:
             return {
                 ...state,
                 loading: {
                     ...state.loading,
-                    addComment: true
+                    addComment: true,
                 },
+                data: {
+                    ...state.data,
+                    comments: [
+                        {
+                            creating: true,
+                            message: action.message,
+                            createdAt: new Date()
+                        },
+                        ...state.data.comments,
+                    ]
+                }
             }
         case ADD_TICKET_COMMENT_SUCCESS:
             return {

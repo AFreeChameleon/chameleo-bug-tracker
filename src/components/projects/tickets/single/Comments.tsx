@@ -11,7 +11,12 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
-import { createComment } from '../../../../redux/ticket/actions';
+import { 
+    createComment,
+    editComment
+} from '../../../../redux/ticket/actions';
+
+import Comment from './Comment';
 
 type CommentsProps = {
     user: any;
@@ -19,12 +24,13 @@ type CommentsProps = {
     project: any;
 
     dispatchCreateComment: (projectId: string, ticketNumber: number, message: string) => void;
+    dispatchEditComment: (projectId: string, ticketNumber: number, comment: any) => void;
 }
 
 type CommentsState = {
     newComment: string;
     selectedCommentIndex: number;
-    editingComment: null | string;
+    editingComment: null | any;
 }
 
 const Main = styled('div')(({ theme }) => ({
@@ -54,6 +60,7 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
         super(props);
 
         this.createComment = this.createComment.bind(this);
+        this.saveEditedComment = this.saveEditedComment.bind(this);
 
         this.state = {
             newComment: '',
@@ -71,9 +78,17 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
         dispatchCreateComment(project.id, ticket.ticketNumber, newComment);
     }
 
+    saveEditedComment(e) {
+        const { project, ticket, dispatchEditComment } = this.props;
+        const { editingComment } = this.state;
+
+        this.setState({ editingComment: null });
+        dispatchEditComment(project.id, ticket.ticketNumber, editingComment);
+    }
+
     render() {
         const { ticket, user, project } = this.props;
-        const { newComment } = this.state;
+        const { newComment, editingComment } = this.state;
 
         return (
             <Main>
@@ -89,7 +104,6 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
                     <Box component="form" width="100%" onSubmit={this.createComment}>
                         <TextField
                             fullWidth
-                            multiline
                             size="small"
                             placeholder="Add a comment..."
                             value={newComment}
@@ -97,56 +111,121 @@ class Comments extends React.Component<CommentsProps, CommentsState> {
                         />
                     </Box>
                 </CommentContainer>
-                { ticket.comments.map((comment) => (
-                    <CommentContainer key={comment.id}>
-                        <SmallAvatar>
-                            {comment.user.firstName[0].toUpperCase()}
-                        </SmallAvatar>
-                        <Box>
-                            <Box display="flex" columnGap="15px">
-                                <Typography 
-                                    variant="subtitle1" 
-                                    sx={{ lineHeight: '1.5' }}
-                                >
-                                    {comment.user.firstName} {comment.user.lastName}
-                                </Typography>
-                                <Typography 
-                                    variant="body2" 
-                                    sx={{ lineHeight: '1.8' }}
-                                >
-                                    {(new Date(comment.createdAt)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
-                                </Typography>
-                            </Box>
-                            <Box marginTop="5px">
-                                <Typography>
-                                    {comment.message}
-                                </Typography>
-                            </Box>
-                            <Box 
-                                marginTop="15px"
-                                display="flex"
-                                columnGap="10px"
-                            >
-                                <CommentActionTypography 
-                                    variant="body2"
-                                >
-                                    Edit
-                                </CommentActionTypography>
-                                <Typography 
-                                    variant="body2" 
-                                    sx={{fontWeight: 600}}
-                                >
-                                    |
-                                </Typography>
-                                <CommentActionTypography 
-                                    variant="body2"
-                                >
-                                    Delete                                    
-                                </CommentActionTypography>
-                            </Box>
-                        </Box>
-                    </CommentContainer>
-                )) }
+                { ticket.comments.map((comment) => {
+                    return <Comment comment={comment} key={comment.id} />
+                    // if (editingComment && editingComment.id === comment.id) {
+                    //     return (
+                    //         <CommentContainer key={comment.id}>
+                    //             <SmallAvatar>
+                    //                 {comment.user.firstName[0].toUpperCase()}
+                    //             </SmallAvatar>
+                    //             <Box width="100%">
+                    //                 <Box display="flex" columnGap="15px">
+                    //                     <Typography 
+                    //                         variant="subtitle1" 
+                    //                         sx={{ lineHeight: '1.5' }}
+                    //                     >
+                    //                         {comment.user.firstName} {comment.user.lastName}
+                    //                     </Typography>
+                    //                     <Typography 
+                    //                         variant="body2" 
+                    //                         sx={{ lineHeight: '1.8' }}
+                    //                     >
+                    //                         {(new Date(comment.createdAt)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    //                     </Typography>
+                    //                 </Box>
+                    //                 <TextField
+                    //                     fullWidth
+                    //                     multiline
+                    //                     size="small"
+                    //                     sx={{ marginTop: '5px' }}
+                    //                     value={editingComment.message}
+                    //                     onChange={(e) => this.setState({ editingComment: {
+                    //                         ...editingComment,
+                    //                         message: e.target.value
+                    //                     } })}
+                    //                 />
+                    //                 <Box 
+                    //                     marginTop="15px"
+                    //                     display="flex"
+                    //                     columnGap="10px"
+                    //                 >
+                    //                     <CommentActionTypography 
+                    //                         variant="body2"
+                    //                         onClick={this.saveEditedComment}
+                    //                     >
+                    //                         Save
+                    //                     </CommentActionTypography>
+                    //                     <Typography 
+                    //                         variant="body2" 
+                    //                         sx={{fontWeight: 600}}
+                    //                     >
+                    //                         |
+                    //                     </Typography>
+                    //                     <CommentActionTypography 
+                    //                         variant="body2"
+                    //                         onClick={() => this.setState({ editingComment: null })}
+                    //                     >
+                    //                         Cancel                                    
+                    //                     </CommentActionTypography>
+                    //                 </Box>
+                    //             </Box>
+                    //         </CommentContainer>
+                    //     )
+                    // }
+
+                    // return (
+                    //     <CommentContainer key={comment.id}>
+                    //         <SmallAvatar>
+                    //             {comment.user.firstName[0].toUpperCase()}
+                    //         </SmallAvatar>
+                    //         <Box>
+                    //             <Box display="flex" columnGap="15px">
+                    //                 <Typography 
+                    //                     variant="subtitle1" 
+                    //                     sx={{ lineHeight: '1.5' }}
+                    //                 >
+                    //                     {comment.user.firstName} {comment.user.lastName}
+                    //                 </Typography>
+                    //                 <Typography 
+                    //                     variant="body2" 
+                    //                     sx={{ lineHeight: '1.8' }}
+                    //                 >
+                    //                     {(new Date(comment.createdAt)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    //                 </Typography>
+                    //             </Box>
+                    //             <Box marginTop="5px">
+                    //                 <Typography>
+                    //                     {comment.message}
+                    //                 </Typography>
+                    //             </Box>
+                    //             <Box 
+                    //                 marginTop="15px"
+                    //                 display="flex"
+                    //                 columnGap="10px"
+                    //             >
+                    //                 <CommentActionTypography 
+                    //                     variant="body2"
+                    //                     onClick={() => this.setState({ editingComment: { ...comment } })}
+                    //                 >
+                    //                     Edit
+                    //                 </CommentActionTypography>
+                    //                 <Typography 
+                    //                     variant="body2" 
+                    //                     sx={{fontWeight: 600}}
+                    //                 >
+                    //                     |
+                    //                 </Typography>
+                    //                 <CommentActionTypography 
+                    //                     variant="body2"
+                    //                 >
+                    //                     Delete                                    
+                    //                 </CommentActionTypography>
+                    //             </Box>
+                    //         </Box>
+                    //     </CommentContainer>
+                    // )
+                }) }
             </Main>
         )
     }
@@ -159,7 +238,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    dispatchCreateComment: (projectId: string, ticketNumber: number, message: string) => dispatch(createComment(projectId, ticketNumber, message))
+    dispatchCreateComment: (projectId: string, ticketNumber: number, message: string) => dispatch(createComment(projectId, ticketNumber, message)),
+    dispatchEditComment: (projectId: string, ticketNumber: number, comment: any) => dispatch(editComment(projectId, ticketNumber, comment))
 });
 
 export default compose<any>(
