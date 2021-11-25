@@ -7,10 +7,6 @@ import withSession, { NextApiRequestWithSession, session } from '../../../../../
 import { isUserLoggedInWithRole } from '../../../../../../../../middleware/auth';
 import { getTicket } from '../../../../../../../../lib/db';
 
-const schema = yup.object().shape({
-    message: yup.string().required('Comment can\'t be null.')
-});
-
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {
         console.log(error)
@@ -26,20 +22,16 @@ const handler = nextConnect({
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
 
-handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
+handler.delete(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         const project_id = req.query.project_id as string;
         const ticket_number = req.query.ticket_number as string;
         const comment_id = req.query.comment_id as string;
-        const { message } = schema.validateSync(req.body);
 
         const ticket = await getTicket(project_id, parseInt(ticket_number));
-        await prisma.comment.update({
+        await prisma.comment.delete({
             where: {
                 id: parseInt(comment_id)
-            },
-            data: {
-                message: message
             },
         });
 

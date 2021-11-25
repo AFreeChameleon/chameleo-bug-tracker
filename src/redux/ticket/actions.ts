@@ -50,7 +50,7 @@ export const deleteComment = (projectId: string, ticketNumber: number, commentId
             type: DELETE_TICKET_COMMENT_REQUEST,
             commentId: commentId
         });
-        return axios.patch(`/api/project/${projectId}/ticket/${ticketNumber}/comments/${commentId}/delete`, { withCredentials: true })
+        return axios.delete(`/api/project/${projectId}/ticket/${ticketNumber}/comments/${commentId}/delete`, { withCredentials: true })
         .then((res: any) => {
             dispatch({
                 type: DELETE_TICKET_COMMENT_SUCCESS,

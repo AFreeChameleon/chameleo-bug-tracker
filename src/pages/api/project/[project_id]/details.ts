@@ -177,7 +177,6 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 }
             }
         });
-        console.log('TICKETS', project.tickets)
         return res.json({
             project: project,
         });

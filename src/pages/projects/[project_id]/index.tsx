@@ -18,7 +18,7 @@ import {
     styled,
     alpha
 } from '@mui/material/styles';
-import Container from '@mui/material/Container';
+// import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -77,6 +77,10 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+}));
+
+const Container = styled('div')(({ theme }) => ({
+    width: '100%'
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({

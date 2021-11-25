@@ -12,15 +12,18 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 import MoreIcon from '@mui/icons-material/MoreHoriz';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 import TicketItem from './TicketItem';
 import EditColumnModal from './EditColumnModal';
 import { setProjectDetails } from '../../../redux/project/actions';
+import CreateColumn from './CreateColumn';
 
 type DraggableBoardsProps = {
     tickets: any[];
@@ -37,13 +40,13 @@ type DraggableBoardsState = {
 
 const FlexDiv = styled('div')(({ theme }) => ({
     display: 'flex',
+    width: 'calc(100vw - 350px)',
 }))
 
 const CenterDiv = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
-    maxWidth: '300px',
-    width: '25%',
+    minWidth: '300px',
     marginRight: '20px'
 }));
 
@@ -79,7 +82,9 @@ const DroppablePaper = styled(Paper)(({ theme }) => ({
 }));
 
 const Container = styled('div')(({ theme }) => ({
-    width: '100%'
+    width: '100%',
+    marginTop: '50px',
+    overflowX: 'auto'
 }));
 
 class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoardsState> {
@@ -120,7 +125,7 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
             <DragDropContext
                 onDragEnd={this.onDragEnd}
             >
-                <Container>
+                <Container sx={{ marginTop: '50px', overflowX: 'auto', width: 'calc(100vw - 350px)' }}>
                     <Droppable
                         droppableId="all-columns"
                         direction="horizontal"
@@ -130,9 +135,6 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                             <FlexDiv 
                                 {...columnProvided.droppableProps}
                                 ref={columnProvided.innerRef}
-                                sx={{
-                                    marginTop: '50px',
-                                }}
                             >
                                 { project.details && project.details.columnOrder.map((columnId, i) => (
                                     <Draggable draggableId={columnId} index={i} key={columnId}>
@@ -191,6 +193,8 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                                     </Draggable>
                                 )) }
                                 {columnProvided.placeholder}
+                                {/* CREATE COLUMN */}
+                                <CreateColumn />
                             </FlexDiv>
                         )}
                     </Droppable>
