@@ -38,12 +38,73 @@ export const isUserLoggedInWithRole = async (req: NextApiRequestWithSessionRole,
                         id: project_id
                     },
                     select: {
+                        name: true,
                         id: true,
+                        details: true,
+                        tickets: {
+                            where: {
+                                archived: false
+                            },
+                            select: {
+                                id: true,
+                                timeEstimate: true,
+                                status: true,
+                                priority: true,
+                                description: true,
+                                name: true,
+                                user: {
+                                    select: {
+                                        id: true,
+                                        email: true,
+                                        firstName: true,
+                                        lastName: true
+                                    }
+                                },
+                                assignedUserId: true,
+                                source: true,
+                                started: true,
+                                createdAt: true,
+                                updatedAt: true,
+                                ticketNumber: true
+                            },
+                        },
                         roles: {
                             where: {
                                 userId: id
                             }
                         },
+                        tags: {
+                            select: {
+                                id: true,
+                                name: true,
+                                createdAt: true,
+                                updatedAt: true
+                            }
+                        },
+                        updatedAt: true,
+                        createdAt: true,
+                        user: { 
+                            select: {
+                                id: true,
+                                email: true,
+                                firstName: true,
+                                lastName: true
+                            }
+                        },
+                        users: {
+                            select: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        firstName: true,
+                                        lastName: true,
+                                        email: true,
+                                        createdAt: true,
+                                        updatedAt: true,
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -58,14 +119,8 @@ export const isUserLoggedInWithRole = async (req: NextApiRequestWithSessionRole,
                 errors: ['Project does not have any permissions.']
             });
         }
-        let user = {
-            ...rawUser,
-            project: {
-                ...rawUser.projects[0],
-                role: rawUser.projects[0].roles[0]
-            }
-        }
-        if (user) {
+
+        if (rawUser) {
             req.user = rawUser;
             next();
         } else {

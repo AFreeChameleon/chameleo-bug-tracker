@@ -9,13 +9,48 @@ import {
 
     UPDATE_PROJECT_DETAILS_REQUEST,
     UPDATE_PROJECT_DETAILS_SUCCESS,
-    UPDATE_PROJECT_DETAILS_FAILURE
+    UPDATE_PROJECT_DETAILS_FAILURE,
+
+    DELETE_PROJECT_COLUMN_REQUEST,
+    DELETE_PROJECT_COLUMN_SUCCESS,
+    DELETE_PROJECT_COLUMN_FAILURE,
 } from './types';
 
 export const setProjectData = (data: any) => ({
     type: SET_PROJECT_DATA,
     data: data
 });
+
+export const deleteProjectColumn = (id: string, colId: string, method: string, colIdToMoveTo: string | null = null) => {
+    return dispatch => {
+        dispatch({
+            type: DELETE_PROJECT_COLUMN_REQUEST
+        });
+        axios.post(`/api/project/${id}/column/delete`, {
+            column_id: colId,
+            method: method,
+            backup_column_id: colIdToMoveTo
+        }).then((res: any) => {
+            dispatch({
+                type: DELETE_PROJECT_COLUMN_SUCCESS,
+                project: res.data.project
+            });
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: DELETE_PROJECT_COLUMN_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: DELETE_PROJECT_COLUMN_FAILURE,
+                    errors: ['An error occurred while getting your details, please try again later.']
+                })
+            }
+        });
+    }
+}
 
 export const fetchProjectDetails = (id: string) => {
     return dispatch => {

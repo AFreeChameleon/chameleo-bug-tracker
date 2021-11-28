@@ -50,7 +50,7 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 export const validateTime = (rawTime: string) => {
     try {
         const time = timestring(rawTime, null, {
-            hoursPerDay: 7.5,
+            hoursPerDay: 8,
             daysPerWeek: 5
         });
         if (!time) {

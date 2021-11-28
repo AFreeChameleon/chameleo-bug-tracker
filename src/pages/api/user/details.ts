@@ -53,6 +53,13 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         role: true,
                         projectId: true
                     }
+                },
+                history: {
+                    take: 4,
+                    distinct: ['ticketId'],
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
                 }
             }
         });

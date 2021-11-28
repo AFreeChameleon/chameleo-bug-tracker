@@ -8,7 +8,11 @@ import {
 
     UPDATE_PROJECT_DETAILS_REQUEST,
     UPDATE_PROJECT_DETAILS_SUCCESS,
-    UPDATE_PROJECT_DETAILS_FAILURE
+    UPDATE_PROJECT_DETAILS_FAILURE,
+
+    DELETE_PROJECT_COLUMN_REQUEST,
+    DELETE_PROJECT_COLUMN_SUCCESS,
+    DELETE_PROJECT_COLUMN_FAILURE,
 } from './types';
 
 const defaultState = {
@@ -27,6 +31,27 @@ const reducer = (state = defaultState, action) => {
                     ...action.data
                 }
             }
+            
+        case DELETE_PROJECT_COLUMN_REQUEST:
+            return {
+                ...state,
+                loading: true
+            }
+        case DELETE_PROJECT_COLUMN_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                data: {
+                    ...action.project
+                }
+            }
+        case DELETE_PROJECT_COLUMN_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                errors: action.errors
+            }
+
         case UPDATE_PROJECT_DETAILS_REQUEST:
             return {
                 ...state,

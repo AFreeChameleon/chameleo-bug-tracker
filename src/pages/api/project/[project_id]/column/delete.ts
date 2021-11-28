@@ -1,10 +1,20 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import _ from 'lodash';
 import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
-import { prisma }  from '../../../../lib/prisma';
-import withSession, { NextApiRequestWithSession, NextApiRequestWithSessionRole, session } from '../../../../lib/session';
-import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../middleware/auth';
+import { prisma }  from '../../../../../lib/prisma';
+import withSession, { NextApiRequestWithSessionRole, session } from '../../../../../lib/session';
+import { isUserLoggedInWithRole } from '../../../../../middleware/auth';
+
+const schema = yup.object().shape({
+    column_id: yup.string()
+        .required('Column ID is required.'),
+    method: yup.string()
+        .required('Method is required.'),
+    backup_column_id: yup.string()
+        .optional().nullable()
+});
 
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {
@@ -21,34 +31,44 @@ const handler = nextConnect({
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
 
-handler.get(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
+handler.post(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {
-        return res.json({
-            project: req.user.projects[0],
-        })
-    } catch (err) {
-        console.log(err);
-        if (err.errors) {
-            return res.status(500).json({
-                errors: err.errors
-            });
-        }
-        return res.status(500).json({
-            errors: ['An error occurred while getting project details, please try again later.']
-        })
-    }
-});
-
-handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
-    try {
-        const { details } = req.body;
+        const { 
+            column_id, 
+            method, 
+            backup_column_id
+        } = schema.validateSync(req.body);
         const project_id = req.query.project_id as string;
+        let editableDetails = _.cloneDeep(req.user.projects[0].details);
+        if (editableDetails.columns[column_id].ticketIds.length > 0) {
+            if (method === '0') {
+                editableDetails.columns[backup_column_id].ticketIds = [ 
+                    ...editableDetails.columns[backup_column_id].ticketIds, 
+                    ...editableDetails.columns[column_id].ticketIds 
+                ];
+            } else if (method === '1') {
+                await prisma.ticket.updateMany({
+                    where: {
+                        OR: editableDetails
+                        .columns[column_id]
+                        .ticketIds.map((t) => ({
+                            id: t
+                        }))
+                    },
+                    data: {
+                        archived: true
+                    }
+                });
+            }
+        }
+        editableDetails.columnOrder = editableDetails.columnOrder.filter(c => c !== column_id);
+        editableDetails.columns = _.omit(editableDetails.columns, [column_id]);
         const project = await prisma.project.update({
             where: {
                 id: project_id
             },
             data: {
-                details: details
+                details: editableDetails
             },
             select: {
                 name: true,
@@ -85,6 +105,7 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 },
                 tags: {
                     select: {
+                        id: true,
                         name: true,
                         createdAt: true,
                         updatedAt: true
@@ -98,6 +119,20 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                         email: true,
                         firstName: true,
                         lastName: true
+                    }
+                },
+                users: {
+                    select: {
+                        user: {
+                            select: {
+                                id: true,
+                                firstName: true,
+                                lastName: true,
+                                email: true,
+                                createdAt: true,
+                                updatedAt: true,
+                            }
+                        }
                     }
                 }
             }
@@ -113,9 +148,9 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
             });
         }
         return res.status(500).json({
-            errors: ['An error occurred while getting project details, please try again later.']
+            errors: ['An error occurred while deleting this column, please try again later.']
         })
     }
-})
+});
 
 export default handler;

@@ -129,7 +129,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
             <Header createTicket />
             <Box display="grid" gridTemplateColumns="250px auto">
                 <Sidebar />
-                <Container>
+                <Container sx={{ paddingLeft: '50px' }}>
                     <HeadingDiv>
                         <Breadcrumbs>
                             <NextLink
@@ -148,7 +148,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                             <HeaderTypography
                                 variant="h1"
                             >
-                                Tickets
+                                {project.name}
                             </HeaderTypography>
                         </FlexDiv>
                         <FlexDiv sx={{marginTop: '30px'}}>

@@ -46,7 +46,7 @@ const Body = styled('div')(({ theme }) => ({
     display: 'grid',
     columnGap: '20px',
     gridTemplateColumns: 'auto 350px',
-    marginTop: '20px'
+    marginTop: '20px',
 }));
 
 const Main = styled('div')(({ theme }) => ({

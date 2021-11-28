@@ -349,7 +349,7 @@ class TicketDetails extends React.Component<TicketDetailsProps, TicketDetailsSta
                     open={Boolean(assignedToAnchorEl)}
                     onClose={(e) => this.setState({ assignedToAnchorEl: null })}
                 >
-                    { project.users.map(({ user }, i) => (
+                    { project.users && project.users.map(({ user }, i) => (
                         <MenuItem key={i} onClick={() => this.changeTicketAssignedTo(user.email)}>
                             <ListItemIcon>
                                 <SmallAvatar>

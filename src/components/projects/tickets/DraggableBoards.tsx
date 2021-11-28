@@ -1,7 +1,9 @@
 import React from 'react';
+import _ from 'lodash';
+
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import { setProjectDetails } from '../../../redux/project/actions';
 
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
@@ -22,7 +24,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import TicketItem from './TicketItem';
 import EditColumnModal from './EditColumnModal';
-import { setProjectDetails } from '../../../redux/project/actions';
+import DeleteColumnModal from './DeleteColumnModal';
 import CreateColumn from './CreateColumn';
 
 type DraggableBoardsProps = {
@@ -36,6 +38,7 @@ type DraggableBoardsState = {
     tickets: any;
     colMenuAnchorEl: any;
     editingColumn: any;
+    deletingColumn: any;
 }
 
 const FlexDiv = styled('div')(({ theme }) => ({
@@ -47,6 +50,7 @@ const CenterDiv = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     minWidth: '300px',
+    maxWidth: '300px',
     marginRight: '20px'
 }));
 
@@ -64,7 +68,7 @@ const ColumnHeader = styled(Box)(({ theme }: any) => ({
 
 const DroppablePaper = styled(Paper)(({ theme }) => ({
     width: '100%',
-    height: '500px',
+    minHeight: '500px',
     padding: '5px',
     backgroundColor: theme.palette.grey['50'],
     borderTopLeftRadius: '0',
@@ -82,9 +86,24 @@ const DroppablePaper = styled(Paper)(({ theme }) => ({
 }));
 
 const Container = styled('div')(({ theme }) => ({
-    width: '100%',
-    marginTop: '50px',
-    overflowX: 'auto'
+    marginTop: '50px', 
+    overflowX: 'auto', 
+    width: 'calc(100vw - 350px)',
+    height: 'fit-content',
+    '::-webkit-scrollbar': {
+        width: '7px',
+        height: '7px',
+    },
+    '::-webkit-scrollbar-track': {
+        background: '#f1f1f1'
+    },
+    '::-webkit-scrollbar-thumb': {
+        background: '#B7B7B7',
+        borderRadius: '10px'
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+        background: '#888888'
+    }
 }));
 
 class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoardsState> {
@@ -95,7 +114,9 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
         this.state = {
             tickets: {},
             colMenuAnchorEl: null,
-            editingColumn: null
+
+            editingColumn: null,
+            deletingColumn: null
         }
     }
 
@@ -120,12 +141,12 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
 
     render() {
         const { project, tickets } = this.props;
-        const { colMenuAnchorEl, editingColumn } = this.state;
+        const { colMenuAnchorEl, editingColumn, deletingColumn } = this.state;
         return (
             <DragDropContext
                 onDragEnd={this.onDragEnd}
             >
-                <Container sx={{ marginTop: '50px', overflowX: 'auto', width: 'calc(100vw - 350px)' }}>
+                <Container>
                     <Droppable
                         droppableId="all-columns"
                         direction="horizontal"
@@ -241,7 +262,9 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                         </ListItemIcon>
                         Edit
                     </MenuItem>
-                    <MenuItem>
+                    <MenuItem onClick={(e) => this.setState({
+                        deletingColumn: colMenuAnchorEl.id.split('-')[1]
+                    })}>
                         <ListItemIcon>
                             <DeleteIcon fontSize="small" color="error" />
                         </ListItemIcon>
@@ -257,6 +280,11 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                     onClose={() => this.setState({ editingColumn: null })}
                     columnId={editingColumn}
                 />
+                {Boolean(deletingColumn) && <DeleteColumnModal
+                    open={Boolean(deletingColumn)}
+                    onClose={() => this.setState({ deletingColumn: null })}
+                    columnId={deletingColumn}
+                />}
             </DragDropContext>
         )
     }

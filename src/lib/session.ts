@@ -26,10 +26,7 @@ type RoleProject = Project & {
 
 interface UserWithRole {
   id: number;
-  projects: {
-    id: string;
-    roles: Role[];
-  }[];
+  projects: Project[];
 }
 
 export interface NextApiRequestWithSession extends NextApiRequest {
@@ -39,7 +36,7 @@ export interface NextApiRequestWithSession extends NextApiRequest {
 
 export interface NextApiRequestWithSessionRole extends NextApiRequest {
   session: Session;
-  user: UserWithRole;
+  user: any;
 }
 
 

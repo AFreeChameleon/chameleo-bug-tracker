@@ -6,7 +6,7 @@ export const getTicket = async (projectId: string, ticketNumber: number) => {
     const ticket: any = await prisma.ticket.findFirst({
         where: {
             projectId: projectId,
-            ticketNumber: ticketNumber
+            ticketNumber: ticketNumber,
         },
         select: {
             id: true,

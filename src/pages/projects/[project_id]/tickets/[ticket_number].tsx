@@ -9,7 +9,6 @@ import {
     styled,
     alpha
 } from '@mui/material/styles';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -29,12 +28,18 @@ import TicketBody from '../../../../components/projects/tickets/single/TicketBod
 import { setProjectData } from '../../../../redux/project/actions';
 import { setUserData } from '../../../../redux/user/actions';
 import { setTicketData } from '../../../../redux/ticket/actions';
+import { prisma } from '../../../../lib/prisma';
 
 type TicketPageProps = {
     project: any;
     user: any;
     ticket: any;
 }
+
+const Container = styled('div')(({ theme }) => ({
+    padding: '0 50px',
+    maxWidth: '1280px'
+}));
 
 const TicketPage: NextPage<TicketPageProps> = ({
     project,
@@ -101,6 +106,15 @@ TicketPage.getInitialProps = async (ctx) => {
         }
         const [project, user, ticket] = await Promise.all([projectRes, userRes, ticketRes])
         if (project && user) {
+            if (ctx.req) {
+                const historyRes = await axios.post(`${process.env.HOST}/api/user/history`, {
+                    project_id: ctx.query.project_id,
+                    ticket_number: ctx.query.ticket_number
+                }, {
+                    withCredentials: true,
+                    headers: { Cookie: ctx.req.headers.cookie } 
+                });
+            }
             return {
                 project: project.data.project,
                 user: user.data.user,
@@ -114,6 +128,7 @@ TicketPage.getInitialProps = async (ctx) => {
             };
         }
     } catch (err) {
+        console.log(err)
         return {
             user: null,
             project: null,
