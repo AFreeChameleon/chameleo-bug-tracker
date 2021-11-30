@@ -42,6 +42,7 @@ const Container = styled('div')(({ theme }) => ({
 type ArchivedTicketsPageProps = {
     project: any;
     user: any;
+    tickets: any[];
 };
 
 type ArchivedTicketsPageState = {
@@ -50,19 +51,23 @@ type ArchivedTicketsPageState = {
 
 const ArchivedTicketsPage: NextPage<ArchivedTicketsPageProps> = ({
     project,
-    user
+    user,
+    tickets
 }) => {
     const router = useRouter();
     const projectData = useSelector((state: any) => state.project.data);
+    const ticketsData = useSelector((state: any) => state.project.data.archivedTickets);
     const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setProjectData(project));
+        dispatch(setProjectData({
+            ...project,
+            archivedTickets: tickets
+        }));
         dispatch(setUserData(user));
     }, []);
-    console.log(project, user)
 
-    if (_.isEmpty(projectData) || _.isEmpty(userData)) {
+    if (_.isEmpty(projectData) || _.isEmpty(userData) || !_.isEmpty(ticketsData)) {
         return null;
     }
 
@@ -95,6 +100,10 @@ ArchivedTicketsPage.getInitialProps = async (ctx) => {
                 withCredentials: true,
                 headers: { Cookie: ctx.req.headers.cookie }
             });
+            ticketRes = axios.get(`${process.env.HOST}/api/project/${ctx.query.project_id}/ticket/archived`, { 
+                withCredentials: true,
+                headers: { Cookie: ctx.req.headers.cookie }
+            });
         } else {
             projectRes = axios.get(`/api/project/${ctx.query.project_id}/details`, { 
                 withCredentials: true,
@@ -102,17 +111,22 @@ ArchivedTicketsPage.getInitialProps = async (ctx) => {
             userRes = axios.get('/api/user/details', {
                 withCredentials: true,
             });
+            ticketRes = axios.get(`/api/project/${ctx.query.project_id}/ticket/archived`, {
+                withCredentials: true
+            });
         }
-        const [project, user] = await Promise.all([projectRes, userRes])
-        if (project && user) {
+        const [project, user, ticket] = await Promise.all([projectRes, userRes, ticketRes])
+        if (project && user && ticket) {
             return {
                 project: project.data.project,
                 user: user.data.user,
+                tickets: ticket.data.tickets
             };
         } else {
             return { 
                 user: null,
                 project: null,
+                tickets: []
             };
         }
     } catch (err) {
@@ -120,6 +134,7 @@ ArchivedTicketsPage.getInitialProps = async (ctx) => {
         return {
             user: null,
             project: null,
+            tickets: []
         }
     }
 }
