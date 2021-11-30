@@ -1,5 +1,8 @@
 import React from 'react';
 import { withRouter } from 'next/router';
+import NextLink from 'next/link';
+import _ from 'lodash';
+
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
@@ -10,6 +13,7 @@ import Typography, { TypographyProps } from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -53,6 +57,9 @@ const FlexGrow = styled('div')(({ theme }) => ({
 type SidebarProps = {
     user: any;
     project: any;
+    ticket: any;
+
+    ticketView: boolean;
 }
 
 class Sidebar extends React.Component<SidebarProps> {
@@ -61,8 +68,8 @@ class Sidebar extends React.Component<SidebarProps> {
     }
 
     render() {
-        const { user, project } = this.props;
-        console.log(user, project)
+        const { user, project, ticket, ticketView } = this.props;
+        console.log(user, project, ticket)
         return (
             <Root>
                 <Subtitle
@@ -73,45 +80,85 @@ class Sidebar extends React.Component<SidebarProps> {
                 </Subtitle>
                 <MenuList>
                     { user.projects.map((projectItem, i) => (
-                        <MenuItem key={i} sx={{
-                            padding: 0,
-                            height: '50px'
-                        }}>
-                            { project.id === projectItem.id && <SelectedListItem/> }
-                            <ListItemText sx={{
-                                paddingLeft: project.id === projectItem.id ? '23px' : '25px',
-                                fontSize: '16px'
+                        <NextLink 
+                            key={i}
+                            href={`/projects/${projectItem.id}/`}
+                        >
+                            <MenuItem sx={{
+                                padding: 0,
+                                height: '50px'
                             }}>
-                                {projectItem.name}
-                            </ListItemText>
-                        </MenuItem>
+                                { project.id === projectItem.id && <SelectedListItem/> }
+                                <ListItemText sx={{
+                                    paddingLeft: project.id === projectItem.id ? '23px' : '25px',
+                                    fontSize: '16px'
+                                }}>
+                                    {projectItem.name}
+                                </ListItemText>
+                            </MenuItem>
+                        </NextLink>
                     )) }
                 </MenuList>
                 <Subtitle
                     variant="caption"
                     component="div"
                 >
-                    RECENT
+                    RECENT TICKETS
                 </Subtitle>
                 <MenuList>
-                    <MenuItem sx={{
+                    {ticketView && <MenuItem sx={{
                         padding: 0,
                         height: '50px'
                     }}>
                         <SelectedListItem/>
                         <Box sx={{
                             paddingLeft: '25px',
-                            fontSize: '16px'
+                            fontSize: '16px',
+                            width: '100%'
                         }}>
-                            <Typography>
-                                Yeet
+                            <Typography
+                                variant="caption"
+                                sx={{ color: '#888' }}
+                            >
+                                {project.name}
+                            </Typography>
+                            <Typography noWrap>
+                                {ticket.name}
                             </Typography>
                         </Box>
-                    </MenuItem>
+                    </MenuItem>}
+                    {user.history.filter(h => !ticketView || h.ticketId !== ticket.id).map((h) => {
+                        return (
+                            <NextLink 
+                                key={h.id}
+                                href={`/projects/${h.project.id}/tickets/${h.ticket.ticketNumber}`}
+                            >
+                                <Link sx={{ textDecoration: 'none' }}>
+                                    <MenuItem sx={{
+                                        padding: 0,
+                                        height: '50px'
+                                    }}>
+                                        <Box
+                                            paddingLeft="25px"
+                                            fontSize="16px"
+                                            width="100%"
+                                        >
+                                            <TicketLabel
+                                                variant="caption"
+                                            >
+                                                {h.project.name}
+                                            </TicketLabel>
+                                            <Typography noWrap>
+                                                {h.ticket.name}
+                                            </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                </Link>
+                            </NextLink>
+                    )})}
                 </MenuList>
                 <FlexGrow/>
                 <MenuItem sx={{
-                    // padding: 0,
                     height: '50px',
                     borderTop: (theme) => `1px solid ${theme.palette.grey['200']}`
                 }}>
@@ -129,7 +176,8 @@ class Sidebar extends React.Component<SidebarProps> {
 
 const mapStateToProps = (state) => ({
     user: state.user.data,
-    project: state.project.data
+    project: state.project.data,
+    ticket: state.ticket.data
 });
 
 export default compose<any>(

@@ -36,6 +36,10 @@ import {
     DELETE_TICKET_COMMENT_REQUEST,
     DELETE_TICKET_COMMENT_SUCCESS,
     DELETE_TICKET_COMMENT_FAILURE,
+
+    ARCHIVE_TICKET_REQUEST,
+    ARCHIVE_TICKET_SUCCESS,
+    ARCHIVE_TICKET_FAILURE,
 } from './types';
 
 const defaultState: any = {
@@ -48,7 +52,8 @@ const defaultState: any = {
         name: false,
         addComment: false,
         editComment: false,
-        deleteComment: false
+        deleteComment: false,
+        archive: false
     },
     errors: [],
     data: {}
@@ -62,6 +67,36 @@ const reducer = (state = defaultState, action) => {
                 data: {
                     ...action.data
                 }
+            }
+
+        case ARCHIVE_TICKET_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    archive: true
+                }
+            }
+        case ARCHIVE_TICKET_SUCCESS:
+            console.log(action)
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    archive: false
+                },
+                data: {
+                    ...action.ticket
+                }
+            }
+        case ARCHIVE_TICKET_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    archive: false
+                },
+                errors: action.errors
             }
             
         case DELETE_TICKET_COMMENT_REQUEST:

@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import _ from 'lodash';
 import axios from 'axios';
@@ -114,13 +115,14 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
     project,
     user,
 }: ProjectPageProps) => {
+    const router = useRouter();
     const projectData = useSelector((state: any) => state.project.data);
     const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setUserData(user));
         dispatch(setProjectData(project));
-    }, []);
+    }, [router.query.project_id]);
     if (_.isEmpty(projectData) || _.isEmpty(userData)) {
         return null;
     }

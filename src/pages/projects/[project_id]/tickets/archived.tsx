@@ -1,15 +1,24 @@
-import { useEffect } from 'react';
-import _ from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
-import type { NextPage } from 'next';
+import { NextPage } from "next";
 import { useRouter } from 'next/router';
+
+import { useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+
+import _ from 'lodash';
 import axios from 'axios';
 
 import {
     styled,
     alpha
 } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
+
+import SearchIcon from '@mui/icons-material/Search';
 
 import Header from '../../../../components/Header';
 import ifAuth from '../../../../components/auth/ifAuth';
@@ -22,59 +31,57 @@ import { setProjectData } from '../../../../redux/project/actions';
 import { setUserData } from '../../../../redux/user/actions';
 import { setTicketData } from '../../../../redux/ticket/actions';
 import ArchivedTicket from '../../../../components/projects/tickets/single/ArchivedTicket';
-
-type TicketPageProps = {
-    project: any;
-    user: any;
-    ticket: any;
-}
+import ArchivedTicketsHeader from "../../../../components/projects/tickets/archived/ArchivedTicketsHeader";
+import ArchivedTicketsBody from "../../../../components/projects/tickets/archived/ArchivedTicketsBody";
 
 const Container = styled('div')(({ theme }) => ({
     padding: '0 50px',
     maxWidth: '1280px'
 }));
 
-const TicketPage: NextPage<TicketPageProps> = ({
+type ArchivedTicketsPageProps = {
+    project: any;
+    user: any;
+};
+
+type ArchivedTicketsPageState = {
+
+};
+
+const ArchivedTicketsPage: NextPage<ArchivedTicketsPageProps> = ({
     project,
-    user,
-    ticket
+    user
 }) => {
     const router = useRouter();
     const projectData = useSelector((state: any) => state.project.data);
     const userData = useSelector((state: any) => state.user.data);
-    const ticketData = useSelector((state: any) => state.ticket.data);
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setProjectData(project));
         dispatch(setUserData(user));
-        dispatch(setTicketData(ticket));
-    }, [router.query.ticket_number, ticket.archived]);
+    }, []);
+    console.log(project, user)
 
-    if (_.isEmpty(projectData) || _.isEmpty(userData) || _.isEmpty(ticketData)) {
+    if (_.isEmpty(projectData) || _.isEmpty(userData)) {
         return null;
     }
+
     return (
         <div>
             <Header createTicket />
             <Box display="grid" gridTemplateColumns="250px auto">
-                <Sidebar ticketView />
-                { !ticket.archived ? (
-                    <Container>
-                        <TicketHeader />
-                        <TicketBody />
-                    </Container>
-                ) : (
-                    <Container>
-                        <ArchivedTicket />
-                    </Container>
-                )}
+                <Sidebar />
+                <Container>
+                    <ArchivedTicketsHeader />
+                    <ArchivedTicketsBody />
+                </Container>
             </Box>
             <Alerts />
         </div>
     )
 }
 
-TicketPage.getInitialProps = async (ctx) => {
+ArchivedTicketsPage.getInitialProps = async (ctx) => {
     try {
         let projectRes: any;
         let userRes: any;
@@ -88,10 +95,6 @@ TicketPage.getInitialProps = async (ctx) => {
                 withCredentials: true,
                 headers: { Cookie: ctx.req.headers.cookie }
             });
-            ticketRes = axios.get(`${process.env.HOST}/api/project/${ctx.query.project_id}/ticket/${ctx.query.ticket_number}/details`, {
-                withCredentials: true,
-                headers: { Cookie: ctx.req.headers.cookie }
-            });
         } else {
             projectRes = axios.get(`/api/project/${ctx.query.project_id}/details`, { 
                 withCredentials: true,
@@ -99,31 +102,17 @@ TicketPage.getInitialProps = async (ctx) => {
             userRes = axios.get('/api/user/details', {
                 withCredentials: true,
             });
-            ticketRes = axios.get(`/api/project/${ctx.query.project_id}/ticket/${ctx.query.ticket_number}/details`, {
-                withCredentials: true,
-            });
         }
-        const [project, user, ticket] = await Promise.all([projectRes, userRes, ticketRes])
+        const [project, user] = await Promise.all([projectRes, userRes])
         if (project && user) {
-            if (ctx.req) {
-                const historyRes = await axios.post(`${process.env.HOST}/api/user/history`, {
-                    project_id: ctx.query.project_id,
-                    ticket_number: ctx.query.ticket_number
-                }, {
-                    withCredentials: true,
-                    headers: { Cookie: ctx.req.headers.cookie } 
-                });
-            }
             return {
                 project: project.data.project,
                 user: user.data.user,
-                ticket: ticket.data.ticket
             };
         } else {
             return { 
                 user: null,
                 project: null,
-                ticket: null
             };
         }
     } catch (err) {
@@ -131,11 +120,10 @@ TicketPage.getInitialProps = async (ctx) => {
         return {
             user: null,
             project: null,
-            ticket: null
         }
     }
 }
 
-const AuthenticatedTicketPage = ifAuth(TicketPage);
+const AuthenticatedArchivedTicketsPage = ifAuth(ArchivedTicketsPage);
 
-export default AuthenticatedTicketPage;
+export default AuthenticatedArchivedTicketsPage;

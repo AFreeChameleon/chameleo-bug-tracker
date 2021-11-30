@@ -20,29 +20,22 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
+import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 import DoneIcon from '@mui/icons-material/Done';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CloseIcon from '@mui/icons-material/Close';
+import MoreIcon from '@mui/icons-material/MoreHoriz';
+import ArchiveIcon from '@mui/icons-material/ArchiveOutlined';
+
 import { 
     saveTicketTags,
-    setTicketName
+    setTicketName,
+    archiveTicket
 } from "../../../../redux/ticket/actions";
-
-type TicketHeaderProps = {
-    project: any;
-    ticket: any;
-
-    dispatchSaveTicketTags: (projectId: string, ticketNumber: number, tags: any[]) => void;
-    dispatchSetTicketName: (projectId: string, ticketNumber: number, name: string) => void;
-};
-
-type TicketHeaderState = {
-    editingTagsOpen: boolean;
-    editingTags: any[];
-    editingName: null | string;
-}
 
 const HeadingDiv = styled('div')(({ theme }) => ({
     marginTop: '50px',
@@ -65,7 +58,7 @@ const HeaderInput = styled('input')(({ theme }) => ({
     '&:hover': {
         backgroundColor: theme.palette.grey['200']
     }
-}))
+}));
 
 const FlexDiv = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -117,6 +110,22 @@ const SaveButton = styled(Button)(({ theme }) => ({
     width: '70px',
 }));
 
+type TicketHeaderProps = {
+    project: any;
+    ticket: any;
+
+    dispatchSaveTicketTags: (projectId: string, ticketNumber: number, tags: any[]) => void;
+    dispatchSetTicketName: (projectId: string, ticketNumber: number, name: string) => void;
+    dispatchArchiveTicket: (projectId: string, ticketNumber: number, archive: boolean) => void;
+};
+
+type TicketHeaderState = {
+    editingTagsOpen: boolean;
+    editingTags: any[];
+    editingName: null | string;
+    moreOptionsEl: null | HTMLElement;
+};
+
 class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState> {
     constructor(props) {
         super(props);
@@ -125,11 +134,14 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
         this.removeTag = this.removeTag.bind(this);
         this.saveTags = this.saveTags.bind(this);
         this.saveName = this.saveName.bind(this);
+        this.archiveTicket = this.archiveTicket.bind(this);
 
         this.state = {
             editingTagsOpen: false,
             editingTags: [],
-            editingName: null
+            editingName: null,
+
+            moreOptionsEl: null
         }
     }
 
@@ -164,9 +176,16 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
         this.setState({ editingName: null });
     }
 
+    archiveTicket() {
+        const { project, ticket, dispatchArchiveTicket } = this.props;
+
+        dispatchArchiveTicket(project.id, ticket.ticketNumber, true);
+        this.setState({ moreOptionsEl: null });
+    }
+
     render() {
         const { project, ticket } = this.props;
-        const { editingTagsOpen, editingTags, editingName } = this.state;
+        const { editingTagsOpen, editingTags, editingName, moreOptionsEl } = this.state;
 
         console.log(ticket, project)
         
@@ -235,55 +254,76 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
                         )}
                     </Box>
                 </FlexDiv>
-                { !editingTagsOpen ? (<TagList>
-                    { ticket.tags.map(({tag}, i) => (
-                        <Tag key={i}>
-                            {tag.name.toUpperCase()}
-                        </Tag>
-                    )) }
-                    <EditTag onClick={(e) => this.setState({ editingTagsOpen: true, editingTags: [ ...ticket.tags.map((t) => t.tag) ] })} >
-                        Edit tags
-                    </EditTag>
-                </TagList>) : (<TagList>
-                    { editingTags.map((tag, i) => (
-                        <Tag key={i}>
-                            {tag.name.toUpperCase()}
-                            <CloseIcon 
-                                onClick={(e) => this.removeTag(tag.id)}
-                                sx={{ 
-                                    width: '15px', 
-                                    height: '15px', 
-                                    cursor: 'pointer' 
-                                }} 
-                            />
-                        </Tag>
-                    )) }
-                    <FormControl variant="standard" size="small" sx={{ width: '200px', marginBottom: '15px' }}>
-                        <InputLabel id="add-tag-label">Add Tag...</InputLabel>
-                        <Select
-                            labelId="add-tag-label"
-                            value={''}
-                            onChange={this.addTag}
-                            placeholder="Add Tag..."
+                <FlexDiv>
+                    { !editingTagsOpen ? (<TagList>
+                        { ticket.tags.map(({tag}, i) => (
+                            <Tag key={i}>
+                                {tag.name.toUpperCase()}
+                            </Tag>
+                        )) }
+                        <EditTag onClick={(e) => this.setState({ editingTagsOpen: true, editingTags: [ ...ticket.tags.map((t) => t.tag) ] })} >
+                            Edit tags
+                        </EditTag>
+                    </TagList>) : (<TagList>
+                        { editingTags.map((tag, i) => (
+                            <Tag key={i}>
+                                {tag.name.toUpperCase()}
+                                <CloseIcon 
+                                    onClick={(e) => this.removeTag(tag.id)}
+                                    sx={{ 
+                                        width: '15px', 
+                                        height: '15px', 
+                                        cursor: 'pointer' 
+                                    }} 
+                                />
+                            </Tag>
+                        )) }
+                        <FormControl variant="standard" size="small" sx={{ width: '200px', marginBottom: '15px' }}>
+                            <InputLabel id="add-tag-label">Add Tag...</InputLabel>
+                            <Select
+                                labelId="add-tag-label"
+                                value={''}
+                                onChange={this.addTag}
+                                placeholder="Add Tag..."
+                            >
+                                { project.tags.map((tag, i) => (
+                                    <MenuItem value={tag.id} key={i}>{tag.name}</MenuItem>
+                                )) }
+                            </Select>
+                        </FormControl>
+                        <SaveTagsButton 
+                            variant="contained"
+                            onClick={this.saveTags} 
                         >
-                            { project.tags.map((tag, i) => (
-                                <MenuItem value={tag.id} key={i}>{tag.name}</MenuItem>
-                            )) }
-                        </Select>
-                    </FormControl>
-                    <SaveTagsButton 
-                        variant="contained"
-                        onClick={this.saveTags} 
+                            Save
+                        </SaveTagsButton>
+                        <SaveTagsButton 
+                            variant="outlined"
+                            onClick={(e) => this.setState({ editingTagsOpen: false })} 
+                        >
+                            Cancel
+                        </SaveTagsButton>
+                    </TagList>) }
+                    <IconButton
+                        onClick={(e) => this.setState({ moreOptionsEl: e.currentTarget })}
                     >
-                        Save
-                    </SaveTagsButton>
-                    <SaveTagsButton 
-                        variant="outlined"
-                        onClick={(e) => this.setState({ editingTagsOpen: false })} 
-                    >
-                        Cancel
-                    </SaveTagsButton>
-                </TagList>) }
+                        <MoreIcon />
+                    </IconButton>
+                </FlexDiv>
+                <Menu
+                    open={Boolean(moreOptionsEl)}
+                    anchorEl={moreOptionsEl}
+                    onClose={() => this.setState({ moreOptionsEl: null })}
+                >
+                    <MenuItem onClick={this.archiveTicket}>
+                        <ListItemIcon>
+                            <ArchiveIcon />
+                        </ListItemIcon>
+                        <ListItemText>
+                            Archive
+                        </ListItemText>
+                    </MenuItem>
+                </Menu>
             </HeadingDiv>
         )
     }
@@ -297,6 +337,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     dispatchSaveTicketTags: (projectId: string, ticketNumber: number, tags: any[]) => dispatch(saveTicketTags(projectId, ticketNumber, tags)),
     dispatchSetTicketName: (projectId: string, ticketNumber: number, name: string) => dispatch(setTicketName(projectId, ticketNumber, name)),
+    dispatchArchiveTicket: (projectId: string, ticketNumber: number, archive: boolean) => dispatch(archiveTicket(projectId, ticketNumber, archive))
 });
 
 export default compose<any>(

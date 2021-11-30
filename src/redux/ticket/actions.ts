@@ -37,12 +37,46 @@ import {
     DELETE_TICKET_COMMENT_REQUEST,
     DELETE_TICKET_COMMENT_SUCCESS,
     DELETE_TICKET_COMMENT_FAILURE,
+
+    ARCHIVE_TICKET_REQUEST,
+    ARCHIVE_TICKET_SUCCESS,
+    ARCHIVE_TICKET_FAILURE,
 } from './types';
 
 export const setTicketData = (data: any) => ({
     type: SET_TICKET_DATA,
     data: data
 });
+
+export const archiveTicket = (projectId: string, ticketNumber: number, archive: boolean) => {
+    return dispatch => {
+        dispatch({
+            type: ARCHIVE_TICKET_REQUEST
+        });
+        return axios.post(`/api/project/${projectId}/ticket/${ticketNumber}/archive`, {
+            archive: archive
+        }, { 
+            withCredentials: true
+        }).then((res: any) => {
+            dispatch({
+                type: ARCHIVE_TICKET_SUCCESS,
+                ticket: res.data.ticket
+            })
+        }).catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: ARCHIVE_TICKET_FAILURE,
+                    errors: err.response.errors
+                });
+            } else {
+                dispatch({
+                    type: ARCHIVE_TICKET_FAILURE,
+                    errors: ['An error occurred while archiving, please try again later.']
+                });
+            }
+        })
+    }
+}
 
 export const deleteComment = (projectId: string, ticketNumber: number, commentId: number) => {
     return dispatch => {

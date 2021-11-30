@@ -55,11 +55,20 @@ handler.get(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                     }
                 },
                 history: {
-                    take: 4,
+                    take: 5,
                     distinct: ['ticketId'],
                     orderBy: {
                         createdAt: 'desc'
                     },
+                    select: {
+                        id: true,
+                        projectId: true,
+                        ticketId: true,
+                        createdAt: true,
+                        updatedAt: true,
+                        project: true,
+                        ticket: true
+                    }
                 }
             }
         });
