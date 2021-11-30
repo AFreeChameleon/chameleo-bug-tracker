@@ -13,10 +13,19 @@ import {
     DELETE_PROJECT_COLUMN_REQUEST,
     DELETE_PROJECT_COLUMN_SUCCESS,
     DELETE_PROJECT_COLUMN_FAILURE,
+
+    FETCH_ARCHIVED_TICKETS_REQUEST,
+    FETCH_ARCHIVED_TICKETS_SUCCESS,
+    FETCH_ARCHIVED_TICKETS_FAILURE,
 } from './types';
 
 const defaultState = {
-    loading: false,
+    loading: {
+        deleteColumn: false,
+        updateDetails: false,
+        fetchDetails: false,
+        fetchArchivedTickets: false
+    },
     errors: [],
     data: {}
 }
@@ -31,16 +40,52 @@ const reducer = (state = defaultState, action) => {
                     ...action.data
                 }
             }
+
+        case FETCH_ARCHIVED_TICKETS_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    fetchArchivedTickets: true
+                }
+            }
+        case FETCH_ARCHIVED_TICKETS_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    fetchArchivedTickets: false
+                },
+                data: {
+                    ...state.data,
+                    archivedTickets: action.tickets
+                }
+            }
+        case FETCH_ARCHIVED_TICKETS_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    fetchArchivedTickets: false
+                },
+                errors: action.errors
+            }
             
         case DELETE_PROJECT_COLUMN_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: {
+                    ...state.loading,
+                    deleteColumn: true
+                }
             }
         case DELETE_PROJECT_COLUMN_SUCCESS:
             return {
                 ...state,
-                loading: false,
+                loading: {
+                    ...state.loading,
+                    deleteColumn: false
+                },
                 data: {
                     ...action.project
                 }
@@ -48,14 +93,20 @@ const reducer = (state = defaultState, action) => {
         case DELETE_PROJECT_COLUMN_FAILURE:
             return {
                 ...state,
-                loading: false,
+                loading: {
+                    ...state.loading,
+                    deleteColumn: false
+                },
                 errors: action.errors
             }
 
         case UPDATE_PROJECT_DETAILS_REQUEST:
             return {
                 ...state,
-                loading: true,
+                loading: {
+                    ...state.loading,
+                    updateDetails: true
+                },
                 data: {
                     ...state.data,
                     details: {
@@ -66,7 +117,10 @@ const reducer = (state = defaultState, action) => {
         case UPDATE_PROJECT_DETAILS_SUCCESS:
             return {
                 ...state,
-                loading: false,
+                loading: {
+                    ...state.loading,
+                    updateDetails: false
+                },
                 errors: [],
                 data: {
                     ...action.project
@@ -75,25 +129,37 @@ const reducer = (state = defaultState, action) => {
         case UPDATE_PROJECT_DETAILS_FAILURE:
             return {
                 ...state,
-                loading: false,
+                loading: {
+                    ...state.loading,
+                    updateDetails: false
+                },
                 errors: action.errors
             }
         case FETCH_PROJECT_DETAILS_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: {
+                    ...state.loading,
+                    fetchDetails: true
+                }
             }
         case FETCH_PROJECT_DETAILS_SUCCESS:
             return {
                 ...state,
-                loading: false,
+                loading: {
+                    ...state.loading,
+                    fetchDetails: false
+                },
                 data: action.project,
                 errors: []
             }
         case FETCH_PROJECT_DETAILS_FAILURE:
             return {
                 ...state,
-                loading: false,
+                loading: {
+                    ...state.loading,
+                    fetchDetails: false
+                },
                 errors: action.errors
             }
         default:

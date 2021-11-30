@@ -55,6 +55,9 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 id: true,
                 details: true,
                 tickets: {
+                    where: {
+                        archived: false
+                    },
                     select: {
                         id: true,
                         timeEstimate: true,
@@ -102,6 +105,7 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 }
             }
         });
+        
         return res.json({
             project: project,
         });

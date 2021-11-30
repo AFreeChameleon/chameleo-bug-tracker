@@ -14,12 +14,43 @@ import {
     DELETE_PROJECT_COLUMN_REQUEST,
     DELETE_PROJECT_COLUMN_SUCCESS,
     DELETE_PROJECT_COLUMN_FAILURE,
+    
+    FETCH_ARCHIVED_TICKETS_REQUEST,
+    FETCH_ARCHIVED_TICKETS_SUCCESS,
+    FETCH_ARCHIVED_TICKETS_FAILURE,
 } from './types';
 
 export const setProjectData = (data: any) => ({
     type: SET_PROJECT_DATA,
     data: data
 });
+
+export const fetchArchivedTickets = (id: string) => {
+    return dispatch => {
+        dispatch({
+            type: FETCH_ARCHIVED_TICKETS_REQUEST
+        });
+        axios.get(`/api/project/${id}/archived-tickets`, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: FETCH_ARCHIVED_TICKETS_SUCCESS,
+                tickets: res.data.tickets
+            });
+        }).catch((err: any) => {
+            if (err.response) {
+                dispatch({
+                    type: FETCH_ARCHIVED_TICKETS_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: FETCH_ARCHIVED_TICKETS_FAILURE,
+                    errors: ['An error occurred while getting your archived tickets, please try again later.']
+                })
+            }
+        })
+    }
+}
 
 export const deleteProjectColumn = (id: string, colId: string, method: string, colIdToMoveTo: string | null = null) => {
     return dispatch => {
