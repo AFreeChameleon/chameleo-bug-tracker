@@ -41,12 +41,44 @@ import {
     ARCHIVE_TICKET_REQUEST,
     ARCHIVE_TICKET_SUCCESS,
     ARCHIVE_TICKET_FAILURE,
+
+    FETCH_TICKET_DETAILS_REQUEST,
+    FETCH_TICKET_DETAILS_SUCCESS,
+    FETCH_TICKET_DETAILS_FAILURE,
 } from './types';
 
 export const setTicketData = (data: any) => ({
     type: SET_TICKET_DATA,
     data: data
 });
+
+export const fetchTicketDetails = (projectId: string, ticketNumber: number) => {
+    return dispatch => {
+        dispatch({
+            type: FETCH_TICKET_DETAILS_REQUEST
+        });
+        return axios.get(`/api/project/${projectId}/ticket/${ticketNumber}/details`, {
+            withCredentials: true
+        }).then((res: any) => {
+            dispatch({
+                type: FETCH_TICKET_DETAILS_SUCCESS,
+                ticket: res.data.ticket
+            });
+        }).catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: FETCH_TICKET_DETAILS_FAILURE,
+                    errors: err.response.errors
+                });
+            } else {
+                dispatch({
+                    type: FETCH_TICKET_DETAILS_FAILURE,
+                    errors: ['An error occurred while fetching this ticket, please try again later.']
+                });
+            }
+        })
+    }
+}
 
 export const archiveTicket = (projectId: string, ticketNumber: number, archive: boolean) => {
     return dispatch => {

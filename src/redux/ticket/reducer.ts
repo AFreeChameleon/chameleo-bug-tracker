@@ -40,6 +40,10 @@ import {
     ARCHIVE_TICKET_REQUEST,
     ARCHIVE_TICKET_SUCCESS,
     ARCHIVE_TICKET_FAILURE,
+
+    FETCH_TICKET_DETAILS_REQUEST,
+    FETCH_TICKET_DETAILS_SUCCESS,
+    FETCH_TICKET_DETAILS_FAILURE,
 } from './types';
 
 const defaultState: any = {
@@ -67,6 +71,35 @@ const reducer = (state = defaultState, action) => {
                 data: {
                     ...action.data
                 }
+            }
+
+        case FETCH_TICKET_DETAILS_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    fetchTicket: true
+                }
+            }
+        case FETCH_TICKET_DETAILS_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    fetchTicket: false
+                },
+                data: {
+                    ...action.ticket
+                }
+            }
+        case FETCH_TICKET_DETAILS_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    fetchTicket: false
+                },
+                errors: action.errors
             }
 
         case ARCHIVE_TICKET_REQUEST:

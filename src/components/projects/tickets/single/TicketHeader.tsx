@@ -36,6 +36,10 @@ import {
     setTicketName,
     archiveTicket
 } from "../../../../redux/ticket/actions";
+import {
+    setArchivedTickets
+} from '../../../../redux/project/actions';
+import TicketOptions from "./TicketOptions";
 
 const HeadingDiv = styled('div')(({ theme }) => ({
     marginTop: '50px',
@@ -117,6 +121,7 @@ type TicketHeaderProps = {
     dispatchSaveTicketTags: (projectId: string, ticketNumber: number, tags: any[]) => void;
     dispatchSetTicketName: (projectId: string, ticketNumber: number, name: string) => void;
     dispatchArchiveTicket: (projectId: string, ticketNumber: number, archive: boolean) => void;
+    dispatchSetArchivedTickets: (id: string, ticketNumbers: number[], archived: boolean, refresh?: boolean) => void;
 };
 
 type TicketHeaderState = {
@@ -177,9 +182,9 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
     }
 
     archiveTicket() {
-        const { project, ticket, dispatchArchiveTicket } = this.props;
+        const { project, ticket, dispatchSetArchivedTickets } = this.props;
 
-        dispatchArchiveTicket(project.id, ticket.ticketNumber, true);
+        dispatchSetArchivedTickets(project.id, [ticket.ticketNumber], true, true);
         this.setState({ moreOptionsEl: null });
     }
 
@@ -304,13 +309,14 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
                             Cancel
                         </SaveTagsButton>
                     </TagList>) }
-                    <IconButton
+                    {/* <IconButton
                         onClick={(e) => this.setState({ moreOptionsEl: e.currentTarget })}
                     >
                         <MoreIcon />
-                    </IconButton>
+                    </IconButton> */}
+                    <TicketOptions />
                 </FlexDiv>
-                <Menu
+                {/* <Menu
                     open={Boolean(moreOptionsEl)}
                     anchorEl={moreOptionsEl}
                     onClose={() => this.setState({ moreOptionsEl: null })}
@@ -323,7 +329,7 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
                             Archive
                         </ListItemText>
                     </MenuItem>
-                </Menu>
+                </Menu> */}
             </HeadingDiv>
         )
     }
@@ -337,7 +343,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     dispatchSaveTicketTags: (projectId: string, ticketNumber: number, tags: any[]) => dispatch(saveTicketTags(projectId, ticketNumber, tags)),
     dispatchSetTicketName: (projectId: string, ticketNumber: number, name: string) => dispatch(setTicketName(projectId, ticketNumber, name)),
-    dispatchArchiveTicket: (projectId: string, ticketNumber: number, archive: boolean) => dispatch(archiveTicket(projectId, ticketNumber, archive))
+    dispatchArchiveTicket: (projectId: string, ticketNumber: number, archive: boolean) => dispatch(archiveTicket(projectId, ticketNumber, archive)),
+    dispatchSetArchivedTickets: (id: string, ticketNumbers: number[], archived: boolean, refresh?: boolean) => dispatch(setArchivedTickets(id, ticketNumbers, archived, refresh))
 });
 
 export default compose<any>(

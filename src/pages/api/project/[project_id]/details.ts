@@ -3,6 +3,7 @@ import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { prisma }  from '../../../../lib/prisma';
+import { getProject } from '../../../../lib/db';
 import withSession, { NextApiRequestWithSession, NextApiRequestWithSessionRole, session } from '../../../../lib/session';
 import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../middleware/auth';
 
@@ -23,9 +24,10 @@ handler.use(isUserLoggedInWithRole);
 
 handler.get(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {
+        const project = await getProject(req.user.projects[0].id, req.user.id);
         return res.json({
-            project: req.user.projects[0],
-        })
+            project: project,
+        });
     } catch (err) {
         console.log(err);
         if (err.errors) {

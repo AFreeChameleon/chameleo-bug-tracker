@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { fetchTicketDetails } from '../ticket/actions';
 import {
     SET_PROJECT_DATA,
     SET_PROJECT_DETAILS,
@@ -18,6 +19,18 @@ import {
     FETCH_ARCHIVED_TICKETS_REQUEST,
     FETCH_ARCHIVED_TICKETS_SUCCESS,
     FETCH_ARCHIVED_TICKETS_FAILURE,
+
+    RESTORE_TICKETS_REQUEST,
+    RESTORE_TICKETS_SUCCESS,
+    RESTORE_TICKETS_FAILURE,
+
+    SET_ARCHIVED_TICKETS_REQUEST,
+    SET_ARCHIVED_TICKETS_SUCCESS,
+    SET_ARCHIVED_TICKETS_FAILURE,
+
+    DELETE_TICKETS_REQUEST,
+    DELETE_TICKETS_SUCCESS,
+    DELETE_TICKETS_FAILURE,
 } from './types';
 
 export const setProjectData = (data: any) => ({
@@ -25,12 +38,106 @@ export const setProjectData = (data: any) => ({
     data: data
 });
 
+export const deleteTickets = (id: string, ticketNumbers: number[]) => {
+    return dispatch => {
+        dispatch({
+            type: DELETE_TICKETS_REQUEST
+        });
+        return axios.post(`/api/project/${id}/ticket/delete`, {
+            ticketNumbers: ticketNumbers
+        }).then((res: any) => {
+            dispatch({
+                type: DELETE_TICKETS_SUCCESS,
+                project: res.data.project
+            });
+        }).catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: DELETE_TICKETS_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: DELETE_TICKETS_FAILURE,
+                    errors: ['An error occurred while deleting these tickets, please try again later.']
+                });
+            }
+        })
+    }
+}
+
+export const setArchivedTickets = (id: string, ticketNumbers: number[], archived: boolean, refresh: boolean = false) => {
+    return dispatch => {
+        dispatch({
+            type: SET_ARCHIVED_TICKETS_REQUEST
+        });
+        return axios.patch(`/api/project/${id}/ticket/archive`, {
+            ticketNumbers: ticketNumbers,
+            archived: archived
+        }, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: SET_ARCHIVED_TICKETS_SUCCESS,
+                project: res.data.project
+            });
+            if (refresh) {
+                dispatch(fetchTicketDetails(id, ticketNumbers[0]));
+            }
+            dispatch(fetchArchivedTickets(id));
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: SET_ARCHIVED_TICKETS_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: SET_ARCHIVED_TICKETS_FAILURE,
+                    errors: ['An error occurred while restoring these tickets, please try again later.']
+                })
+            }
+        })
+    }
+}
+
+export const restoreTickets = (id: string, ticketNumbers: number[]) => {
+    return dispatch => {
+        dispatch({
+            type: RESTORE_TICKETS_REQUEST
+        });
+        axios.patch(`/api/project/${id}/ticket/restore`, {
+            ticketNumbers: ticketNumbers
+        }, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: RESTORE_TICKETS_SUCCESS,
+                project: res.data.project
+            });
+            dispatch(fetchArchivedTickets(id));
+        })
+        .catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: RESTORE_TICKETS_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: RESTORE_TICKETS_FAILURE,
+                    errors: ['An error occurred while restoring these tickets, please try again later.']
+                })
+            }
+        })
+    }
+}
+
 export const fetchArchivedTickets = (id: string) => {
     return dispatch => {
         dispatch({
             type: FETCH_ARCHIVED_TICKETS_REQUEST
         });
-        axios.get(`/api/project/${id}/archived-tickets`, { withCredentials: true })
+        axios.get(`/api/project/${id}/ticket/archived`, { withCredentials: true })
         .then((res: any) => {
             dispatch({
                 type: FETCH_ARCHIVED_TICKETS_SUCCESS,

@@ -58,7 +58,7 @@ model Ticket {
 }
 
 model Project {
-  id        String                @unique @default(uuid()) @db.Uuid
+  id        String                @id @unique @default(uuid()) @db.Uuid
   userId    Int
   name      String
   details   Json?

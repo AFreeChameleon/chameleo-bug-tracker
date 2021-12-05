@@ -17,6 +17,18 @@ import {
     FETCH_ARCHIVED_TICKETS_REQUEST,
     FETCH_ARCHIVED_TICKETS_SUCCESS,
     FETCH_ARCHIVED_TICKETS_FAILURE,
+
+    RESTORE_TICKETS_REQUEST,
+    RESTORE_TICKETS_SUCCESS,
+    RESTORE_TICKETS_FAILURE,
+
+    SET_ARCHIVED_TICKETS_REQUEST,
+    SET_ARCHIVED_TICKETS_SUCCESS,
+    SET_ARCHIVED_TICKETS_FAILURE,
+
+    DELETE_TICKETS_REQUEST,
+    DELETE_TICKETS_SUCCESS,
+    DELETE_TICKETS_FAILURE,
 } from './types';
 
 const defaultState = {
@@ -24,7 +36,10 @@ const defaultState = {
         deleteColumn: false,
         updateDetails: false,
         fetchDetails: false,
-        fetchArchivedTickets: false
+        fetchArchivedTickets: false,
+        setArchivedTickets: false,
+        restoreTickets: false,
+        deleteTickets: false,
     },
     errors: [],
     data: {}
@@ -36,9 +51,95 @@ const reducer = (state = defaultState, action) => {
             return {
                 ...state,
                 data: {
-                    // ...state.data,
                     ...action.data
                 }
+            }
+
+        case DELETE_TICKETS_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteTickets: true
+                }
+            }
+        case DELETE_TICKETS_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteTickets: false
+                },
+                data: {
+                    ...action.project
+                }
+            }
+        case DELETE_TICKETS_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteTickets: false
+                },
+                errors: action.errors
+            }
+
+        case SET_ARCHIVED_TICKETS_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    setArchivedTickets: true
+                }
+            }
+        case SET_ARCHIVED_TICKETS_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    setArchivedTickets: false
+                },
+                data: {
+                    ...action.project
+                }
+            }
+        case SET_ARCHIVED_TICKETS_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    setArchivedTickets: false
+                },
+                errors: action.errors
+            }
+
+        case RESTORE_TICKETS_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    restoreTickets: true
+                }
+            }
+        case RESTORE_TICKETS_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    restoreTickets: false
+                },
+                data: {
+                    ...action.project
+                }
+            }
+        case RESTORE_TICKETS_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    restoreTickets: false
+                },
+                errors: action.errors
             }
 
         case FETCH_ARCHIVED_TICKETS_REQUEST:

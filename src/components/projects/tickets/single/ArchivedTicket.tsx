@@ -5,9 +5,12 @@ import { compose } from "redux";
 import { connect } from "react-redux";
 
 import {
-    setTicketDescription,
-    archiveTicket
+    fetchTicketDetails
 } from '../../../../redux/ticket/actions';
+import {
+    setArchivedTickets
+} from '../../../../redux/project/actions';
+
 
 import {
     styled,
@@ -146,8 +149,13 @@ const ModalBody = styled(Paper)(({ theme }) => ({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#fff',
-    padding: '10px 20px',
+    padding: '20px 30px',
     width: '400px'
+}));
+
+const SmallButton = styled(Button)(({ theme }) => ({
+    textTransform: 'none',
+    width: '100px'
 }));
 
 type TicketBodyProps = {
@@ -155,7 +163,8 @@ type TicketBodyProps = {
     ticket: any;
     user: any
 
-    dispatchArchiveTicket: (projectId: string, ticketNumber: number, archive: boolean) => void;
+    dispatchSetArchivedTickets: (id: string, ticketNumbers: number[], archived: boolean, refresh?: boolean) => void;
+    dispatchFetchTicketDetails: (id: string, ticketNumber: number) => void;
 }
 
 type TicketBodyState = {
@@ -195,10 +204,11 @@ class TicketBody extends React.Component<TicketBodyProps, TicketBodyState> {
         const {
             project,
             ticket,
-            dispatchArchiveTicket
+            dispatchSetArchivedTickets,
+            dispatchFetchTicketDetails
         } = this.props;
 
-        dispatchArchiveTicket(project.id, ticket.ticketNumber, false);
+        dispatchSetArchivedTickets(project.id, [ticket.ticketNumber], false, true);
 
         this.setState({ restoreModalOpen: false });
     }
@@ -231,14 +241,14 @@ class TicketBody extends React.Component<TicketBodyProps, TicketBodyState> {
                             {ticket.ticketNumber}
                         </LinkDiv>
                     </Breadcrumbs>
-                    <FlexDiv sx={{marginTop: '30px'}}>
+                    <FlexDiv sx={{marginTop: '35px'}}>
                         <Typography
                             variant="h1"
                         >
                             {ticket.name}
                         </Typography>
                     </FlexDiv>
-                    <FlexDiv sx={{ marginTop: '10px' }}>
+                    <FlexDiv sx={{ marginTop: '15px' }}>
                         <TagList>
                             { ticket.tags.map(({tag}, i) => (
                                 <Tag key={i}>
@@ -270,24 +280,24 @@ class TicketBody extends React.Component<TicketBodyProps, TicketBodyState> {
                                 Are you sure you want to restore this ticket?
                             </Typography>
                             <FlexDiv sx={{ marginTop: '40px' }}>
-                                <Button
+                                <SmallButton
                                     variant="contained"
                                     sx={{
                                         width: '150px',
                                     }}
                                     onClick={this.restoreTicket}
                                 >
-                                    YES
-                                </Button>
-                                <Button
+                                    Restore
+                                </SmallButton>
+                                <SmallButton
                                     variant="outlined"
                                     sx={{
                                         width: '150px',
                                     }}
                                     onClick={() => this.setState({ restoreModalOpen: false })}
                                 >
-                                    No
-                                </Button>
+                                    Cancel
+                                </SmallButton>
                             </FlexDiv>
                         </ModalBody>
                     </Modal>
@@ -299,7 +309,7 @@ class TicketBody extends React.Component<TicketBodyProps, TicketBodyState> {
                         >
                             {ticket.description}
                         </Typography>
-                        <Main sx={{ marginTop: '30px' }}>
+                        {ticket.comments.length > 0 && <Main sx={{ marginTop: '30px' }}>
                             <Typography
                                 variant="subtitle1"
                             >
@@ -335,7 +345,7 @@ class TicketBody extends React.Component<TicketBodyProps, TicketBodyState> {
                                     </CommentContainer>
                                 )
                             }) }
-                        </Main>
+                        </Main>}
                     </Main>
                     <Details>
                         <Detail>
@@ -423,7 +433,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    dispatchArchiveTicket: (projectId: string, ticketNumber: number, archive: boolean) => dispatch(archiveTicket(projectId, ticketNumber, archive))
+    dispatchSetArchivedTickets: (id: string, ticketNumbers: number[], archived: boolean, refresh?: boolean) => dispatch(setArchivedTickets(id, ticketNumbers, archived, refresh)),
+    dispatchFetchTicketDetails: (id: string, ticketNumber: number) => dispatch(fetchTicketDetails(id, ticketNumber))
 });
 
 export default compose<any>(

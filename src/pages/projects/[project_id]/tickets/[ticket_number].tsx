@@ -45,10 +45,11 @@ const TicketPage: NextPage<TicketPageProps> = ({
     const ticketData = useSelector((state: any) => state.ticket.data);
     const dispatch = useDispatch();
     useEffect(() => {
+        console.log('setting data')
         dispatch(setProjectData(project));
         dispatch(setUserData(user));
         dispatch(setTicketData(ticket));
-    }, [router.query.ticket_number, ticket.archived]);
+    }, [router.query.ticket_number]);
 
     if (_.isEmpty(projectData) || _.isEmpty(userData) || _.isEmpty(ticketData)) {
         return null;
@@ -58,7 +59,7 @@ const TicketPage: NextPage<TicketPageProps> = ({
             <Header createTicket />
             <Box display="grid" gridTemplateColumns="250px auto">
                 <Sidebar ticketView />
-                { !ticket.archived ? (
+                { !ticketData.archived ? (
                     <Container>
                         <TicketHeader />
                         <TicketBody />

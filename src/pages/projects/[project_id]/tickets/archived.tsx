@@ -56,21 +56,18 @@ const ArchivedTicketsPage: NextPage<ArchivedTicketsPageProps> = ({
 }) => {
     const router = useRouter();
     const projectData = useSelector((state: any) => state.project.data);
-    const ticketsData = useSelector((state: any) => state.project.data.archivedTickets);
     const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setProjectData({
             ...project,
-            archivedTickets: tickets
         }));
         dispatch(setUserData(user));
     }, []);
 
-    if (_.isEmpty(projectData) || _.isEmpty(userData) || !_.isEmpty(ticketsData)) {
+    if (_.isEmpty(projectData) || _.isEmpty(userData)) {
         return null;
     }
-
     return (
         <div>
             <Header createTicket />
