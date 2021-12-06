@@ -26,8 +26,10 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
+import IconButton from '@mui/material/IconButton';
 
 import SearchIcon from '@mui/icons-material/Search';
+import MoreIcon from '@mui/icons-material/MoreHoriz';
 
 import Header from '../../../components/Header';
 import ifAuth from '../../../components/auth/ifAuth';
@@ -35,6 +37,7 @@ import { authenticated } from '../../../lib/auth';
 import Alerts from '../../../components/Alerts';
 import DraggableBoards from '../../../components/projects/tickets/DraggableBoards';
 import Sidebar from '../../../components/Sidebar';
+import ProjectOptions from '../../../components/projects/ProjectOptions';
 
 type ProjectPageProps = {
     project: any;
@@ -42,7 +45,8 @@ type ProjectPageProps = {
 }
 
 const HeadingDiv = styled('div')(({ theme }) => ({
-    margin: '50px auto 0 auto',
+    margin: '50px 0 0 0',
+    width: 'calc(100vw - 350px)'
 }));
 
 const LinkDiv = styled('div')(({ theme }) => ({
@@ -163,6 +167,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                                     inputProps={{ 'aria-label': 'search' }}
                                 />
                             </Search>
+                            <ProjectOptions />
                         </FlexDiv>
                     </HeadingDiv>
                     {(project && project.tickets) && <DraggableBoards />}
