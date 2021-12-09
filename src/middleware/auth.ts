@@ -33,6 +33,11 @@ export const isUserLoggedInWithRole = async (req: NextApiRequestWithSessionRole,
             },
             select: {
                 id: true,
+                roles: {
+                    where: {
+                        projectId: project_id
+                    }
+                },
                 projects: {
                     where: {
                         id: project_id

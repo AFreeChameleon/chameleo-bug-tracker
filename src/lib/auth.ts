@@ -33,30 +33,35 @@ export const checkPermission = (role: string) => {
                 read: true,
                 write: true,
                 userReadWrite: true,
+                priority: 3
             }
         case 'Administrator':
             return {
                 read: true,
                 write: true,
-                userReadWrite: true
+                userReadWrite: true,
+                priority: 2
             }
         case 'User':
             return {
                 read: true,
                 write: true,
-                userReadWrite: false
+                userReadWrite: false,
+                priority: 1
             }
         case 'ReadOnly':
             return {
                 read: true,
                 write: false,
-                userReadWrite: false
+                userReadWrite: false,
+                priority: 0
             }
         default:
             return {
                 read: false,
                 write: false,
-                userReadWrite: false
+                userReadWrite: false,
+                priority: -1
             }
     }
 }

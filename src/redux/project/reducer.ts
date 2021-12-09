@@ -29,6 +29,14 @@ import {
     DELETE_TICKETS_REQUEST,
     DELETE_TICKETS_SUCCESS,
     DELETE_TICKETS_FAILURE,
+
+    ADD_USER_TO_PROJECT_REQUEST,
+    ADD_USER_TO_PROJECT_SUCCESS,
+    ADD_USER_TO_PROJECT_FAILURE,
+
+    CHANGE_USER_PERMISSIONS_REQUEST,
+    CHANGE_USER_PERMISSIONS_SUCCESS,
+    CHANGE_USER_PERMISSIONS_FAILURE,
 } from './types';
 
 const defaultState = {
@@ -40,6 +48,8 @@ const defaultState = {
         setArchivedTickets: false,
         restoreTickets: false,
         deleteTickets: false,
+        addUser: false,
+        changePermissions: false
     },
     errors: [],
     data: {}
@@ -53,6 +63,64 @@ const reducer = (state = defaultState, action) => {
                 data: {
                     ...action.data
                 }
+            }
+
+        case CHANGE_USER_PERMISSIONS_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    changePermissions: true
+                }
+            }
+        case CHANGE_USER_PERMISSIONS_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    changePermissions: false
+                },
+                data: {
+                    ...action.project
+                }
+            }
+        case CHANGE_USER_PERMISSIONS_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    changePermissions: false
+                },
+                errors: action.errors
+            }
+
+        case ADD_USER_TO_PROJECT_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    addUser: true
+                }
+            }
+        case ADD_USER_TO_PROJECT_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    addUser: false
+                },
+                data: {
+                    ...action.project
+                }
+            }
+        case ADD_USER_TO_PROJECT_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    addUser: false
+                },
+                errors: action.errors
             }
 
         case DELETE_TICKETS_REQUEST:

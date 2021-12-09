@@ -2,7 +2,7 @@ import {
     SET_ALERTS
 } from './types';
 
-type Alert = {
+export type Alert = {
     type: 'success' | 'error';
     message: string;
 }

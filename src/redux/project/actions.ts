@@ -31,12 +31,78 @@ import {
     DELETE_TICKETS_REQUEST,
     DELETE_TICKETS_SUCCESS,
     DELETE_TICKETS_FAILURE,
+
+    ADD_USER_TO_PROJECT_REQUEST,
+    ADD_USER_TO_PROJECT_SUCCESS,
+    ADD_USER_TO_PROJECT_FAILURE,
+
+    CHANGE_USER_PERMISSIONS_REQUEST,
+    CHANGE_USER_PERMISSIONS_SUCCESS,
+    CHANGE_USER_PERMISSIONS_FAILURE,
 } from './types';
 
 export const setProjectData = (data: any) => ({
     type: SET_PROJECT_DATA,
     data: data
 });
+
+export const changeUserPermissions = (id: string, email: string, role: string) => {
+    return dispatch => {
+        dispatch({
+            type: CHANGE_USER_PERMISSIONS_REQUEST
+        });
+        return axios.post(`/api/project/${id}/user/edit-permission`, {
+            email: email,
+            role: role
+        }, { withCredentials: true }).then((res: any) => {
+            dispatch({
+                type: CHANGE_USER_PERMISSIONS_SUCCESS,
+                project: res.data.project
+            });
+        }).catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: CHANGE_USER_PERMISSIONS_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: CHANGE_USER_PERMISSIONS_FAILURE,
+                    errors: ['An error occurred while changing permissions, please try again later.']
+                });
+            }
+        });
+    }
+}
+
+export const addUserToProject = (id: string, email: string) => {
+    return dispatch => {
+        dispatch({
+            type: ADD_USER_TO_PROJECT_REQUEST
+        });
+        return axios.post(`/api/project/${id}/user/add`, {
+            email: email
+        }, { withCredentials: true })
+        .then((res: any) => {
+            dispatch({
+                type: ADD_USER_TO_PROJECT_SUCCESS,
+                project: res.data.project
+            });
+        }).catch((err) => {
+            if (err.response) {
+                dispatch({
+                    type: ADD_USER_TO_PROJECT_FAILURE,
+                    errors: err.response.errors  
+                });
+            } else {
+                dispatch({
+                    type: ADD_USER_TO_PROJECT_FAILURE,
+                    errors: ['An error occurred while deleting these tickets, please try again later.']
+                });
+            }
+        })
+    }
+};
 
 export const deleteTickets = (id: string, ticketNumbers: number[]) => {
     return dispatch => {

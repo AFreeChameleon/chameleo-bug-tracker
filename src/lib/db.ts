@@ -38,11 +38,6 @@ export const getProject = async (projectId: string, userId: number) => {
                     ticketNumber: true
                 },
             },
-            roles: {
-                where: {
-                    userId: userId
-                }
-            },
             tags: {
                 select: {
                     id: true,
@@ -71,6 +66,16 @@ export const getProject = async (projectId: string, userId: number) => {
                             email: true,
                             createdAt: true,
                             updatedAt: true,
+                            roles: {
+                                where: {
+                                    projectId: projectId
+                                },
+                                select: {
+                                    projectId: true,
+                                    userId: true,
+                                    role: true
+                                }
+                            }
                         }
                     }
                 }

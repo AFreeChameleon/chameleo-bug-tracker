@@ -29,9 +29,11 @@ handler.post(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) =>
         
         const userResults = await prisma.user.findMany({
             where: {
-                email: {
-                    startsWith: email
-                }
+                email: email,
+                // ! ADD IN AFTER DEVELOPMENT FINISHED
+                // NOT: [
+                //     { id: req.user.id }
+                // ]
             },
             select: {
                 id: true,

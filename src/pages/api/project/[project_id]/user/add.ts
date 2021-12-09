@@ -53,9 +53,17 @@ handler.post(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) =>
         const createdJunction = await prisma.projectUserJunction.create({
             data: {
                 userId: addingUser.id,
-                projectId: projectId
+                projectId: projectId,
             }
         });
+
+        const createdRole = await prisma.role.create({
+            data: {
+                userId: addingUser.id,
+                projectId: projectId,
+                role: 'User'
+            },
+        })
 
         const newProject = await getProject(projectId, req.user.id);
 
