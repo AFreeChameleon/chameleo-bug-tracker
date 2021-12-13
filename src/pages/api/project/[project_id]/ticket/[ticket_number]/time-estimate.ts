@@ -2,10 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
-import { prisma }  from '../../../../../../../lib/prisma';
-import withSession, { NextApiRequestWithSession, session } from '../../../../../../../lib/session';
-import { isUserLoggedInWithRole } from '../../../../../../../middleware/auth';
-import { getTicket } from '../../../../../../../lib/db';
+import { prisma }  from '../../../../../../lib/prisma';
+import withSession, { NextApiRequestWithSession, session } from '../../../../../../lib/session';
+import { isUserLoggedInWithRole } from '../../../../../../middleware/auth';
+import { getTicket } from '../../../../../../lib/db';
+import { canUserEditTickets } from '../../../../../../middleware/permissions';
 
 const schema = yup.object().shape({
     tags: yup.array().required()
@@ -25,12 +26,13 @@ const handler = nextConnect({
 
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
+handler.use(canUserEditTickets);
 
 handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {
         const project_id = req.query.project_id as string;
         const ticket_number = req.query.ticket_number as string;
-        const { name } = req.body;
+        const { time } = req.body;
 
         await prisma.ticket.updateMany({
             where: {
@@ -38,7 +40,7 @@ handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 ticketNumber: parseInt(ticket_number)
             },
             data: {
-                name: name
+                timeEstimate: time || '0m'
             },
         });
 

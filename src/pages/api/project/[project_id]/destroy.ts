@@ -24,7 +24,8 @@ handler.use(isUserLoggedInWithRole);
 
 handler.delete(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {
-        if (!checkPermission(req.user.projects[0].roles[0].role).write) {
+        const userPermissions = checkPermission(req.user.roles[0].role);
+        if (req.user.roles[0].role !== 'Owner') {
             return res.status(401).json({
                 errors: ['You do not have permissions to delete this.']
             });

@@ -6,6 +6,7 @@ import { prisma }  from '../../../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../../../lib/session';
 import { isUserLoggedInWithRole } from '../../../../../../../middleware/auth';
 import { getTicket } from '../../../../../../../lib/db';
+import { canUserEditTickets } from '../../../../../../../middleware/permissions';
 
 const schema = yup.object().shape({
     tags: yup.array().required()
@@ -25,6 +26,7 @@ const handler = nextConnect({
 
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
+handler.use(canUserEditTickets);
 
 handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {

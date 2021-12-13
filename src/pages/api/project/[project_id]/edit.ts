@@ -31,7 +31,7 @@ handler.use(isUserLoggedInWithRole);
 handler.patch(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {
         const { name } = schema.validateSync(req.body);
-        if (!checkPermission(req.user.projects[0].roles[0].role).write) {
+        if (req.user.roles[0].role !== 'Owner' && req.user.roles[0].role !== 'Administrator') {
             return res.status(401).json({
                 errors: ['You do not have permissions to edit this.']
             });

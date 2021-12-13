@@ -9,6 +9,7 @@ const mailer: Mailgun = mailgun({
 
 const verifyEmailHTML = readFileSync(path.join(process.cwd(), './html/verification.html'));
 const resetPassHTML = readFileSync(path.join(process.cwd(), './html/reset-password.html'));
+const changedEmailHTML = readFileSync(path.join(process.cwd(), './html/account-details-changed.html'))
 
 export const sendVerifyEmail = (userEmail: string, token: string) => {
     return new Promise((resolve, reject) => {
@@ -19,7 +20,7 @@ export const sendVerifyEmail = (userEmail: string, token: string) => {
             to: userEmail,
             subject: 'Verify your email!',
             html: newVerifyEmailHTML
-        }
+        };
         mailer.messages().send(data, (err, body) => {
             if (err) {
                 console.log(err)
@@ -34,8 +35,33 @@ export const sendVerifyEmail = (userEmail: string, token: string) => {
                     message: body
                 });
             }
-        })
-    })
+        });
+    });
+}
+
+export const sendChangedEmailAddressEmail = (userEmail: string) => {
+    return new Promise((resolve, reject) => {
+        const newResetPassHTML = changedEmailHTML.toString();
+        const data = {
+            from: 'Support Chameleo <info@chamel.io>',
+            to: userEmail,
+            subject: 'Successfully changed your email.',
+            html: newResetPassHTML
+        };
+        mailer.messages().send(data, (err, body) => {
+            if (err) {
+                reject({
+                    error: true,
+                    message: err
+                })
+            } else {
+                resolve({
+                    error: false,
+                    message: body
+                });
+            }
+        });
+    });
 }
 
 export const sendResetPassEmail = (userEmail: string, token: string) => {
@@ -60,6 +86,6 @@ export const sendResetPassEmail = (userEmail: string, token: string) => {
                     message: body
                 });
             }
-        })
-    })
+        });
+    });
 }

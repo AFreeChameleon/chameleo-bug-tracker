@@ -6,6 +6,7 @@ import { prisma }  from '../../../../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../../../../lib/session';
 import { isUserLoggedInWithRole } from '../../../../../../../../middleware/auth';
 import { getTicket } from '../../../../../../../../lib/db';
+import { canUserEditTickets } from '../../../../../../../../middleware/permissions';
 
 const schema = yup.object().shape({
     message: yup.string().required('Comment can\'t be null.')
@@ -25,6 +26,7 @@ const handler = nextConnect({
 
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
+handler.use(canUserEditTickets);
 
 handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {

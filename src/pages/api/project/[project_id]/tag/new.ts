@@ -6,6 +6,7 @@ import timestring from 'timestring';
 import { prisma }  from '../../../../../lib/prisma';
 import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../../middleware/auth';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../lib/session';
+import { canUserEditTickets } from '../../../../../middleware/permissions';
 
 const schema = yup.object().shape({
     name: yup.string()
@@ -26,6 +27,7 @@ const handler = nextConnect({
 
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
+handler.use(canUserEditTickets);
 
 handler.post(async (req: any, res: NextApiResponse) => {
     try {

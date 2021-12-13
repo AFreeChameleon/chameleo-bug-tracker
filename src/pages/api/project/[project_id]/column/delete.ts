@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { prisma }  from '../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSessionRole, session } from '../../../../../lib/session';
 import { isUserLoggedInWithRole } from '../../../../../middleware/auth';
+import { getProject } from '../../../../../lib/db';
 
 const schema = yup.object().shape({
     column_id: yup.string()
@@ -63,80 +64,15 @@ handler.post(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) =>
         }
         editableDetails.columnOrder = editableDetails.columnOrder.filter(c => c !== column_id);
         editableDetails.columns = _.omit(editableDetails.columns, [column_id]);
-        const project = await prisma.project.update({
+        await prisma.project.update({
             where: {
                 id: project_id
             },
             data: {
                 details: editableDetails
-            },
-            select: {
-                name: true,
-                id: true,
-                details: true,
-                tickets: {
-                    select: {
-                        id: true,
-                        timeEstimate: true,
-                        status: true,
-                        priority: true,
-                        description: true,
-                        name: true,
-                        user: {
-                            select: {
-                                id: true,
-                                email: true,
-                                firstName: true,
-                                lastName: true
-                            }
-                        },
-                        assignedUserId: true,
-                        source: true,
-                        started: true,
-                        createdAt: true,
-                        updatedAt: true,
-                        ticketNumber: true
-                    },
-                },
-                roles: {
-                    where: {
-                        userId: req.user.id
-                    }
-                },
-                tags: {
-                    select: {
-                        id: true,
-                        name: true,
-                        createdAt: true,
-                        updatedAt: true
-                    }
-                },
-                updatedAt: true,
-                createdAt: true,
-                user: { 
-                    select: {
-                        id: true,
-                        email: true,
-                        firstName: true,
-                        lastName: true
-                    }
-                },
-                users: {
-                    select: {
-                        user: {
-                            select: {
-                                id: true,
-                                firstName: true,
-                                lastName: true,
-                                email: true,
-                                createdAt: true,
-                                updatedAt: true,
-                            }
-                        }
-                    }
-                }
             }
         });
+        const project = await getProject(project_id, req.user.id)
         return res.json({
             project: project,
         });

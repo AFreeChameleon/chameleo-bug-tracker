@@ -7,6 +7,7 @@ import withSession, { NextApiRequestWithSession, NextApiRequestWithSessionRole, 
 import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../../middleware/auth';
 import { checkPermission } from '../../../../../lib/auth';
 import { getProject } from '../../../../../lib/db';
+import { canUserEditUsers } from '../../../../../middleware/permissions';
 
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {
@@ -22,6 +23,7 @@ const handler = nextConnect({
 
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
+handler.use(canUserEditUsers);
 
 handler.post(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {

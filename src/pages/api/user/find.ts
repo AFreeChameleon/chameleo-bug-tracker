@@ -21,7 +21,7 @@ const handler = nextConnect({
 });
 
 handler.use(session);
-handler.use(isUserLoggedInWithRole);
+handler.use(isUserLoggedIn);
 
 handler.post(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {
@@ -30,10 +30,9 @@ handler.post(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) =>
         const userResults = await prisma.user.findMany({
             where: {
                 email: email,
-                // ! ADD IN AFTER DEVELOPMENT FINISHED
-                // NOT: [
-                //     { id: req.user.id }
-                // ]
+                NOT: [
+                    { id: req.user.id }
+                ]
             },
             select: {
                 id: true,

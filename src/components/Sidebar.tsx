@@ -20,6 +20,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 import LogoutIcon from '@mui/icons-material/Logout';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Root = styled('div')(({ theme }: any) => ({
     width: '250px',
@@ -158,17 +159,19 @@ class Sidebar extends React.Component<SidebarProps> {
                     )})}
                 </MenuList>
                 <FlexGrow/>
-                <MenuItem sx={{
-                    height: '50px',
-                    borderTop: (theme) => `1px solid ${theme.palette.grey['200']}`
-                }}>
-                    <ListItemIcon>
-                        <LogoutIcon color="primary"/>
-                    </ListItemIcon>
-                    <ListItemText>
-                        Logout
-                    </ListItemText>
-                </MenuItem>
+                <NextLink href="/account">
+                    <MenuItem sx={{
+                        height: '50px',
+                        borderTop: (theme) => `1px solid ${theme.palette.grey['200']}`
+                    }}>
+                        <ListItemIcon>
+                            <AccountCircleIcon color="primary"/>
+                        </ListItemIcon>
+                        <ListItemText>
+                            Account
+                        </ListItemText>
+                    </MenuItem>
+                </NextLink>
             </Root>
         )
     }

@@ -6,6 +6,7 @@ import { prisma }  from '../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, NextApiRequestWithSessionRole, session } from '../../../../../lib/session';
 import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../../middleware/auth';
 import { getProject } from '../../../../../lib/db';
+import { canUserEditTickets } from '../../../../../middleware/permissions';
 
 const handler = nextConnect({
     onError(error, req: NextApiRequest, res: NextApiResponse) {
@@ -21,6 +22,7 @@ const handler = nextConnect({
 
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
+handler.use(canUserEditTickets);
 
 handler.patch(async (req: NextApiRequestWithSessionRole, res: NextApiResponse) => {
     try {

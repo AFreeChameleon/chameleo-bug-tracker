@@ -6,6 +6,7 @@ import { prisma }  from '../../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../../lib/session';
 import { isUserLoggedInWithRole } from '../../../../../../middleware/auth';
 import { mapIntToStatus } from '../../../../../../lib/ticket';
+import { canUserEditTickets } from '../../../../../../middleware/permissions';
 
 const schema = yup.object().shape({
     ticket_id: yup.number()
@@ -28,6 +29,7 @@ const handler = nextConnect({
 
 handler.use(session);
 handler.use(isUserLoggedInWithRole);
+handler.use(canUserEditTickets);
 
 handler.patch(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
     try {

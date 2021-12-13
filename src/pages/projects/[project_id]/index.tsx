@@ -39,11 +39,6 @@ import DraggableBoards from '../../../components/projects/tickets/DraggableBoard
 import Sidebar from '../../../components/Sidebar';
 import ProjectOptions from '../../../components/projects/ProjectOptions';
 
-type ProjectPageProps = {
-    project: any;
-    user: any;
-}
-
 const HeadingDiv = styled('div')(({ theme }) => ({
     margin: '50px 0 0 0',
     width: 'calc(100vw - 350px)'
@@ -113,7 +108,12 @@ const SmallButton = styled(Button)(({ theme }) => ({
     // height: '50px',
     textTransform: 'none',
     fontSize: theme.typography.body2.fontSize,
-}))
+}));
+
+type ProjectPageProps = {
+    project: any;
+    user: any;
+}
 
 const ProjectPage: NextPage<ProjectPageProps> = ({
     project,
