@@ -26,7 +26,7 @@ import ifAuth from '../../components/auth/ifAuth';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import AccountTabs from '../../components/account/AccountTabs';
-import AccountGeneral from '../../components/account/AccountGeneral';
+import AccountBilling from '../../components/account/AccountBilling';
 import Alerts from '../../components/Alerts';
 
 const Container = styled('div')(({ theme }) => ({
@@ -47,11 +47,11 @@ const HeaderTypography = styled(Typography)(({ theme }) => ({
     
 }));
 
-type AccountPageProps = {
+type AccountBillingPageProps = {
     user: any;
 }
 
-const AccountPage: NextPage<AccountPageProps> = ({ user }) => {
+const AccountBillingPage: NextPage<AccountBillingPageProps> = ({ user }) => {
     const router = useRouter();
     const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
@@ -91,8 +91,8 @@ const AccountPage: NextPage<AccountPageProps> = ({ user }) => {
                             </HeaderTypography>
                         </Box>
                     </HeadingDiv>
-                    <AccountTabs selectedTab={0} />
-                    <AccountGeneral />
+                    <AccountTabs selectedTab={1} />
+                    <AccountBilling />
                 </Container>
             </Box>
             <Alerts />
@@ -100,7 +100,7 @@ const AccountPage: NextPage<AccountPageProps> = ({ user }) => {
     )
 }
 
-AccountPage.getInitialProps = async (ctx) => {
+AccountBillingPage.getInitialProps = async (ctx) => {
     try {
         let userRes: any;
         if (ctx.req) {
@@ -131,6 +131,6 @@ AccountPage.getInitialProps = async (ctx) => {
     }
 }
 
-const AuthenticatedAccountPage = ifAuth(AccountPage);
+const AuthenticatedAccountBillingPage = ifAuth(AccountBillingPage);
 
-export default AuthenticatedAccountPage;
+export default AuthenticatedAccountBillingPage;

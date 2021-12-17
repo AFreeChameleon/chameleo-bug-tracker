@@ -54,7 +54,7 @@ handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
         } else {
             const valid = bcrypt.compareSync(password, user.password);
             if (valid) {
-                req.session.set('user', user.id);
+                req.session.user = user.id;
                 await req.session.save();
                 return res.json({
                     message: 'Successfully logged in!'

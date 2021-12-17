@@ -5,7 +5,7 @@ import withSession, { NextApiRequestWithSession, NextApiRequestWithSessionRole }
 
 export const isUserLoggedIn = async (req: NextApiRequestWithSession, res: NextApiResponse, next: NextHandler) => {
     try {
-        const id = req.session.get('user') || -1;
+        const id = req.session.user || -1;
         const user = await prisma.user.findUnique({
             where: {
                 id: id
@@ -25,7 +25,7 @@ export const isUserLoggedIn = async (req: NextApiRequestWithSession, res: NextAp
 
 export const isUserLoggedInWithRole = async (req: NextApiRequestWithSessionRole, res: NextApiResponse, next: NextHandler) => {
     try {
-        const id = req.session.get('user') || -1;
+        const id = req.session.user || -1;
         const project_id = req.query.project_id as string;
         const rawUser = await prisma.user.findUnique({
             where: {

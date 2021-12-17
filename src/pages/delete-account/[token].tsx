@@ -6,8 +6,10 @@ import axios from 'axios';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import { Typography } from '@mui/material';
+import { withIronSession } from 'next-iron-session';
+import withSession, { session } from '../../lib/session';
 
-type VerifyEmailTokenProps = {
+type DeleteAccountTokenProps = {
     error: boolean;
     message: string;
 }
@@ -35,9 +37,9 @@ const InnerContainerButton = styled('div')((theme) => ({
     paddingTop: '20px'
 }));
 
-const VerifyEmailToken: NextPage<VerifyEmailTokenProps> = ({ error, message }: VerifyEmailTokenProps) => {
+const DeleteAccountToken: NextPage<DeleteAccountTokenProps> = ({ error, message }: DeleteAccountTokenProps) => {
     const router = useRouter();
-    console.log(error, message)
+
     useEffect(() => {
         if (!error) {
             router.push('/login')
@@ -54,7 +56,7 @@ const VerifyEmailToken: NextPage<VerifyEmailTokenProps> = ({ error, message }: V
                     variant="h1"
                     gutterBottom
                 >
-                    Verified!
+                    Deleted your account
                 </Typography>
                 <Typography
                     variant="body2"
@@ -79,16 +81,17 @@ const VerifyEmailToken: NextPage<VerifyEmailTokenProps> = ({ error, message }: V
                     variant="body2"
                     gutterBottom
                 >
-                    An error occurred while verifying your email.
+                    An error occurred while deleting your account.
                 </Typography>
                 <InnerContainerButton>
                     <Button
                         color="primary"
                         variant="contained" 
-                        fullWidth
-                        onClick={(e) => router.push('/register')}
+                        // fullWidth
+                        onClick={(e) => router.push('/account')}
+                        sx={{ textTransform: 'none' }}
                     >
-                        Go back to register
+                        Go back
                     </Button>
                 </InnerContainerButton>
             </InnerContainer>
@@ -96,7 +99,7 @@ const VerifyEmailToken: NextPage<VerifyEmailTokenProps> = ({ error, message }: V
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = withSession(async (context) => {
     try {
         const rawToken = context.query.token as string;
         if (!rawToken) {
@@ -109,68 +112,43 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
         const token = await prisma.token.findUnique({
             where: {
-                token: rawToken
+                token: rawToken,
             },
             select: {
-                id: true,
-                createdAt: true,
                 user: {
                     select: {
-                        email: true,
-                        confirmedAt: true,
                         id: true
                     }
-                }
+                },
+                createdAt: true
             }
         });
-        if (!token) {
-            return {
-                props: {
-                    error: true,
-                    message: 'Token invalid.'
+        if (token && token.user) {
+            const expiration = new Date(token.createdAt!.getTime() + 30*60000);
+            await prisma.token.deleteMany({
+                where: {
+                    userId: token.user.id,
+                    purpose: 'delete-account'
                 }
-            }
-        }
-        const { user } = token;
-
-        console.log(user)
-        if (!user.confirmedAt) {
-            if (user.email) {
-                const expiration = new Date(token.createdAt!.getTime() + 30*60000);
-                await prisma.token.deleteMany({
+            });
+            if (new Date() < expiration) {
+                context.req.session.destroy();
+                await prisma.user.delete({
                     where: {
-                        userId: user.id,
-                        purpose: 'verify-email'
+                        id: token.user.id
                     }
                 });
-                if (new Date() < expiration) {
-                    await prisma.user.update({
-                        where: {
-                            id: user.id
-                        },
-                        data: {
-                            confirmedAt: (new Date()).toISOString()
-                        }
-                    });
-                    return {
-                        props: {
-                            error: false,
-                            message: 'Email was successfully verified.'
-                        }
-                    }
-                } else {
-                    return {
-                        props: {
-                            error: true,
-                            message: 'Token has expired. Please try again.'
-                        }
+                return {
+                    props: {
+                        error: false,
+                        message: 'Account was successfully deleted.'
                     }
                 }
             } else {
                 return {
                     props: {
                         error: true,
-                        message: 'Invalid token.'
+                        message: 'Token has expired. Please try again.'
                     }
                 }
             }
@@ -178,7 +156,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             return {
                 props: {
                     error: true,
-                    message: 'User already verified.'
+                    message: 'Invalid token.'
                 }
             }
         }
@@ -191,6 +169,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             }
         }
     }
-}
+});
 
-export default VerifyEmailToken;
+export default DeleteAccountToken;

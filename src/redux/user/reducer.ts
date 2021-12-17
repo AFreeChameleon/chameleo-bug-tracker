@@ -4,10 +4,22 @@ import {
     FETCH_USER_DETAILS_REQUEST,
     FETCH_USER_DETAILS_SUCCESS,
     FETCH_USER_DETAILS_FAILURE,
+
+    EDIT_USER_DETAILS_REQUEST,
+    EDIT_USER_DETAILS_SUCCESS,
+    EDIT_USER_DETAILS_FAILURE,
+
+    DELETE_USER_REQUEST,
+    DELETE_USER_SUCCESS,
+    DELETE_USER_FAILURE,
 } from './types';
 
 const defaultState = {
-    loading: false,
+    loading: {
+        fetchUser: false,
+        editUser: false,
+        deleteUser: false,
+    },
     errors: [],
     data: {}
 }
@@ -21,14 +33,68 @@ const reducer = (state = defaultState, action) => {
                     ...action.user
                 }
             }
+        case DELETE_USER_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteUser: true
+                }
+            }
+        case DELETE_USER_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    deleteUser: false
+                },
+                data: {
+                    ...action.user
+                }
+            }
+        case EDIT_USER_DETAILS_REQUEST:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    editUser: true
+                }
+            }
+        case EDIT_USER_DETAILS_SUCCESS:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    editUser: false
+                },
+                data: {
+                    ...action.user
+                }
+            }
+        case EDIT_USER_DETAILS_FAILURE:
+            return {
+                ...state,
+                loading: {
+                    ...state.loading,
+                    editUser: false
+                },
+                errors: action.errors
+            }
         case FETCH_USER_DETAILS_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: {
+                    ...state.loading,
+                    fetchUser: true
+                }
             }
         case FETCH_USER_DETAILS_SUCCESS:
             return {
                 ...state,
+                loading: {
+                    ...state.loading,
+                    fetchUser: false
+                },
                 data: {
                     ...action.data
                 }
@@ -36,7 +102,11 @@ const reducer = (state = defaultState, action) => {
         case FETCH_USER_DETAILS_FAILURE:
             return {
                 ...state,
-                error: action.error
+                loading: {
+                    ...state.loading,
+                    fetchUser: false
+                },
+                errors: action.errors
             }
         default:
             return state;

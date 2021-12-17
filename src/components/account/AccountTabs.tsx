@@ -1,4 +1,5 @@
 import React from 'react';
+import NextLink from 'next/link';
 
 import { styled } from '@mui/material/styles';
 
@@ -7,7 +8,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 const StyledTab = styled(Tab)(({ theme }) => ({
-    textTransform: 'none'
+    textTransform: 'none',
+    color: theme.palette.primary.main,
+    opacity: 0.8
 }));
 
 type AccountTabsProps = {
@@ -27,9 +30,15 @@ class AccountTabs extends React.Component<AccountTabsProps> {
                 <Tabs
                     value={selectedTab}
                 >
-                    <StyledTab label="General" value={0} />
-                    <StyledTab label="Billing" value={1} />
-                    <StyledTab label="Security" value={2} />
+                    <NextLink href="/account">
+                        <StyledTab label="General" value={0} />
+                    </NextLink>
+                    <NextLink href="/account/billing">
+                        <StyledTab label="Billing" value={1} />
+                    </NextLink>
+                    <NextLink href="/account/security">
+                        <StyledTab label="Security" value={2} />
+                    </NextLink>
                 </Tabs>
             </Box>
         )

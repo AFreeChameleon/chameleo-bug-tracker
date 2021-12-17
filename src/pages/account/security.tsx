@@ -28,6 +28,7 @@ import Sidebar from '../../components/Sidebar';
 import AccountTabs from '../../components/account/AccountTabs';
 import AccountGeneral from '../../components/account/AccountGeneral';
 import Alerts from '../../components/Alerts';
+import AccountSecurity from '../../components/account/AccountSecurity';
 
 const Container = styled('div')(({ theme }) => ({
     width: '100%'
@@ -47,11 +48,11 @@ const HeaderTypography = styled(Typography)(({ theme }) => ({
     
 }));
 
-type AccountPageProps = {
+type AccountSecurityPageProps = {
     user: any;
 }
 
-const AccountPage: NextPage<AccountPageProps> = ({ user }) => {
+const AccountSecurityPage: NextPage<AccountSecurityPageProps> = ({ user }) => {
     const router = useRouter();
     const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
@@ -91,8 +92,8 @@ const AccountPage: NextPage<AccountPageProps> = ({ user }) => {
                             </HeaderTypography>
                         </Box>
                     </HeadingDiv>
-                    <AccountTabs selectedTab={0} />
-                    <AccountGeneral />
+                    <AccountTabs selectedTab={2} />
+                    <AccountSecurity />
                 </Container>
             </Box>
             <Alerts />
@@ -100,7 +101,7 @@ const AccountPage: NextPage<AccountPageProps> = ({ user }) => {
     )
 }
 
-AccountPage.getInitialProps = async (ctx) => {
+AccountSecurityPage.getInitialProps = async (ctx) => {
     try {
         let userRes: any;
         if (ctx.req) {
@@ -131,6 +132,6 @@ AccountPage.getInitialProps = async (ctx) => {
     }
 }
 
-const AuthenticatedAccountPage = ifAuth(AccountPage);
+const AuthenticatedAccountSecurityPage = ifAuth(AccountSecurityPage);
 
-export default AuthenticatedAccountPage;
+export default AuthenticatedAccountSecurityPage;

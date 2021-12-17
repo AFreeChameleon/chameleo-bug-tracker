@@ -9,7 +9,64 @@ const mailer: Mailgun = mailgun({
 
 const verifyEmailHTML = readFileSync(path.join(process.cwd(), './html/verification.html'));
 const resetPassHTML = readFileSync(path.join(process.cwd(), './html/reset-password.html'));
-const changedEmailHTML = readFileSync(path.join(process.cwd(), './html/account-details-changed.html'))
+const changedEmailHTML = readFileSync(path.join(process.cwd(), './html/account-details-changed.html'));
+const deleteAccountHTML = readFileSync(path.join(process.cwd(), './html/delete-account.html'));
+const passwordChangedHTML = readFileSync(path.join(process.cwd(), './html/password-changed.html'));
+
+export const sendPasswordChangedEmail = (userEmail: string) => {
+    return new Promise((resolve, reject) => {
+        let passwordChangedHTML = deleteAccountHTML.toString();
+        const data = {
+            from: 'Support Chameleo <info@chamel.io>',
+            to: userEmail,
+            subject: 'Your password has been changed',
+            html: passwordChangedHTML
+        };
+        mailer.messages().send(data, (err, body) => {
+            if (err) {
+                console.log(err)
+                reject({
+                    error: true,
+                    message: err
+                });
+            } else {
+                console.log(body)
+                resolve({
+                    error: false,
+                    message: body
+                });
+            }
+        });
+    });
+}
+
+export const sendDeleteAccountEmail = (userEmail: string, token: string) => {
+    return new Promise((resolve, reject) => {
+        let newDeleteAccountHTML = deleteAccountHTML.toString()
+            .replace('TOKEN_URL', `${process.env.HOST}/delete-account/${token}`);
+        const data = {
+            from: 'Support Chameleo <info@chamel.io>',
+            to: userEmail,
+            subject: 'Delete your account',
+            html: newDeleteAccountHTML
+        };
+        mailer.messages().send(data, (err, body) => {
+            if (err) {
+                console.log(err)
+                reject({
+                    error: true,
+                    message: err
+                });
+            } else {
+                console.log(body)
+                resolve({
+                    error: false,
+                    message: body
+                });
+            }
+        });
+    });
+}
 
 export const sendVerifyEmail = (userEmail: string, token: string) => {
     return new Promise((resolve, reject) => {

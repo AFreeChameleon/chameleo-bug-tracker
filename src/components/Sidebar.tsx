@@ -29,7 +29,8 @@ const Root = styled('div')(({ theme }: any) => ({
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: theme.palette.background.light,
-    position: 'sticky'
+    position: 'sticky',
+    top: '64px'
 }));
 
 const Subtitle: typeof Typography = styled(Typography)(({ theme }) => ({

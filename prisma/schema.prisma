@@ -51,7 +51,7 @@ model Ticket {
   comments       Comment[]
   attachments    Attachment[]
   history        History[]
-  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User                @relation(fields: [userId], references: [id])
   project        Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("tickets")

@@ -56,21 +56,20 @@ handler.post(async (req: NextApiRequest, res: NextApiResponse) => {
                     firstName: first_name,
                     lastName: last_name, 
                     email: email,
-                    password: await bcrypt.hash(password, salt),
-                    tokens: {
-                        create: [
-                            {
-                                purpose: 'verify-email',
-                            }
-                        ]
-                    }
+                    password: await bcrypt.hash(password, salt)
                 },
                 select: {
                     tokens: true,
                     id: true,
                 }
             });
-            await sendVerifyEmail(email, user.tokens[0].token);
+            const token = await prisma.token.create({
+                data: {
+                    purpose: 'verify-email',
+                    userId: user.id
+                }
+            })
+            await sendVerifyEmail(email, token.token);
             // Use this when I want to save money
             // if (process.env.NODE_ENV === 'production') {
             // }
