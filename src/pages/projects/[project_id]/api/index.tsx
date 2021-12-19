@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import _ from 'lodash';
@@ -9,11 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     setUserData,
     fetchUserData
-} from '../../../redux/user/actions';
+} from '../../../../redux/user/actions';
 import {
     setProjectData,
     fetchProjectDetails
-} from '../../../redux/project/actions';
+} from '../../../../redux/project/actions';
 
 import {
     styled,
@@ -31,13 +31,12 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreIcon from '@mui/icons-material/MoreHoriz';
 
-import Header from '../../../components/Header';
-import ifAuth from '../../../components/auth/ifAuth';
-import { authenticated } from '../../../lib/auth';
-import Alerts from '../../../components/Alerts';
-import DraggableBoards from '../../../components/projects/tickets/DraggableBoards';
-import Sidebar from '../../../components/Sidebar';
-import ProjectOptions from '../../../components/projects/ProjectOptions';
+import Header from '../../../../components/Header';
+import ifAuth from '../../../../components/auth/ifAuth';
+import { authenticated } from '../../../../lib/auth';
+import Alerts from '../../../../components/Alerts';
+import Sidebar from '../../../../components/Sidebar';
+import ProjectOptions from '../../../../components/projects/ProjectOptions';
 
 const HeadingDiv = styled('div')(({ theme }) => ({
     margin: '50px 0 0 0',
@@ -103,26 +102,20 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const SmallButton = styled(Button)(({ theme }) => ({
-    width: '100px',
-    // height: '50px',
-    textTransform: 'none',
-    fontSize: theme.typography.body2.fontSize,
-}));
-
-type ProjectPageProps = {
+type ProjectAPIPageProps = {
     project: any;
     user: any;
 }
 
-const ProjectPage: NextPage<ProjectPageProps> = ({
+const ProjectAPIPage: NextPage<ProjectAPIPageProps> = ({
     project,
-    user,
-}: ProjectPageProps) => {
+    user
+}) => {
     const router = useRouter();
     const projectData = useSelector((state: any) => state.project.data);
     const userData = useSelector((state: any) => state.user.data);
     const dispatch = useDispatch();
+
     useEffect(() => {
         console.log(user, project)
         dispatch(setUserData(user));
@@ -131,12 +124,13 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
     if (_.isEmpty(projectData) || _.isEmpty(userData)) {
         return null;
     }
+
     return (
         <div>
             <Header createTicket />
             <Box display="grid" gridTemplateColumns="250px auto">
                 <Sidebar />
-                <Container sx={{ paddingLeft: '50px' }}>
+                <Container sx={{ paddingLeft: '50px', width: '750px' }}>
                     <HeadingDiv>
                         <Breadcrumbs>
                             <NextLink
@@ -147,31 +141,29 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                                     Projects
                                 </LinkDiv>
                             </NextLink>
+                            <NextLink
+                                shallow
+                                href={`/projects/${project.id}`}
+                            >
+                                <LinkDiv>
+                                    {project && project.name}
+                                </LinkDiv>
+                            </NextLink>
                             <LinkDiv>
-                                {project && project.name}
+                                API
                             </LinkDiv>
                         </Breadcrumbs>
                         <FlexDiv sx={{marginTop: '30px'}}>
                             <HeaderTypography
                                 variant="h1"
                             >
-                                {project.name}
+                                API documentation
                             </HeaderTypography>
                         </FlexDiv>
-                        <FlexDiv sx={{marginTop: '30px'}}>
-                            <Search>
-                                <SearchIconWrapper>
-                                    <SearchIcon />
-                                </SearchIconWrapper>
-                                <StyledInputBase
-                                    placeholder="Search…"
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </Search>
-                            <ProjectOptions />
-                        </FlexDiv>
                     </HeadingDiv>
-                    {(project && project.tickets) && <DraggableBoards />}
+                    <Box>
+
+                    </Box>
                 </Container>
             </Box>
             <Alerts />
@@ -179,7 +171,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
     )
 }
 
-ProjectPage.getInitialProps = async (ctx) => {
+ProjectAPIPage.getInitialProps = async (ctx) => {
     try {
         let projectRes: any;
         let userRes: any;
@@ -221,6 +213,6 @@ ProjectPage.getInitialProps = async (ctx) => {
     }
 };
 
-const AuthenticatedProjectPage = ifAuth(ProjectPage);
+const AuthenticatedProjectAPIPage = ifAuth(ProjectAPIPage);
 
-export default AuthenticatedProjectPage;
+export default AuthenticatedProjectAPIPage;

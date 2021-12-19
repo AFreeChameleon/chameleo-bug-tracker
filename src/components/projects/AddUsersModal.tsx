@@ -227,6 +227,7 @@ class AddUsersModal extends React.Component<AddUsersModalProps, AddUsersModalSta
                             console.log(permissions, userPermissions)
                             return (
                                 <Box 
+                                    key={u.id}
                                     display="flex"
                                     justifyContent="space-between"
                                     alignItems="center"

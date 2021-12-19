@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import axios from 'axios';
 import NextLink from 'next/link';
 import { NextRouter, withRouter } from 'next/router';
@@ -33,19 +34,6 @@ import { Button } from '@mui/material';
 
 import CreateTicketModal from './projects/tickets/CreateTicketModal';
 
-type HeaderProps = {
-    user: any;
-    router: NextRouter;
-    dispatchSetAlerts: (values: any[]) => void;
-
-    createTicket?: boolean;
-}
-
-type HeaderState = {
-    profileMenuAnchorEl: any;
-    createTicketModalOpen: boolean;
-}
-
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -74,7 +62,6 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     border: `1px solid ${theme.palette.grey['400']}`,
-    marginRight: '30px',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
@@ -105,6 +92,21 @@ const NotificationBadge = styled(Badge)(({ theme }) => ({
         color: theme.palette.error.contrastText
     }
 }));
+
+type HeaderProps = {
+    user: any;
+    project: any;
+    router: NextRouter;
+    dispatchSetAlerts: (values: any[]) => void;
+
+    createTicket?: boolean;
+}
+
+type HeaderState = {
+    profileMenuAnchorEl: any;
+    createTicketModalOpen: boolean;
+}
+
 
 class Header extends React.Component<HeaderProps, HeaderState> {
     constructor(props) {
@@ -142,13 +144,14 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
 
     render() {
-        const { user, createTicket } = this.props;
+        const { user, project, createTicket } = this.props;
         const { profileMenuAnchorEl, createTicketModalOpen } = this.state;
+        console.log(project)
         return (
             <Box sx={{ flexGrow: 1 }} zIndex={10} marginBottom="64px">
                 <Box position="absolute" width="100%" top={0} zIndex={10}>
                     <AppBar position="fixed" color="inherit" sx={{boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)'}}>
-                        <Toolbar sx={{  }}>
+                        <Toolbar sx={{ columnGap: '30px' }}>
                             <NextLink href="/">
                                 <StyledLink>
                                     <NextImage src={chameleologo}/>
@@ -165,6 +168,11 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                             >
                                 Create Ticket
                             </Button>}
+                            {!_.isEmpty(project) && (<NextLink href={`/projects/${project.id}/api`}>
+                                <Link sx={{textDecoration: 'none', cursor: 'pointer'}}>
+                                    API
+                                </Link>
+                            </NextLink> )}
                             <Search>
                                 <SearchIconWrapper>
                                     <SearchIcon />
@@ -174,12 +182,12 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                     inputProps={{ 'aria-label': 'search' }}
                                 />
                             </Search>
+
                             <IconButton
                                 size="large"
                                 edge="start"
                                 color="inherit"
                                 aria-label="open drawer"
-                                sx={{ mr: 2 }}
                             >
                                 <NotificationBadge badgeContent="4" overlap="circular">
                                     <NotificationsIcon />
@@ -190,7 +198,6 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                 edge="start"
                                 color="inherit"
                                 aria-label="open drawer"
-                                sx={{ mr: 2 }}
                                 onClick={(e) => this.setState({ profileMenuAnchorEl: e.currentTarget })}
                             >
                                 <Avatar sx={{ height: 32, width: 32, marginTop: '2px' }}>
@@ -258,7 +265,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user.data
+    user: state.user.data,
+    project: state.project.data
 });
 
 const mapDispatchToProps = (dispatch) => ({
