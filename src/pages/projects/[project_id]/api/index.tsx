@@ -37,6 +37,7 @@ import { authenticated } from '../../../../lib/auth';
 import Alerts from '../../../../components/Alerts';
 import Sidebar from '../../../../components/Sidebar';
 import ProjectOptions from '../../../../components/projects/ProjectOptions';
+import ApiBody from '../../../../components/projects/api/ApiBody';
 
 const HeadingDiv = styled('div')(({ theme }) => ({
     margin: '50px 0 0 0',
@@ -117,7 +118,6 @@ const ProjectAPIPage: NextPage<ProjectAPIPageProps> = ({
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log(user, project)
         dispatch(setUserData(user));
         dispatch(setProjectData(project));
     }, [router.query.project_id]);
@@ -130,7 +130,7 @@ const ProjectAPIPage: NextPage<ProjectAPIPageProps> = ({
             <Header createTicket />
             <Box display="grid" gridTemplateColumns="250px auto">
                 <Sidebar />
-                <Container sx={{ paddingLeft: '50px', width: '750px' }}>
+                <Container sx={{ paddingLeft: '50px', width: '900px' }}>
                     <HeadingDiv>
                         <Breadcrumbs>
                             <NextLink
@@ -161,9 +161,7 @@ const ProjectAPIPage: NextPage<ProjectAPIPageProps> = ({
                             </HeaderTypography>
                         </FlexDiv>
                     </HeadingDiv>
-                    <Box>
-
-                    </Box>
+                    <ApiBody />
                 </Container>
             </Box>
             <Alerts />

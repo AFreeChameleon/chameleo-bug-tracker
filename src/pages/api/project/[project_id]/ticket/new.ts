@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 import timestring from 'timestring';
 import { prisma }  from '../../../../../lib/prisma';
 import withSession, { NextApiRequestWithSession, session } from '../../../../../lib/session';
-import { isUserLoggedIn } from '../../../../../middleware/auth';
+import { isUserLoggedIn, isUserLoggedInWithRole } from '../../../../../middleware/auth';
 import { mapIntToPriority, mapIntToStatus, validateTime } from '../../../../../lib/ticket';
 import { canUserEditTickets } from '../../../../../middleware/permissions';
 
@@ -53,7 +53,7 @@ const upload = multer({
 });
 
 handler.use(session);
-handler.use(isUserLoggedIn);
+handler.use(isUserLoggedInWithRole);
 handler.use(canUserEditTickets);
 handler.use(upload.array('attachments'));
 

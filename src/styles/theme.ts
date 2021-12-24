@@ -63,6 +63,10 @@ const themeObj = {
             fontSize: '24px',
             fontWeight: 600,
         },
+        h4: {
+            fontSize: '22px',
+            fontWeight: 600,
+        },
         h5: {
             fontSize: '18px',
             fontWeight: 600,
