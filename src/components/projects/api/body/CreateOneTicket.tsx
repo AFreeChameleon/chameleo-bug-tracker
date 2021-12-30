@@ -81,16 +81,16 @@ const TabPanel = styled(TabPanelUnstyled)(({ theme }) => ({
     fontFamily: "'Source Code Pro', monospace",
 }));
 
-type GetMultipleTicketsProps = {
+type CreateOneTicketProps = {
     project: any;
     user: any;
 }
 
-type GetMultipleTicketsState = {
+type CreateOneTicketState = {
     selectedTab: number;
 }
 
-class GetMultipleTickets extends React.Component<GetMultipleTicketsProps, GetMultipleTicketsState> {
+class CreateOneTicket extends React.Component<CreateOneTicketProps, CreateOneTicketState> {
     constructor(props) {
         super(props);
 
@@ -109,7 +109,7 @@ class GetMultipleTickets extends React.Component<GetMultipleTicketsProps, GetMul
                     gutterBottom
                     variant="h4"
                 >
-                    Get multiple tickets
+                    Create one ticket
                 </Typography>
                 <Box marginTop="20px">
                     <Box display="flex" alignItems="center" padding="10px" borderRadius="6px" sx={{
@@ -132,7 +132,7 @@ class GetMultipleTickets extends React.Component<GetMultipleTicketsProps, GetMul
                                 fontFamily: "'Source Code Pro', monospace",
                             }}
                         >
-                            https://parson-api.chameleo.dev/tickets
+                            https://parson-api.chameleo.dev/tickets/new
                         </Typography>
                     </Box>
                 </Box>
@@ -145,33 +145,22 @@ class GetMultipleTickets extends React.Component<GetMultipleTicketsProps, GetMul
                 </Typography>
                 <CodeBlock>
 {`{
-    where: {
-        name: string || {
-            startsWith: string,
-            endsWith: string,
-            includes: string
-        },
-        status: string || {
-            startsWith: string,
-            endsWith: string,
-            includes: string
-        },
+    data: {
+        // Required
+        name: string,
         
-        // The value is the user’s email
-        assignedTo: string || {
-            startsWith: string,
-            endsWith: string,
-            includes: string
-        },
+        description: string,
+        timeEstimate: string,
+        
+        // Required
+        priority: string,
+        
+        // Required
+        status: string,
 
         // The value is the user’s email
-        createdBy: string || {
-            startsWith: string,
-            endsWith: string,
-            includes: string
-        }
-    },
-    limit: number
+        assignedTo: string
+    }
 }`}
                 </CodeBlock>
                 <Typography
@@ -241,4 +230,4 @@ const mapDispatchToProps = dispatch => ({
 
 export default compose<any>(
     connect(mapStateToProps, mapDispatchToProps)
-)(GetMultipleTickets);
+)(CreateOneTicket);

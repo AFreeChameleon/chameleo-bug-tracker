@@ -114,7 +114,6 @@ handler.post(async (req: any, res: NextApiResponse) => {
 
         const latestTicket = await prisma.ticket.findMany({
             where: {
-                userId: req.user.id,
                 projectId: project.id,
             },
             select: {

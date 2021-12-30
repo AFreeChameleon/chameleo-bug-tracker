@@ -36,6 +36,7 @@ import FolderSharedIcon from '@mui/icons-material/FolderSharedOutlined';
 import ApiKeys from './body/ApiKeys';
 import GetOneTicket from './body/GetOneTicket';
 import GetMultipleTickets from './body/GetMultipleTickets';
+import CreateOneTicket from './body/CreateOneTicket';
 
 const CodeBlock = styled('div')(({ theme }: any) => ({
     ...(theme.typography as any).body2,
@@ -70,14 +71,9 @@ class APIBody extends React.Component<APIBodyProps> {
             <Box>
                 <ApiKeys />
                 <Box marginTop="30px">
-                    <Typography
-                        variant="h4"
-                    >
-                        API documenation
-                    </Typography>
                     <Box marginTop="30px">
                         <Typography
-                            variant="h5"
+                            variant="h4"
                         >
                             Authentication
                         </Typography>
@@ -99,6 +95,7 @@ class APIBody extends React.Component<APIBodyProps> {
                 </Box>
                 <GetOneTicket />
                 <GetMultipleTickets />
+                <CreateOneTicket />
             </Box>
         )
     }

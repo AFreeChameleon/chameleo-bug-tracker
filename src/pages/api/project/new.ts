@@ -48,18 +48,22 @@ handler.post(async (req: NextApiRequestWithSession, res: NextApiResponse) => {
                 details: {
                     columns: {
                         '1': {
+                            id: '1',
                             ticketIds: [],
                             name: 'Todo'
                         },
                         '2': {
+                            id: '2',
                             ticketIds: [],
                             name: 'In progress'
                         },
                         '3': {
+                            id: '3',
                             ticketIds: [],
                             name: 'Waiting for review'
                         },
                         '4': {
+                            id: '4',
                             ticketIds: [],
                             name: 'Done'
                         },

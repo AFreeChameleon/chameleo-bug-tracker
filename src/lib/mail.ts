@@ -80,13 +80,13 @@ export const sendVerifyEmail = (userEmail: string, token: string) => {
         };
         mailer.messages().send(data, (err, body) => {
             if (err) {
-                console.log(err)
+                console.log('err', err)
                 reject({
                     error: true,
                     message: err
-                })
+                });
             } else {
-                console.log(body)
+                console.log('body', body)
                 resolve({
                     error: false,
                     message: body

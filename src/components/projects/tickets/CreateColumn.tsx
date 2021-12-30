@@ -81,6 +81,7 @@ class CreateColumn extends React.Component<CreateColumnProps, CreateColumnState>
         let editableProject = _.cloneDeep(project);
         const newId = Math.max(...Object.keys(editableProject.details.columns).map((id) => parseInt(id))) + 1;
         editableProject.details.columns[newId] = {
+            id: newId,
             name: columnName,
             ticketIds: []
         };

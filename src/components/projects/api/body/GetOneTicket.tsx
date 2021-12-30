@@ -106,7 +106,7 @@ class GetOneTicket extends React.Component<GetOneTicketProps, GetOneTicketState>
             <Root>
                 <Typography
                     gutterBottom
-                    variant="h5"
+                    variant="h4"
                 >
                     Get one ticket
                 </Typography>
@@ -137,7 +137,7 @@ class GetOneTicket extends React.Component<GetOneTicketProps, GetOneTicketState>
                 </Box>
                 <Typography
                     gutterBottom
-                    variant="h6"
+                    variant="h5"
                     sx={{ marginTop: '20px' }}
                 >
                     Example response
