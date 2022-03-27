@@ -1,3 +1,7 @@
+/*
+!   THIS IS DEPRECATED BUT KEEPING IT UNLESS I NEED TO USE IT SOON
+*/
+
 import React from 'react';
 import NextLink from 'next/link';
 import { compose } from "redux";

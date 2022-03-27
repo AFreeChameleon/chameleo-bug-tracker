@@ -221,7 +221,7 @@ class AddUsersModal extends React.Component<AddUsersModalProps, AddUsersModalSta
                         />
                     </Box>
                     <Stack direction="column" marginTop="20px" spacing={1}>
-                        { project.users.map((roleUser) => {
+                        { project.users && project.users.map((roleUser) => {
                             const u = roleUser.user;
                             const permissions = checkPermission(u.roles[0].role)
                             console.log(permissions, userPermissions)

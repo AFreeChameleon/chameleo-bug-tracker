@@ -20,7 +20,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 import LogoutIcon from '@mui/icons-material/Logout';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
+import AddUsersModal from './projects/AddUsersModal';
 
 const Root = styled('div')(({ theme }: any) => ({
     width: '250px',
@@ -64,14 +68,23 @@ type SidebarProps = {
     ticketView: boolean;
 }
 
-class Sidebar extends React.Component<SidebarProps> {
+type SidebarState = {
+    addUsersModalOpen: boolean;
+}
+
+class Sidebar extends React.Component<SidebarProps, SidebarState> {
     constructor(props) {
         super(props);
+
+        this.state = {
+            addUsersModalOpen: false
+        }
     }
 
     render() {
         const { user, project, ticket, ticketView } = this.props;
-        console.log(user, project, ticket)
+        const { addUsersModalOpen } = this.state;
+        console.log(user, project, ticket, _.isEmpty(project))
         return (
             <Root>
                 <Subtitle
@@ -101,36 +114,36 @@ class Sidebar extends React.Component<SidebarProps> {
                         </NextLink>
                     )) }
                 </MenuList>
-                <Subtitle
-                    variant="caption"
-                    component="div"
-                >
-                    RECENT TICKETS
-                </Subtitle>
-                <MenuList>
-                    {ticketView && <MenuItem sx={{
-                        padding: 0,
-                        height: '50px'
-                    }}>
-                        <SelectedListItem/>
-                        <Box sx={{
-                            paddingLeft: '25px',
-                            fontSize: '16px',
-                            width: '100%'
+                { user.history.length > 0 && (<>
+                    <Subtitle
+                        variant="caption"
+                        component="div"
+                    >
+                        RECENT TICKETS
+                    </Subtitle>
+                    <MenuList>
+                        {ticketView && <MenuItem sx={{
+                            padding: 0,
+                            height: '50px'
                         }}>
-                            <Typography
-                                variant="caption"
-                                sx={{ color: '#888' }}
-                            >
-                                {project.name}
-                            </Typography>
-                            <Typography noWrap>
-                                {ticket.name}
-                            </Typography>
-                        </Box>
-                    </MenuItem>}
-                    {user.history.filter(h => !ticketView || h.ticketId !== ticket.id).map((h) => {
-                        return (
+                            <SelectedListItem/>
+                            <Box sx={{
+                                paddingLeft: '25px',
+                                fontSize: '16px',
+                                width: '100%'
+                            }}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{ color: '#888' }}
+                                >
+                                    {project.name}
+                                </Typography>
+                                <Typography noWrap>
+                                    {ticket.name}
+                                </Typography>
+                            </Box>
+                        </MenuItem>}
+                        {user.history.filter(h => !ticketView || h.ticketId !== ticket.id).map((h) => (
                             <NextLink 
                                 key={h.id}
                                 href={`/projects/${h.project.id}/tickets/${h.ticket.ticketNumber}`}
@@ -157,8 +170,46 @@ class Sidebar extends React.Component<SidebarProps> {
                                     </MenuItem>
                                 </Link>
                             </NextLink>
-                    )})}
-                </MenuList>
+                        ))}
+                    </MenuList>
+                </>)}
+                { !_.isEmpty(project) && (<>
+                <Subtitle
+                    variant="caption"
+                    component="div"
+                >
+                    MORE
+                </Subtitle>
+                <MenuList>
+                    <NextLink
+                        href={`/projects/${project.id}/tickets/archived`}
+                    >
+                        <MenuItem sx={{
+                            paddingLeft: '23px',
+                            height: '50px'
+                        }}>
+                            <ListItemIcon>
+                                <ArchiveIcon color="secondary"/>
+                            </ListItemIcon>
+                            <ListItemText sx={{
+                                fontSize: '16px'
+                            }}>
+                                Archived Tickets
+                            </ListItemText>
+                        </MenuItem>
+                    </NextLink>
+                    <MenuItem onClick={() => this.setState({ addUsersModalOpen: true })} sx={{
+                        paddingLeft: '23px',
+                        height: '50px'
+                    }}>
+                        <ListItemIcon>
+                            <FolderSharedIcon color="secondary" />
+                        </ListItemIcon>
+                        <ListItemText>
+                            Share
+                        </ListItemText>
+                    </MenuItem>
+                </MenuList></>) }
                 <FlexGrow/>
                 <NextLink href="/account">
                     <MenuItem sx={{
@@ -173,8 +224,12 @@ class Sidebar extends React.Component<SidebarProps> {
                         </ListItemText>
                     </MenuItem>
                 </NextLink>
+                {!_.isEmpty(project) && <AddUsersModal 
+                    open={addUsersModalOpen}
+                    onClose={() => this.setState({ addUsersModalOpen: false })}
+                />}
             </Root>
-        )
+        );
     }
 }
 

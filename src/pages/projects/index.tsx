@@ -11,7 +11,6 @@ import {
     styled
 } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -40,18 +39,27 @@ type DashboardProps = {
 }
 
 const HeadingDiv = styled('div')(({ theme }) => ({
-    margin: '30px auto 0 auto',
-    display: 'flex',
-    justifyContent: 'space-between',
-
+    margin: '50px 0 0 0',
+    width: 'calc(100vw - 350px)'
 }));
 
 const LinkDiv = styled('div')(({ theme }) => ({
     cursor: 'pointer',
-    textDecoration: 'underline',
-    color: theme.palette.primary.main,
-    fontSize: '14px',
-    marginTop: '25px'
+    textDecoration: 'underline'
+}));
+
+const FlexDiv = styled('div')(({ theme }) => ({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+}));
+
+const HeaderTypography = styled(Typography)(({ theme }) => ({
+    
+}));
+
+const Container = styled('div')(({ theme }) => ({
+    width: '100%'
 }));
 
 const Dashboard: NextPage<DashboardProps> = ({user}: DashboardProps) => {
@@ -66,42 +74,35 @@ const Dashboard: NextPage<DashboardProps> = ({user}: DashboardProps) => {
     return (
         <div>
             <Header />
-            <Box display="flex">
+            <Box display="grid" gridTemplateColumns="250px auto">
                 <Sidebar />
-                <Container>
-                    <Container>
-                        <HeadingDiv>
-                            <Breadcrumbs>
-                                <NextLink
-                                    shallow
-                                    replace
-                                    href="/projects"
-                                >
-                                    <LinkDiv sx={{
-
-                                    }}>
-                                        Projects
-                                    </LinkDiv>
-                                </NextLink>
-                            </Breadcrumbs>
-                        </HeadingDiv>
-                        <HeadingDiv>
-                            <Typography
+                <Container sx={{ paddingLeft: '50px' }}>
+                <HeadingDiv>
+                        <Breadcrumbs>
+                            <NextLink
+                                shallow
+                                href="/projects"
+                            >
+                                <LinkDiv>
+                                    Projects
+                                </LinkDiv>
+                            </NextLink>
+                        </Breadcrumbs>
+                        <FlexDiv sx={{marginTop: '30px'}}>
+                            <HeaderTypography
                                 variant="h1"
                             >
                                 Projects
-                            </Typography>
-                            {/* <Button
-                                variant="contained"
-                                onClick={(e) => setCreatingNewProject(!creatingNewProject)}
-                            >
-                                {creatingNewProject ? 'Cancel' : 'Create'}
-                            </Button> */}
-                        </HeadingDiv>
-                        <ProjectBody />
-                        {/* <ProjectTable newProjectRowOpen={creatingNewProject} setNewProjectRowOpen={(val: boolean) => setCreatingNewProject(val)} /> */}
-                    </Container>
-
+                            </HeaderTypography>
+                        </FlexDiv>
+                        {/* <Button
+                            variant="contained"
+                            onClick={(e) => setCreatingNewProject(!creatingNewProject)}
+                        >
+                            {creatingNewProject ? 'Cancel' : 'Create'}
+                        </Button> */}
+                    </HeadingDiv>
+                    <ProjectBody />
                 </Container>
             </Box>
             <Alerts/>

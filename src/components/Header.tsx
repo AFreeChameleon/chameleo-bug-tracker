@@ -151,7 +151,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
             <Box sx={{ flexGrow: 1 }} zIndex={10} marginBottom="64px">
                 <Box position="absolute" width="100%" top={0} zIndex={10}>
                     <AppBar position="fixed" color="inherit" sx={{boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)'}}>
-                        <Toolbar sx={{ columnGap: '30px' }}>
+                        <Toolbar sx={{ columnGap: '15px' }}>
                             <NextLink href="/">
                                 <StyledLink>
                                     <NextImage src={chameleologo}/>
@@ -168,11 +168,11 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                             >
                                 Create Ticket
                             </Button>}
-                            {!_.isEmpty(project) && (<NextLink href={`/projects/${project.id}/api`}>
+                            {/* {!_.isEmpty(project) && (<NextLink href={`/projects/${project.id}/api`}>
                                 <Link sx={{textDecoration: 'none', cursor: 'pointer'}}>
                                     API
                                 </Link>
-                            </NextLink> )}
+                            </NextLink> )} */}
                             <Search>
                                 <SearchIconWrapper>
                                     <SearchIcon />
@@ -183,7 +183,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                 />
                             </Search>
 
-                            <IconButton
+                            {/* <IconButton
                                 size="large"
                                 edge="start"
                                 color="inherit"
@@ -192,7 +192,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                 <NotificationBadge badgeContent="4" overlap="circular">
                                     <NotificationsIcon />
                                 </NotificationBadge>
-                            </IconButton>
+                            </IconButton> */}
                             <IconButton
                                 size="large"
                                 edge="start"

@@ -84,28 +84,29 @@ class TicketItem extends React.Component<any> {
             case 'Low':
                 return (
                     <LowPriorityIcon />
-                )
+                );
             case 'Medium':
                 return (
                     <MediumPriorityIcon />
-                )
+                );
             case 'High':
                 return (
                     <HighPriorityIcon />
-                )
+                );
             case 'Critical':
                 return (
                     <CriticalPriorityIcon />
-                )
+                );
             default:
                 return (
                     <MediumPriorityIcon />
-                )
+                );
         }
     }
 
     render() {
         const { ticket, refEl, project, ...otherProps } = this.props;
+        console.log(ticket)
         return (
             <NextLink href={`/projects/${project.id}/tickets/${ticket.ticketNumber}`}>
                 <TicketContainer 
@@ -114,12 +115,15 @@ class TicketItem extends React.Component<any> {
                 >
                     <FlexDiv sx={{ paddingRight: '5px' }}>
                         <TagList>
-                            <Tag>
-                                TAGLIST
-                            </Tag>
-                            {/* <IconButton size="small">
-                                <AddIcon sx={{ width: '20px', height: '20px' }} color="primary" />
-                            </IconButton> */}
+                            {ticket.tags.length > 0 ? ticket.tags.map((tag) => {console.log(tag);return(
+                                <Tag>
+                                    {tag.tag.name}
+                                </Tag>
+                            )}) : (
+                                <Tag>
+                                    No Tags
+                                </Tag>
+                            )}
                         </TagList>
                         {this.formatPriority()}
                     </FlexDiv>

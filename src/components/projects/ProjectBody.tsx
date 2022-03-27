@@ -129,17 +129,6 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
 
         return (
             <Root>
-                <Box display="flex" justifyContent="space-between">
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search…"
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Search>
-                </Box>
                 <Box display="flex" columnGap={'25px'} mt={'25px'}>
                     {(user && user.projects) && user.projects.map((project, i) => (
                         <NextLink

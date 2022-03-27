@@ -236,7 +236,7 @@ class CreateTicketModal extends React.Component<CreateTicketModalProps, CreateTi
         const { attachments } = this.state;
         console.log(e.target.files)
         this.setState({
-            attachments: [...attachments, ...Array.from(e.target.files).map((file, i) => ({
+            attachments: [...attachments, ...Array.from(e.target.files).map((file: any, i) => ({
                 id: attachments.length + i,
                 data: URL.createObjectURL(file),
                 file: file

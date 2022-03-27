@@ -35,7 +35,12 @@ export const getProject = async (projectId: string, userId: number) => {
                     started: true,
                     createdAt: true,
                     updatedAt: true,
-                    ticketNumber: true
+                    ticketNumber: true,
+                    tags: {
+                        select: {
+                            tag: true,
+                        }
+                    }
                 },
             },
             tags: {

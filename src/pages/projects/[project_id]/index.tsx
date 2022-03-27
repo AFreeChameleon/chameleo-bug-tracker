@@ -38,6 +38,7 @@ import Alerts from '../../../components/Alerts';
 import DraggableBoards from '../../../components/projects/tickets/DraggableBoards';
 import Sidebar from '../../../components/Sidebar';
 import ProjectOptions from '../../../components/projects/ProjectOptions';
+import ProjectFilters from '../../../components/projects/ProjectFilters';
 
 const HeadingDiv = styled('div')(({ theme }) => ({
     margin: '50px 0 0 0',
@@ -159,16 +160,7 @@ const ProjectPage: NextPage<ProjectPageProps> = ({
                             </HeaderTypography>
                         </FlexDiv>
                         <FlexDiv sx={{marginTop: '30px'}}>
-                            <Search>
-                                <SearchIconWrapper>
-                                    <SearchIcon />
-                                </SearchIconWrapper>
-                                <StyledInputBase
-                                    placeholder="Search…"
-                                    inputProps={{ 'aria-label': 'search' }}
-                                />
-                            </Search>
-                            <ProjectOptions />
+                            <ProjectFilters />
                         </FlexDiv>
                     </HeadingDiv>
                     {(project && project.tickets) && <DraggableBoards />}

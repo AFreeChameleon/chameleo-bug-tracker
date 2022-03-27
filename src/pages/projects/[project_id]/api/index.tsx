@@ -36,7 +36,6 @@ import ifAuth from '../../../../components/auth/ifAuth';
 import { authenticated } from '../../../../lib/auth';
 import Alerts from '../../../../components/Alerts';
 import Sidebar from '../../../../components/Sidebar';
-import ProjectOptions from '../../../../components/projects/ProjectOptions';
 import ApiBody from '../../../../components/projects/api/ApiBody';
 
 const HeadingDiv = styled('div')(({ theme }) => ({

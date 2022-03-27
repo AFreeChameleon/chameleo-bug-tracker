@@ -261,9 +261,9 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
                 </FlexDiv>
                 <FlexDiv>
                     { !editingTagsOpen ? (<TagList>
-                        { ticket.tags.map(({tag}, i) => (
+                        { ticket.tags.length > 0 && ticket.tags.map((tag, i) => tag.tag && (
                             <Tag key={i}>
-                                {tag.name.toUpperCase()}
+                                {tag.tag.name}
                             </Tag>
                         )) }
                         <EditTag onClick={(e) => this.setState({ editingTagsOpen: true, editingTags: [ ...ticket.tags.map((t) => t.tag) ] })} >
@@ -272,7 +272,7 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
                     </TagList>) : (<TagList>
                         { editingTags.map((tag, i) => (
                             <Tag key={i}>
-                                {tag.name.toUpperCase()}
+                                {tag.name}
                                 <CloseIcon 
                                     onClick={(e) => this.removeTag(tag.id)}
                                     sx={{ 
