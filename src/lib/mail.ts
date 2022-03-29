@@ -15,12 +15,12 @@ const passwordChangedHTML = readFileSync(path.join(process.cwd(), './html/passwo
 
 export const sendPasswordChangedEmail = (userEmail: string) => {
     return new Promise((resolve, reject) => {
-        let passwordChangedHTML = deleteAccountHTML.toString();
+        let newPasswordChangedHTML = passwordChangedHTML.toString();
         const data = {
             from: 'Support Chameleo <info@chamel.io>',
             to: userEmail,
             subject: 'Your password has been changed',
-            html: passwordChangedHTML
+            html: newPasswordChangedHTML
         };
         mailer.messages().send(data, (err, body) => {
             if (err) {
