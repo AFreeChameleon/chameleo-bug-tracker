@@ -115,11 +115,11 @@ class TicketItem extends React.Component<any> {
                 >
                     <FlexDiv sx={{ paddingRight: '5px' }}>
                         <TagList>
-                            {ticket.tags.length > 0 ? ticket.tags.map((tag) => {console.log(tag);return(
-                                <Tag>
+                            {ticket.tags.length > 0 ? ticket.tags.map((tag, i) => (
+                                <Tag key={i}>
                                     {tag.tag.name}
                                 </Tag>
-                            )}) : (
+                            )) : (
                                 <Tag>
                                     No Tags
                                 </Tag>

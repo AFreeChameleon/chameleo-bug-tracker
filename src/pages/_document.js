@@ -18,7 +18,7 @@ class MyDocument extends Document {
                 rel="stylesheet"
                 href="/css/root.css"
             />
-            {(this.props as any).emotionStyleTags}
+            {this.props.emotionStyleTags}
         </Head>
         <body style={{margin: 0, padding: 0}}>
           <Main />
@@ -41,7 +41,7 @@ MyDocument.getInitialProps = async (ctx) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App: any) => 
+      enhanceApp: (App) => 
         function EnhanceApp(props) {
           return <App emotionCache={cache} {...props} />;
         },

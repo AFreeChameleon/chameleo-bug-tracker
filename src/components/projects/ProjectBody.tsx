@@ -201,7 +201,7 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                             }
                             const selectedProject = anchorEl ? user.projects[parseInt(anchorEl.id.split('project-btn-')[1])] : user.projects[0];
                             return [
-                                <ListItem>
+                                <ListItem key={0}>
                                     <ListItemIcon sx={{  minWidth: 'fit-content' }}>
                                         <Avatar>
                                             {selectedProject.user.firstName.slice(0, 1)}
@@ -213,8 +213,8 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                                         </Typography>
                                     </ListItemText>
                                 </ListItem>,
-                                <Divider/>,
-                                <MenuItem onClick={() => {
+                                <Divider key={1}/>,
+                                <MenuItem key={2} onClick={() => {
                                     this.setState({ editingProject: selectedProject })
                                 }}>
                                     <ListItemIcon>
@@ -224,7 +224,7 @@ class ProjectBody extends React.Component<ProjectBodyProps, ProjectBodyState> {
                                         Edit
                                     </ListItemText>
                                 </MenuItem>,
-                                <MenuItem onClick={() => this.setState({
+                                <MenuItem key={3} onClick={() => this.setState({
                                     destroyProject: selectedProject
                                 })} >
                                     <ListItemIcon>
