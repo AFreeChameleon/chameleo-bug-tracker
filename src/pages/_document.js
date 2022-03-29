@@ -65,24 +65,25 @@ MyDocument.getInitialProps = async (ctx) => {
     // Styles fragment is rendered after the app and page rendering finish.
     // eslint-disable-next-line react/display-name
     styles: [...React.Children.toArray(initialProps.styles), ...emotionStyleTags],
-    render: () => (
-      <Html lang="en">
-        <Head>
-            {/* PWA primary color */}
-            <meta name="theme-color" content={theme.palette.primary.main} />
-            <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
-            <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Source+Code+Pro&display=swap" rel="stylesheet"/>
-            <link
-                rel="stylesheet"
-                href="/css/root.css"
-            />
-        </Head>
-        <body style={{margin: 0, padding: 0}}>
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    )
+    render: function DocumentPage() {
+      return (
+        <Html lang="en">
+          <Head>
+              {/* PWA primary color */}
+              <meta name="theme-color" content={theme.palette.primary.main} />
+              <link rel="preconnect" href="https://fonts.googleapis.com"/>
+              <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
+              <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Source+Code+Pro&display=swap" rel="stylesheet"/>
+              <link
+                  rel="stylesheet"
+                  href="/css/root.css"
+              />
+          </Head>
+          <body style={{margin: 0, padding: 0}}>
+            <Main />
+            <NextScript />
+          </body>
+        </Html>
+    )}
   };
 };
