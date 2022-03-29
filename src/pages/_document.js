@@ -4,10 +4,28 @@ import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from '../styles/createEmotionCache';
 import theme from '../styles/theme';
 
-export default class MyDocument extends Document {
-  // render() {
-  //   return ;
-  // }
+class MyDocument extends Document {
+  render() {
+    return (
+      <Html lang="en">
+        <Head>
+            {/* PWA primary color */}
+            <meta name="theme-color" content={theme.palette.primary.main} />
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
+            <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Source+Code+Pro&display=swap" rel="stylesheet"/>
+            <link
+                rel="stylesheet"
+                href="/css/root.css"
+            />
+        </Head>
+        <body style={{margin: 0, padding: 0}}>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
 }
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),
@@ -44,7 +62,9 @@ MyDocument.getInitialProps = async (ctx) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App) => (props) => <App emotionCache={cache} {...props} />,
+      enhanceApp: (App) => function EnhanceApp(props) {
+        return (<App emotionCache={cache} {...props} />)
+      },
     });
 
   const initialProps = await Document.getInitialProps(ctx);
@@ -65,25 +85,7 @@ MyDocument.getInitialProps = async (ctx) => {
     // Styles fragment is rendered after the app and page rendering finish.
     // eslint-disable-next-line react/display-name
     styles: [...React.Children.toArray(initialProps.styles), ...emotionStyleTags],
-    render: function DocumentPage() {
-      return (
-        <Html lang="en">
-          <Head>
-              {/* PWA primary color */}
-              <meta name="theme-color" content={theme.palette.primary.main} />
-              <link rel="preconnect" href="https://fonts.googleapis.com"/>
-              <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
-              <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Source+Code+Pro&display=swap" rel="stylesheet"/>
-              <link
-                  rel="stylesheet"
-                  href="/css/root.css"
-              />
-          </Head>
-          <body style={{margin: 0, padding: 0}}>
-            <Main />
-            <NextScript />
-          </body>
-        </Html>
-    )}
   };
 };
+
+export default MyDocument;
