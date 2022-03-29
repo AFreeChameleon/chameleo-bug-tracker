@@ -131,6 +131,8 @@ AccountBillingPage.getInitialProps = async (ctx) => {
     }
 }
 
+AccountBillingPage.displayName = 'AccountBillingPage';
+
 const AuthenticatedAccountBillingPage = ifAuth(AccountBillingPage);
 
 export default AuthenticatedAccountBillingPage;

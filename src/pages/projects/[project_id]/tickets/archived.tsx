@@ -136,6 +136,8 @@ ArchivedTicketsPage.getInitialProps = async (ctx) => {
     }
 }
 
+ArchivedTicketsPage.displayName = 'ArchivedTicketsPage';
+
 const AuthenticatedArchivedTicketsPage = ifAuth(ArchivedTicketsPage);
 
 export default AuthenticatedArchivedTicketsPage;

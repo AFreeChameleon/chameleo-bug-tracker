@@ -144,6 +144,8 @@ Dashboard.getInitialProps = async (ctx) => {
     }
 };
 
+Dashboard.displayName = 'Dashboard';
+
 const AuthenticatedDashboard = ifAuth(Dashboard);
 
 export default AuthenticatedDashboard;

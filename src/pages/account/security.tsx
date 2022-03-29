@@ -132,6 +132,8 @@ AccountSecurityPage.getInitialProps = async (ctx) => {
     }
 }
 
+AccountSecurityPage.displayName = 'AccountSecurityPage';
+
 const AuthenticatedAccountSecurityPage = ifAuth(AccountSecurityPage);
 
 export default AuthenticatedAccountSecurityPage;

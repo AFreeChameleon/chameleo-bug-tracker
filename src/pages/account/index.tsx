@@ -131,6 +131,8 @@ AccountPage.getInitialProps = async (ctx) => {
     }
 }
 
+AccountPage.displayName = 'AccountPage';
+
 const AuthenticatedAccountPage = ifAuth(AccountPage);
 
 export default AuthenticatedAccountPage;

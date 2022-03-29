@@ -171,4 +171,6 @@ export const getServerSideProps: GetServerSideProps = withSession(async (context
     }
 });
 
+DeleteAccountToken.displayName = 'DeleteAccountToken';
+
 export default DeleteAccountToken;

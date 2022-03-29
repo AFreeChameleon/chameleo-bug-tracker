@@ -137,6 +137,8 @@ TicketPage.getInitialProps = async (ctx) => {
     }
 }
 
+TicketPage.displayName = 'TicketPage';
+
 const AuthenticatedTicketPage = ifAuth(TicketPage);
 
 export default AuthenticatedTicketPage;

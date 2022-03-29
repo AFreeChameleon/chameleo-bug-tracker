@@ -135,6 +135,8 @@ const Login: NextPage<LoginProps> = ({ dispatchSetAlerts }: LoginProps) => {
   );
 }
 
+Login.displayName = 'Login';
+
 const mapStateToProps = (state: any) => ({
 });
 

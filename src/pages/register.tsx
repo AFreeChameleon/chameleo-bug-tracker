@@ -224,6 +224,8 @@ function Register({ dispatchSetAlerts }: RegisterProps) {
     );
 }
 
+Register.displayName = 'Register';
+
 const mapStateToProps = (state: any) => ({
 });
 

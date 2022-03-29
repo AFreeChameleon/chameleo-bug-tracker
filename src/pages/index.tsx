@@ -9,4 +9,6 @@ const Index: NextPage = () => {
     )
 }
 
+Index.displayName = 'Index';
+
 export default Index;

@@ -213,6 +213,8 @@ ProjectPage.getInitialProps = async (ctx) => {
     }
 };
 
+ProjectPage.displayName = 'ProjectPage';
+
 const AuthenticatedProjectPage = ifAuth(ProjectPage);
 
 export default AuthenticatedProjectPage;
