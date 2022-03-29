@@ -1,17 +1,29 @@
 import path from 'path';
 import mailgun, { Mailgun } from 'mailgun-js';
 import { readFileSync } from 'fs';
+import {
+    VerificationHTML,
+    DeleteAccountHTML,
+    ResetPasswordHTML,
+    PasswordChangedHTML,
+    AccountDetailsChangedHTML
+} from './html';
 
 const mailer: Mailgun = mailgun({
     apiKey: process.env.MAILGUN_API_KEY as string,
     domain: process.env.MAILGUN_DOMAIN as string
 });
 
-const verifyEmailHTML = readFileSync(path.join(process.cwd(), './html/verification.html'));
-const resetPassHTML = readFileSync(path.join(process.cwd(), './html/reset-password.html'));
-const changedEmailHTML = readFileSync(path.join(process.cwd(), './html/account-details-changed.html'));
-const deleteAccountHTML = readFileSync(path.join(process.cwd(), './html/delete-account.html'));
-const passwordChangedHTML = readFileSync(path.join(process.cwd(), './html/password-changed.html'));
+// const verifyEmailHTML = readFileSync(path.join(process.cwd(), './html/verification.html'));
+const verifyEmailHTML = VerificationHTML;
+// const resetPassHTML = readFileSync(path.join(process.cwd(), './html/reset-password.html'));
+const resetPassHTML = ResetPasswordHTML;
+// const changedEmailHTML = readFileSync(path.join(process.cwd(), './html/account-details-changed.html'));
+const changedEmailHTML = AccountDetailsChangedHTML;
+// const deleteAccountHTML = readFileSync(path.join(process.cwd(), './html/delete-account.html'));
+const deleteAccountHTML = DeleteAccountHTML;
+// const passwordChangedHTML = readFileSync(path.join(process.cwd(), './html/password-changed.html'));
+const passwordChangedHTML = PasswordChangedHTML;
 
 export const sendPasswordChangedEmail = (userEmail: string) => {
     return new Promise((resolve, reject) => {
