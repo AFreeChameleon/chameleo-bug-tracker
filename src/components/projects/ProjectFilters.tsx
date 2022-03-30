@@ -3,7 +3,7 @@ import axios from 'axios';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { setAlerts } from '../../redux/alerts/actions';
-import { setTicketFilterOwners } from '../../redux/ticket-filters/actions';
+import { setTicketFilterOwners, setTicketFilterTitle } from '../../redux/ticket-filters/actions';
 import { fetchProjectDetails } from '../../redux/project/actions';
 
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -41,6 +41,7 @@ type ProjectFiltersProps = {
     ticketFilter: any;
 
     dispatchSetTicketFilterOwners: (values: any[]) => void;
+    dispatchSetTicketFilterTitle: (text: string) => void;
     dispatchFetchProjectDetails: (id: string) => void;
     dispatchSetAlerts: (value: any) => void;
 }
@@ -165,7 +166,7 @@ class ProjectFilters extends React.Component<ProjectFiltersProps, ProjectFilters
     }
 
     render() {
-        const { project, ticketFilter } = this.props;
+        const { project, ticketFilter, dispatchSetTicketFilterTitle } = this.props;
         const { 
             addTagModalOpen,
             newTagValue 
@@ -203,7 +204,12 @@ class ProjectFilters extends React.Component<ProjectFiltersProps, ProjectFilters
                     </ModalCard>
                 </Modal>
                 <Box display="flex" columnGap="20px">
-                    <OutlinedInput size="small" placeholder="Search..." endAdornment={<SearchIcon />} />
+                    <OutlinedInput 
+                        size="small" 
+                        placeholder="Search..." 
+                        endAdornment={<SearchIcon />} 
+                        onChange={(e) => dispatchSetTicketFilterTitle(e.target.value)} 
+                    />
                     <Autocomplete
                         multiple
                         limitTags={2}
@@ -256,7 +262,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     dispatchSetAlerts: (values: any[]) => dispatch(setAlerts(values)),
     dispatchSetTicketFilterOwners: (values: any[]) => dispatch(setTicketFilterOwners(values)),
-    dispatchFetchProjectDetails: (id: string) => dispatch(fetchProjectDetails(id))
+    dispatchFetchProjectDetails: (id: string) => dispatch(fetchProjectDetails(id)),
+    dispatchSetTicketFilterTitle: (text: string) => dispatch(setTicketFilterTitle(text))
 });
 
 export default compose<any>(

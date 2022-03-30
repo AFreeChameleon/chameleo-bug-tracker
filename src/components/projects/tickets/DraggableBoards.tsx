@@ -30,6 +30,7 @@ import CreateColumn from './CreateColumn';
 type DraggableBoardsProps = {
     tickets: any[];
     project: any;
+    ticketFilter: any;
 
     dispatchSetProjectDetails: (id: string, details: any) => void;
 }
@@ -110,6 +111,7 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
     constructor(props) {
         super(props);
         this.onDragEnd = this.onDragEnd.bind(this);
+        this.filterTickets = this.filterTickets.bind(this);
         
         this.state = {
             tickets: {},
@@ -139,9 +141,31 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
         }
     }
 
+    filterTickets(tickets) {
+        const { ticketFilter } = this.props;
+        const selectedOwnerIds = [ ...ticketFilter.owners.map(({user}) => user.id) ]
+        let filterConditionsMet = false;
+        const filteredTickets = tickets.filter((ticket) => {
+            filterConditionsMet = true;
+            if (
+                selectedOwnerIds.length > 0 && 
+                !selectedOwnerIds.includes(ticket.user.id)
+            ) {
+                filterConditionsMet = false;
+            }
+            if (!(new RegExp(ticketFilter.title, 'i')).test(ticket.name)) {
+                filterConditionsMet = false;
+            }
+            return filterConditionsMet;
+        });
+
+        return filteredTickets;
+    }
+
     render() {
-        const { project, tickets } = this.props;
+        const { project, tickets, ticketFilter } = this.props;
         const { colMenuAnchorEl, editingColumn, deletingColumn } = this.state;
+        const filteredTickets = this.filterTickets(tickets);
         return (
             <DragDropContext
                 onDragEnd={this.onDragEnd}
@@ -184,8 +208,8 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                                                             ref={cardProvided.innerRef}
                                                         >
                                                             { project.details.columns[columnId].ticketIds.map((ticketId, i) => {
-                                                                const ticket = tickets.find(t => t.id === ticketId);
-                                                                console.log(ticket)
+                                                                const ticket = filteredTickets.find(t => t.id === ticketId);
+                                                                console.log(ticketFilter, ticket)
                                                                 if (!ticket) {
                                                                     return null;
                                                                 }
@@ -296,7 +320,8 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
 
 const mapStateToProps = (state) => ({
     tickets: state.project.data.tickets,
-    project: state.project.data
+    project: state.project.data,
+    ticketFilter: state.ticketFilter
 });
 
 const mapDispatchToProps = (dispatch) => ({

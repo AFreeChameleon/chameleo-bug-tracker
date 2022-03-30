@@ -29,7 +29,7 @@ export const sendPasswordChangedEmail = (userEmail: string) => {
     return new Promise((resolve, reject) => {
         let newPasswordChangedHTML = passwordChangedHTML.toString();
         const data = {
-            from: 'Support Chameleo <info@chamel.io>',
+            from: 'Support Chameleo <info@chameleo.dev>',
             to: userEmail,
             subject: 'Your password has been changed',
             html: newPasswordChangedHTML
