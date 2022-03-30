@@ -57,7 +57,7 @@ export const sendDeleteAccountEmail = (userEmail: string, token: string) => {
         let newDeleteAccountHTML = deleteAccountHTML.toString()
             .replace('TOKEN_URL', `${process.env.HOST}/delete-account/${token}`);
         const data = {
-            from: 'Support Chameleo <info@chamel.io>',
+            from: 'Support Chameleo <info@chameleo.dev>',
             to: userEmail,
             subject: 'Delete your account',
             html: newDeleteAccountHTML
@@ -85,7 +85,7 @@ export const sendVerifyEmail = (userEmail: string, token: string) => {
         let newVerifyEmailHTML = verifyEmailHTML.toString()
             .replace('TOKEN_URL', `${process.env.HOST}/verify-email/${token}`);
         const data = {
-            from: 'Support Chameleo <info@chamel.io>',
+            from: 'Support Chameleo <info@chameleo.dev>',
             to: userEmail,
             subject: 'Verify your email!',
             html: newVerifyEmailHTML
@@ -112,7 +112,7 @@ export const sendChangedEmailAddressEmail = (userEmail: string) => {
     return new Promise((resolve, reject) => {
         const newResetPassHTML = changedEmailHTML.toString();
         const data = {
-            from: 'Support Chameleo <info@chamel.io>',
+            from: 'Support Chameleo <info@chameleo.dev>',
             to: userEmail,
             subject: 'Successfully changed your email.',
             html: newResetPassHTML
@@ -138,7 +138,7 @@ export const sendResetPassEmail = (userEmail: string, token: string) => {
         const newResetPassHTML = resetPassHTML.toString()
             .replace('TOKEN_URL', `${process.env.HOST}/forgot-password/${token}`);
         const data = {
-            from: 'Support Chameleo <info@chamel.io>',
+            from: 'Support Chameleo <info@chameleo.dev>',
             to: userEmail,
             subject: 'Reset your password!',
             html: newResetPassHTML
