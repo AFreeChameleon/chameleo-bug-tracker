@@ -185,6 +185,10 @@ class DraggableBoards extends React.Component<DraggableBoardsProps, DraggableBoa
                                                         >
                                                             { project.details.columns[columnId].ticketIds.map((ticketId, i) => {
                                                                 const ticket = tickets.find(t => t.id === ticketId);
+                                                                console.log(ticket)
+                                                                if (!ticket) {
+                                                                    return null;
+                                                                }
                                                                 return (
                                                                     <Draggable
                                                                         key={ticket.name}

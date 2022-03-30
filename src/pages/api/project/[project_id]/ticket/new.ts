@@ -120,10 +120,12 @@ handler.post(async (req: any, res: NextApiResponse) => {
                 ticketNumber: true,
             },
             orderBy: {
-                createdAt: 'asc'
+                createdAt: 'desc'
             },
             take: 1
         });
+
+        console.log(latestTicket);
 
         const ticket = await prisma.ticket.create({
             data: {
@@ -155,7 +157,7 @@ handler.post(async (req: any, res: NextApiResponse) => {
         const tagList = await prisma.tagTicketJunction.createMany({
             data: project.tags
             .filter((tag) => 
-                tags.findIndex(t => t.name === tag.name)
+                tags.findIndex(t => t.name === tag.name) > -1
             ).map((tag) => ({
                 tagId: tag.id,
                 ticketId: ticket.id,

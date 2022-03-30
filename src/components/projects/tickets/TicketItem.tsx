@@ -106,7 +106,7 @@ class TicketItem extends React.Component<any> {
 
     render() {
         const { ticket, refEl, project, ...otherProps } = this.props;
-        console.log(ticket)
+        // console.log(ticket)
         return (
             <NextLink href={`/projects/${project.id}/tickets/${ticket.ticketNumber}`}>
                 <TicketContainer 
@@ -115,14 +115,12 @@ class TicketItem extends React.Component<any> {
                 >
                     <FlexDiv sx={{ paddingRight: '5px' }}>
                         <TagList>
-                            {ticket.tags.length > 0 ? ticket.tags.map((tag, i) => (
+                            {(ticket.tags && ticket.tags.length > 0) ? ticket.tags.map((tag, i) => (
                                 <Tag key={i}>
                                     {tag.tag.name}
                                 </Tag>
                             )) : (
-                                <Tag>
-                                    No Tags
-                                </Tag>
+                                <Tag sx={{border: 'none'}}></Tag>
                             )}
                         </TagList>
                         {this.formatPriority()}

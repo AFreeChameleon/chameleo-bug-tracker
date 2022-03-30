@@ -193,4 +193,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 }
 
+VerifyEmailToken.displayName = 'VerifyEmailToken';
+
 export default VerifyEmailToken;
