@@ -26,6 +26,35 @@ const deleteAccountHTML = DeleteAccountHTML;
 // const passwordChangedHTML = readFileSync(path.join(process.cwd(), './html/password-changed.html'));
 const passwordChangedHTML = PasswordChangedHTML;
 
+export const sendContactEmail = (name: string, email: string, message: string) => {
+    return new Promise((resolve, reject) => {
+        const data = {
+            from: 'Support Chameleo <panther@chameleo.dev>',
+            to: 'support@chameleo.dev',
+            subject: `${name} says...`,
+            html: `
+                <p>${email}</p>
+                <p>${message}</p>
+            `
+        };
+        mailer.messages().send(data, (err, body) => {
+            if (err) {
+                console.log(err)
+                reject({
+                    error: true,
+                    message: err
+                });
+            } else {
+                console.log(body)
+                resolve({
+                    error: false,
+                    message: body
+                });
+            }
+        })
+    });
+}
+
 export const sendPasswordChangedEmail = (userEmail: string) => {
     return new Promise((resolve, reject) => {
         let newPasswordChangedHTML = passwordChangedHTML.toString();

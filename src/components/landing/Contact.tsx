@@ -1,12 +1,15 @@
 import React from'react';
+import axios from 'axios';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 
-import NextImage from 'next/image';
-import demo from '../../../public/img/demo.png';
-import waveOne from '../../../public/img/wave_1.svg';
+import {
+    setAlerts
+} from '../../redux/alerts/actions';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
 
 import { styled, alpha } from '@mui/material/styles';
@@ -20,18 +23,23 @@ const Container = styled('div')(({ theme }) => ({
     margin: '0 auto'
 }));
 
-const SubmitButton = styled(Button)(({ theme }) => ({
+const SubmitButton = styled(LoadingButton)(({ theme }) => ({
     width: '100px',
     textTransform: 'none'
 }));
+
+type ContactProps = {
+    dispatchSetAlerts: (alerts: any[]) => void;
+}
 
 type ContactState = {
     name: string;
     email: string;
     message: string;
+    loading: boolean;
 }
 
-class Contact extends React.Component<any, ContactState> {
+class Contact extends React.Component<ContactProps, ContactState> {
     constructor(props) {
         super(props);
 
@@ -40,19 +48,61 @@ class Contact extends React.Component<any, ContactState> {
         this.state = {
             name: '',
             email: '',
-            message: ''
+            message: '',
+            loading: false
         }
     }
 
     submitEmail(e) {
         e.preventDefault();
+        const { dispatchSetAlerts } = this.props;
+        const {
+            name,
+            email,
+            message,
+            loading
+        } = this.state;
+
+        this.setState({ loading: true });
+        
+        axios.post('/api/contact-email', {
+            name,
+            email,
+            message
+        }).then((res) => {
+            console.log('res', res)
+            dispatchSetAlerts([
+                {
+                    severity: 'success',
+                    message: res.data.message
+                }
+            ]);
+        }).catch((err) => {
+            console.log('err', err)
+            if (err.response) {
+                dispatchSetAlerts(
+                    err.response.data.errors.map((e: string) => ({
+                        type: 'error',
+                        message: e
+                    }))
+                );
+            } else {
+                dispatchSetAlerts([ {
+                    type: 'error',
+                    message: err.message
+                } ]);
+            }
+        }).finally(() => {
+            this.setState({ loading: false })
+        });
     }
 
     render() {
         const {
             name,
             email,
-            message
+            message,
+            loading
         } = this.state;
 
         return (
@@ -66,7 +116,16 @@ class Contact extends React.Component<any, ContactState> {
                     <Typography variant="h3">
                         Contact us
                     </Typography>
-                    <Box display="flex" flexDirection="column" rowGap="15px" marginTop="30px" component="form" onSubmit={this.submitEmail}>
+                    <Box 
+                        display="flex" 
+                        flexDirection="column" 
+                        rowGap="15px" 
+                        marginTop="30px" 
+                        component="form" 
+                        action=""
+                        method="POST"
+                        onSubmit={this.submitEmail}
+                    >
                         <TextField
                             variant="outlined"
                             label="Name"
@@ -93,7 +152,12 @@ class Contact extends React.Component<any, ContactState> {
                                 message: e.target.value
                             })}
                         />
-                        <SubmitButton variant="contained" color="secondary">
+                        <SubmitButton
+                            disabled={loading}
+                            variant="contained" 
+                            color="secondary" 
+                            type="submit"
+                        >
                             Submit
                         </SubmitButton>
                     </Box>
@@ -103,4 +167,14 @@ class Contact extends React.Component<any, ContactState> {
     }
 }
 
-export default Contact;
+const mapStateToProps = (state) => ({
+
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    dispatchSetAlerts: (alerts: any[]) => dispatch(setAlerts(alerts))
+});
+
+export default compose(
+    connect(mapStateToProps, mapDispatchToProps)
+)(Contact);

@@ -5,6 +5,8 @@ import Hero from '../components/landing/Hero';
 import HeroTransition from '../components/landing/HeroTransition';
 import OpenBeta from '../components/landing/OpenBeta';
 import Contact from '../components/landing/Contact';
+import Footer from '../components/landing/Footer';
+import Alerts from '../components/Alerts';
 
 const Index: NextPage = () => {
     return (
@@ -14,6 +16,8 @@ const Index: NextPage = () => {
             <HeroTransition />
             <OpenBeta />
             <Contact />
+            <Footer />
+            <Alerts />
         </div>
     )
 }

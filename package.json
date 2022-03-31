@@ -15,6 +15,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/base": "^5.0.0-alpha.60",
     "@mui/icons-material": "^5.0.0-rc.1",
+    "@mui/lab": "^5.0.0-alpha.75",
     "@mui/material": "^5.0.0-rc.1",
     "@prisma/client": "^3.2.1",
     "@types/bcrypt": "^5.0.0",
