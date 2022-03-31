@@ -24,7 +24,7 @@ const themeObj = {
             main: chameleoGreen,
         },
         secondary: {
-            main: navy,
+            main: chameleoGreen,
             contrastText: '#ffffff'
         },
         error: {

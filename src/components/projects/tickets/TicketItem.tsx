@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 
 import AddIcon from '@mui/icons-material/Add';
 import { CriticalPriorityIcon, HighPriorityIcon, LowPriorityIcon, MediumPriorityIcon } from './Icons';
@@ -114,15 +115,11 @@ class TicketItem extends React.Component<any> {
                     {...otherProps}
                 >
                     <FlexDiv sx={{ paddingRight: '5px' }}>
-                        <TagList>
-                            {(ticket.tags && ticket.tags.length > 0) ? ticket.tags.map((tag, i) => (
-                                <Tag key={i}>
-                                    {tag.tag.name}
-                                </Tag>
-                            )) : (
-                                <Tag sx={{border: 'none'}}></Tag>
-                            )}
-                        </TagList>
+                        <Typography
+                            variant="body1"
+                        >
+                            {ticket.name}
+                        </Typography>
                         {this.formatPriority()}
                     </FlexDiv>
                     <Box marginTop="5px">
@@ -133,11 +130,13 @@ class TicketItem extends React.Component<any> {
                             From: {ticket.source}
                         </SourceTypography>}
                         <FlexDiv>
-                            <Typography
-                                variant="body1"
-                            >
-                                {ticket.name}
-                            </Typography>
+                            <TagList>
+                                {(ticket.tags && ticket.tags.length > 0) ? ticket.tags.map((tag, i) => (
+                                    <Chip label={tag.tag.name} color="primary" size="small"/>
+                                )) : (
+                                    <Tag sx={{border: 'none'}}></Tag>
+                                )}
+                            </TagList>
                         </FlexDiv>
                     </Box>
                     <FlexGrow />
