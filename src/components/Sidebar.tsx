@@ -189,7 +189,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                             height: '50px'
                         }}>
                             <ListItemIcon>
-                                <ArchiveIcon color="secondary"/>
+                                <ArchiveIcon color="primary"/>
                             </ListItemIcon>
                             <ListItemText sx={{
                                 fontSize: '16px'
@@ -203,7 +203,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
                         height: '50px'
                     }}>
                         <ListItemIcon>
-                            <FolderSharedIcon color="secondary" />
+                            <FolderSharedIcon color="primary" />
                         </ListItemIcon>
                         <ListItemText>
                             Share

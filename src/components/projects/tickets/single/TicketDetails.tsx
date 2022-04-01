@@ -163,7 +163,7 @@ class TicketDetails extends React.Component<TicketDetailsProps, TicketDetailsSta
 
     changeTicketPriority(priority: string) {
         const { project, ticket, dispatchSetTicketPriority } = this.props;
-        dispatchSetTicketPriority(project.id, ticket.id, priority);
+        dispatchSetTicketPriority(project.id, ticket.ticketNumber, priority);
         this.setState({ priorityAnchorEl: null });
     }
 
@@ -172,7 +172,7 @@ class TicketDetails extends React.Component<TicketDetailsProps, TicketDetailsSta
         this.setState({ assignedToAnchorEl: null });
         const user = (email && project.users.find(({ user }) => user.email === email)) ? 
             project.users.find(({ user }) => user.email === email).user : null;
-        dispatchSetTicketAssignedTo(project.id, ticket.id, user);
+        dispatchSetTicketAssignedTo(project.id, ticket.ticketNumber, user);
     }
 
     saveTimeEstimate(e) {
@@ -246,7 +246,7 @@ class TicketDetails extends React.Component<TicketDetailsProps, TicketDetailsSta
                                     <SaveButtons sx={{position: 'absolute', zIndex: 5}}>
                                         <Button
                                             variant="contained"
-                                            color="primary"
+                                            color="secondary"
                                             sx={{ minWidth: '20px', padding: '6px' }}
                                             type="submit"
                                         >
@@ -277,13 +277,17 @@ class TicketDetails extends React.Component<TicketDetailsProps, TicketDetailsSta
                         </Typography>
                         <AssignedTo onClick={(e) => this.setState({ assignedToAnchorEl: e.currentTarget })}>
                             <SmallAvatar>
-                                {ticket.user.firstName[0]}
+                                {ticket.assignedUser ? ticket.assignedUser.firstName[0] : ticket.user.firstName[0]}
                             </SmallAvatar>
                             <Typography
                                 noWrap
                                 variant="body2"
                             >
-                                {ticket.user.firstName} {ticket.user.lastName}
+                                {ticket.assignedUser ? 
+                                ticket.assignedUser.firstName : 
+                                ticket.user.firstName} {ticket.assignedUser ? 
+                                ticket.assignedUser.lastName : 
+                                ticket.user.lastName}
                             </Typography>
                         </AssignedTo>
                     </Detail>

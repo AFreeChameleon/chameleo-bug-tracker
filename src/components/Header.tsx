@@ -144,9 +144,8 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     }
 
     render() {
-        const { user, project, createTicket } = this.props;
+        const { user, project, createTicket, router } = this.props;
         const { profileMenuAnchorEl, createTicketModalOpen } = this.state;
-        console.log(project)
         return (
             <Box sx={{ flexGrow: 1 }} zIndex={10} marginBottom="64px">
                 <Box position="absolute" width="100%" top={0} zIndex={10}>
@@ -159,6 +158,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                             </NextLink>
                             <FlexGrow/>
                             {createTicket && <Button
+                                color="secondary"
                                 onClick={() => this.setState({ createTicketModalOpen: true })}
                                 sx={{ 
                                     textTransform: 'none',
@@ -173,7 +173,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                     API
                                 </Link>
                             </NextLink> )} */}
-                            <Search>
+                            {/* <Search>
                                 <SearchIconWrapper>
                                     <SearchIcon />
                                 </SearchIconWrapper>
@@ -181,7 +181,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                     placeholder="Search…"
                                     inputProps={{ 'aria-label': 'search' }}
                                 />
-                            </Search>
+                            </Search> */}
 
                             {/* <IconButton
                                 size="large"
@@ -238,16 +238,13 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                             >
-                                <MenuItem>
-                                    <Avatar /> Profile
-                                </MenuItem>
-                                <Divider />
-                                <MenuItem>
+                                <MenuItem onClick={() => router.push('/account')}>
                                     <ListItemIcon>
                                         <SettingsIcon fontSize="small" />
                                     </ListItemIcon>
                                     Settings
                                 </MenuItem>
+                                <Divider />
                                 <MenuItem onClick={this.logout}>
                                     <ListItemIcon>
                                         <LogoutIcon fontSize="small" />

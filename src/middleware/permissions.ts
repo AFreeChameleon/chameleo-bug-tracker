@@ -17,7 +17,6 @@ export const canUserEditUsers = async (req: NextApiRequestWithSessionRole, res: 
 }
 
 export const canUserEditTickets = async (req: NextApiRequestWithSessionRole, res: NextApiResponse, next: NextHandler) => {
-    console.log('CAN USER EDIT TICKETS?!?!??!!?', req.user)
     const userPermissions = checkPermission(req.user.roles[0].role);
 
     if (userPermissions.write) {

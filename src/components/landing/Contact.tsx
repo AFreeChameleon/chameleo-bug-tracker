@@ -70,7 +70,6 @@ class Contact extends React.Component<ContactProps, ContactState> {
             email,
             message
         }).then((res) => {
-            console.log('res', res)
             dispatchSetAlerts([
                 {
                     severity: 'success',
@@ -78,7 +77,6 @@ class Contact extends React.Component<ContactProps, ContactState> {
                 }
             ]);
         }).catch((err) => {
-            console.log('err', err)
             if (err.response) {
                 dispatchSetAlerts(
                     err.response.data.errors.map((e: string) => ({

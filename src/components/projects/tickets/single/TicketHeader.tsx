@@ -237,7 +237,7 @@ class TicketHeader extends React.Component<TicketHeaderProps, TicketHeaderState>
                             <SaveButtons>
                                 <Button
                                     variant="contained"
-                                    color="primary"
+                                    color="secondary"
                                     sx={{ minWidth: '20px', padding: '6px' }}
                                     type="submit"
                                 >
