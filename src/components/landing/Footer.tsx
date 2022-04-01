@@ -13,7 +13,7 @@ class Footer extends React.Component {
 
     render() {
         return (
-            <Box height="60px" marginTop="30px" boxShadow={(theme) => theme.shadows[4]} display="flex" alignItems="center" padding="0 20px">
+            <Box height="60px" marginTop="30px" boxShadow={(theme) => theme.shadows[4]} display="flex" alignItems="center" padding="0 20px" id="footer">
                 <Typography variant="body2">
                     Email: <Link href="mailto:support@chameleo.dev">support@chameleo.dev</Link>
                 </Typography>

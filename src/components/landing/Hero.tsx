@@ -82,6 +82,11 @@ class Hero extends React.Component<HeroProps> {
                                 borderColor: (theme) => theme.palette.secondary.main,
                                 color: (theme) => theme.palette.primary.main
                             }}
+                            onClick={() => {
+                                document.getElementById('footer').scrollIntoView({
+                                    behavior: 'smooth'
+                                });
+                            }}
                         >
                             Contact us
                         </ActionButton>
