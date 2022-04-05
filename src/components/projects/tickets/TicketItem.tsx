@@ -132,7 +132,7 @@ class TicketItem extends React.Component<any> {
                         <FlexDiv>
                             <TagList>
                                 {(ticket.tags && ticket.tags.length > 0) ? ticket.tags.map((tag, i) => (
-                                    <Chip label={tag.tag.name} color="primary" size="small"/>
+                                    <Chip label={tag.tag.name} color="primary" size="small" key={i}/>
                                 )) : (
                                     <Tag sx={{border: 'none'}}></Tag>
                                 )}

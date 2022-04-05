@@ -52,7 +52,7 @@ class OpenBeta extends React.Component {
                                 marginBottom: '20px'
                             }}
                         >
-                            We're in open beta!
+                            We&apos;re in open beta!
                         </Typography>
                         <Typography
                             variant="body1"
